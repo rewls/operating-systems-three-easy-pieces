@@ -1,5 +1,23 @@
 # Ch5 Interlude: Process API
 
+## Contents
+
+Virtualization
+
+- Ch5 Interlude: Process APi
+
+    - 5.1 The `fork()` System Call
+
+    - 5.2 The `wait()` System Call
+
+    - 5.3 Finally, The `exec()` System Call
+
+    - 5.4 Why? Motivating The API
+
+    - 5.5 Process Control And Users
+
+    - 5.6 Useful Tools
+
 ## Homework (Simulation)
 
 ### Questions
@@ -368,3 +386,63 @@ Action?
 ```
 
 - In this case the number of actions is different from the number of child processes of the root process, so we can't determine the actions. Because we don't know what process was forked by what process.
+
+## Homework (Code)
+
+### Questions
+
+#### 1
+
+- `01.c`
+
+- The value of the variable in the child process is the same as previously set.
+
+- When both the child and parent change the value of `x`, the value changes independently in each. Since each of the parent and child has its own address space, changing values in each does not affect each other.
+
+#### 2
+
+- `02.c`
+
+- Both the child and parent can access the file descriptor.
+
+- Writing is done in nondeterministic order. I think writing at the same time actually does not happen because scheduler determines the order.
+
+#### 3
+
+- `03.c`
+
+- We can ensure that the child process always prints first without calling `wait()` in the parent.
+
+- One of the solutions is using `kill()` and `signal()`.  
+
+#### 4
+
+- `04.c`
+
+```
+$ man exec.3
+```
+
+#### 5
+
+- `05.c`
+
+- `wait()` returns child process pid.
+
+- If we use `wait()` in the child, it returns -1 and `ECHILD` error occurs.
+
+#### 6
+
+- `06.c`
+
+- When we want to specify the pid to wait and options, `waitpid()` is useful.
+
+#### 7
+
+- `07.c`
+
+- `printf()` write output to stdout, the standard output stream. If we close standard output, we cannot write to stdout. But return value is the number of characters we want to print in that the output error doesn't occur.
+
+#### 8
+
+- `08.c`
