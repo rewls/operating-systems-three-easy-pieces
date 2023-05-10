@@ -1,0 +1,5 @@
+Kernel compile reference
+
+- [Kernel/Traditional compilation](https://wiki.archlinux.org/title/Kernel/Traditional_compilation)
+
+- [GRUB](https://wiki.archlinux.org/title/GRUB)
