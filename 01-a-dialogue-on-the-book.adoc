@@ -1,0 +1,71 @@
+= 1 A Dialogue on the Book
+
+Student::
+Why is it called "Three Easy Pieces"?
+
+Professor::
+Well, you see, there are these great lectures on Physics by Richard Feynman...
+
+Professor::
+Hopefully this book is more like his notes on Physics. +
+Some of the basics were summed up in a book called "Six Easy Pieces". +
+He was talking about Physics; we're going to do Three Easy Pieces on the fine
+topic of Operating Systems. +
+This is appropriate, as Operating Systems are about half as hard as Physics.
+
+Student::
+Well, I liked physics, so that is probably good. +
+What are those pieces?
+
+Professor::
+They are the three key ideas we're going to learn about: virtualization,
+concurrency, and persistence. +
+In learning about these ideas, we'll learn all about how an operating system
+works, including how it decides what program to run next on a CPU, how it
+handles memory overload in a virtual memory system, how virtual machine
+monitors work, how to manage information on disks, and even a little about how
+to build a distributed system that works when parts have failed. +
+That sort of stuff.
+
+Student::
+I have no idea what you're talking about, really.
+
+Professor::
+Good! That means you are in the right class.
+
+Student::
+I have another question: what's the best way to learn this stuff?
+
+Professor::
+Excellent query! +
+Well, each person needs to figure this out on their own, of course, but here is
+what I would do: go to class, to hear the professor introduce the material. +
+Then, at the end of every week, read these notes, to help the ideas sink into
+your head a bit better. +
+Of course, some time later (hint: before the exam!), read the notes again to
+firm up your knowledge. +
+Of course, your professor will no doubt assign some homeworks and projects, so
+you should do those; in particular, doing projects where you write real code to
+solve real problems is the best way to put the ideas within these notes into
+action. +
+As Confucius said...
+
+Student::
+Oh, I know! 'I hear and I forget. I see and I remember. I do and I
+understand.' +
+Or something like that.
+
+...
+
+Student::
+Professor -- just one more question, if I may. +
+What are these dialogues for? +
+I mean, isn't this just supposed to be a book? +
+Why not present the material directly?
+
+Professor::
+Ah, good question, good question! +
+Well, I think it is sometimes useful to pull yourself outside of a narrative
+and think a bit; these dialogues are those times. +
+So you and I are going to work together to make sense of all of these pretty
+complex ideas.
