@@ -356,7 +356,7 @@ ____
 
 === Appendices
 
-* A Dialogue
+* [x] link:appendix-a-a-dialogue-on-virtual-machine-monitors.adoc[A Dialogue]
 * link:appendix-b-virtual-machine-monitors.adoc[B Virtual Machines]
 ** [x] B.1 Introduction
 ** [x] B.2 Motivation: Why VMMs?
