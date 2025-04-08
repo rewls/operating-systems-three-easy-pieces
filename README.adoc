@@ -359,7 +359,7 @@ ____
 * A Dialogue
 * link:appendix-b-virtual-machine-monitors.adoc[B Virtual Machines]
 ** [x] B.1 Introduction
-** [ ] B.2 Motivation: Why VMMs?
+** [x] B.2 Motivation: Why VMMs?
 ** [ ] B.3 Virtualizing the CPU
 ** [ ] B.4 Virtualizing Memory
 ** [ ] B.5 The information Gap

@@ -39,7 +39,68 @@
   underneath the OS; what are the techniques required to do so?
 ****
 
+== B.2 Motivation: Why VMMs?
+
+* Today, VMMs have become popular again for a multitude of reasons.
+* Server consolidation is one such reason.
+* In many settings, people run services on different machines which run
+  different operating systems (or even OS versions), and yet each machine is
+  lightly utilized.
+* In this case, virtualization enables an administrator to consolidate
+  multiple OSes onto fewer hardware platforms, and thus lower costs and ease
+  administration.
+
+'''
+
+* Virtualization has also become popular on desktops, as many users wish to
+  run one operating system (say Linux or Mac OS X) but still have access to
+  native applications on a different platform (say Windows).
+* This type of improvement in functionality is also a good reason.
+
+'''
+
+* Another reason is testing and debugging.
+* While developers write code on one main platform, they often want to debug
+  and test it on the many different platforms that they deploy the software to
+  in the field.
+* Thus, virtualization makes it easy to do so, by enabling a developer to run
+  many operating system types and versions on just one machine.
+
+'''
+
+* This resurgence in virtualization began in earnest the mid-to-late 1990's,
+  and was led by a group of researchers at Stanford headed by Professor Mendel
+  Rosenblum.
+* His group's work on Disco [B+97], a virtual machine monitor for the MIPS
+  processor, was an early effort that revived VMMs and eventually led that
+  group to the founding of VMware [V98], now a market leader in virtualization
+  technology.
+* In this chapter, we will discuss the primary technology underlying Disco and
+  through that window try to understand how virtualization works.
+
 == References
+
+[B+97] "Disco: Running Commodity Operating Systems on Scalable Multiprocessors" by Edouard Bugnion, Scott Devine, Kinshuk Govil, Mendel Rosenblum. SOSP '97.::
+* The paper that reintroduced the systems community to virtual machine
+  research; well, perhaps this is unfair as Bressoud and Schneider [BS95] also
+  did, but here we began to understand why virtualization was going to come
+  back.
+* What made it even clearer, however, is when this group of excellent
+  researchers started VMware and made some billions of dollars.
+
+[BS95] "Hypervisor-based Fault-tolerance" by Thomas C. Bressoud, Fred B.  Schneider. SOSP '95.::
+* One the earliest papers to bring back the hypervisor, which is just another
+  term for a virtual machine monitor.
+* In this work, however, such hypervisors are used to improve system tolerance
+  of hardware faults, which is perhaps less useful than some of the more
+  practical scenarios discussed in this chapter; however, still quite an
+  intriguing paper in its own right.
 
 [G74] "Survey of Virtual Machine Research" by R.P. Goldberg. IEEE Computer, Volume 7, Number 6.::
 * A terrific survey of a lot of old virtual machine research.
+
+[V98] by VMware corporation. Available: http://www.vmware.com/.::
+* This may be the most useless reference in this book, as you can clearly look
+  this up yourself.
+* Anyhow, the company was founded in 1998 and is a leader in the field of
+  virtualization.
