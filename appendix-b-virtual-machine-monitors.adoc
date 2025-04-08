@@ -1,0 +1,45 @@
+= B Virtual Machine Monitors
+
+== B.1 Introduction
+
+* Years ago, IBM sold expensive mainframes to large organizations, and a
+  problem arose: what if the organization wanted to run different operating
+  systems on the machine at the same time?
+* Some applications had been developed on one OS, and some on others, and thus
+  the problem.
+* As a solution, IBM introduced yet another level of indirection in the form
+  of a *virtual machine monitor* (*VMM*) (also called a *hypervisor*) [G74].
+
+'''
+
+* Specifically, the monitor sits between one or more operating systems and the
+  hardware and gives the illusion to each running OS that it controls the
+  machine.
+* Behind the scenes, however, the monitor actually is in control of the
+  hardware, and must multiplex running OSes across the physical resources of
+  the machine.
+* Indeed, the VMM serves as an operating system for operating systems, but at
+  a much lower level; the OS must still think it is interacting with the
+  physical hardware.
+* Thus, transparency is a major goal of VMMs.
+
+'''
+
+* Thus, we find ourselves in a funny position: the OS has thus far served as
+  the master illusionist, tricking unsuspecting applications into thinking
+  they have their own private CPU and a large virtual memory, while secretly
+  switching between applications and sharing memory as well.
+* Now, we have to do it again, but this time underneath the OS, who is used to
+  being in charge.
+* How can the VMM create this illusion for each OS running on top of it?
+
+.The Crux: How to virtualize the machine underneath the OS
+****
+* The virtual machine monitor must transparently virtualize the machine
+  underneath the OS; what are the techniques required to do so?
+****
+
+== References
+
+[G74] "Survey of Virtual Machine Research" by R.P. Goldberg. IEEE Computer, Volume 7, Number 6.::
+* A terrific survey of a lot of old virtual machine research.

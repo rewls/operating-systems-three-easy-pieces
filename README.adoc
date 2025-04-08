@@ -278,7 +278,7 @@ ____
 * Mop-up work, anomaly, crisis, and revolution.
 * We are mostly destined to do mop-up work, alas.
 
-== TOC 
+== Contents
 
 === Intro
 
@@ -356,11 +356,18 @@ ____
 
 === Appendices
 
-* Dialogue
-* Virtual Machines
-* Dialogue
-* Monitors
-* Dialogue
-* Lba Tutorial
-* Systems Labs
-* xv6 Labs
+* A Dialogue
+* link:appendix-b-virtual-machine-monitors.adoc[B Virtual Machines]
+** [x] B.1 Introduction
+** [ ] B.2 Motivation: Why VMMs?
+** [ ] B.3 Virtualizing the CPU
+** [ ] B.4 Virtualizing Memory
+** [ ] B.5 The information Gap
+** [ ] B.6 Summary
+** [ ] References
+* C Dialogue
+* D Monitors
+* E Dialogue
+* F Lba Tutorial
+* G Systems Labs
+* H xv6 Labs
