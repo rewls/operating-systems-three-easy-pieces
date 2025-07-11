@@ -289,7 +289,7 @@ ____
 * link:02-introduction-to-operating-systems/[2 Introduction to Operating
   Systems 3]
 ** [x] 2.1 Virtualizing The CPU 5
-** [ ] 2.2 virtualizing Memory 7
+** [x] 2.2 virtualizing Memory 7
 ** [ ] 2.3 Concurrency 9 
 ** [ ] 2.4 Persistence 11
 ** [ ] 2.5 Design Goals 13
