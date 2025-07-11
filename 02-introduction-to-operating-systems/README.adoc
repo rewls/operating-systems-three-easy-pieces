@@ -430,6 +430,121 @@ Final value : 137298 // what the??
 * How can we use them to solve the problems of concurrency?
 ****
 
+== 2.4 Persistence
+
+* The third major theme of the course is *persistence*.
+* In system memory, data can be easily lost, as devices such as DRAM store
+  values in a *volatile* manner; when power goes away or the system crashes,
+  any data in memory is lost.
+* Thus, we need hardware and software to be able to store data *persistently*;
+  such storage is thus critical to any system as users care a great deal about
+  their data.
+
+'''
+
+* The hardware comes in the form of some kind of *input/output* or *I/O* device;
+  in modern systems, a *hard drive* is a common repository for long-lived
+  information, although *solid-state drives* (*SSDs*) are making headway in
+  this arena as well.
+
+'''
+
+* The software in the operating system that usually manages the disk is called
+  the *file system*; it is thus responsible for storing any files the user
+  creates in a reliable and efficient manner on the disks of the system.
+
+'''
+
+* Unlike the abstractions provided by the OS for the CPU and memory, the OS
+  does not create a private, virtualized disk for each application.
+* Rather, it is assumed that often times, users will want to share information
+  that is in files.
+* For example, when writing a C program, you might first use an editor (e.g.,
+  Emacs{empty}footnote:[You should be using Emacs. If you are using vi, there
+  is probably something wrong with you. If you are using something that is not
+  a real code editor, that is even worse.]) to create and edit the C file
+  (`emacs -nw main.c`).
+* Once done, you might use the compiler to turn the source code into an
+  executable (e.g., `gcc -o main main.c`). When you're finished,
+* you might run the new executable (e.g., `./main`).
+* Thus, you can see how files are shared across different processes.
+* First, Emacs creates a file that serves as input to the compiler; the
+  compiler uses that input file to create a new executable file (in many steps
+  -- take a compiler course for details); finally, the new executable is then
+  run.
+* And thus a new program is born!
+
+'''
+
+* To understand this better, let's look at some code.
+* Figure 2.6 presents code to create a file (`/tmp/file`) that contains the
+  string "hello world".
+
+'''
+
+* To accomplish this task, the program makes three calls into the operating
+  system.
+* The first, a call to `open()`, opens the file and creates it; the second,
+  `write()`, writes some data to the file; the third, `close()`, simply closes
+  the file thus indicating the program won't be writing any more data to it.
+* These *system calls* are routed to the part of the operating system called
+  the *file system*, which then handles the requests and returns some kind of
+  error code to the user.
+
+:figure-number: 6
+.{figure-caption} {figure-number}. A Program That Does I/O (`io.c`)
+[,c]
+----
+include::io.c[]
+----
+
+* You might be wondering what the OS does in order to actually write to disk.
+* We would show you but you'd have to promise to close your eyes first; it is
+  that unpleasant.
+* The file system has to do a fair bit of work: first figuring out where on
+  disk this new data will reside, and then keeping track of it in various
+  structures the file system maintains.
+* Doing so requires issuing I/O requests to the underlying storage device, to
+  either read existing structures or update (write) them.
+* As anyone who has written a *device driver*{empty}footnote:[A device driver
+  is some code in the operating system that knows how to deal with a specific
+  device. We will talk more about devices and device drivers later.] knows,
+  getting a device to do something on your behalf is an intricate and detailed
+  process.
+* It requires a deep knowledge of the low-level device interface and its exact
+  semantics.
+* Fortunately, the OS provides a standard and simple way to access devices
+  through its system calls.
+* Thus, the OS is sometimes seen as a *standard library*.
+
+'''
+
+* Of course, there are many more details in how devices are accessed, and how
+  file systems manage data persistently atop said devices.
+* For performance reasons, most file systems first delay such writes for a
+  while, hoping to batch them into larger groups.
+* To handle the problems of system crashes during writes, most file systems
+  incorporate some kind of intricate write protocol, such as *journaling* or
+  *copy-on-write*, carefully ordering writes to disk to ensure that if a
+  failure occurs during the write sequence, the system can recover to
+  reasonable state afterwards.
+* To make different common operations efficient, file systems employ many
+  different data structures and access methods, from simple lists to complex
+  btrees.
+* If all of this doesn't make sense yet, good!
+* We'll be talking about all of this quite a bit more in the third part of
+  this book on *persistence*, where we'll discuss devices and I/O in general,
+  and then disks, RAIDs, and file systems in great detail.
+
+.The crux of the problem: How to store data persistently
+****
+* The file system is the part of the OS in charge of managing persistent data.
+* What techniques are needed to do so correctly?
+* What mechanisms and policies are required to do so with high performance?
+* How is reliability achieved, in the face of failures in hardware and
+  software?
+****
+
 == References
 
 [BOH10] "Computer Systems: A Programmer's Perspective" by R. Bryant and D.  O'Hallaron. Addison-Wesley, 2010.::

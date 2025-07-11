@@ -1,9 +1,9 @@
 CFLAGS = -Wall -Wextra -Werror -g
 
-all: cpu mem threads
+all: cpu mem threads io
 
 clean:
-	$(RM) cpu mem threads
+	$(RM) cpu mem threads io
 
 cpu mem threads: common.h
 
