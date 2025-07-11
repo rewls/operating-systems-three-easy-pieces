@@ -292,7 +292,7 @@ ____
 ** [x] 2.2 virtualizing Memory 7
 ** [x] 2.3 Concurrency 9 
 ** [x] 2.4 Persistence 11
-** [ ] 2.5 Design Goals 13
+** [x] 2.5 Design Goals 13
 ** [ ] 2.6 Some History 14
 ** [ ] 2.7 Summary 19
 ** [ ] References 20
