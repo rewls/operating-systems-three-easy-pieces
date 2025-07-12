@@ -540,7 +540,60 @@ mov %eax, 0x8049a1c
 * How can programs use them to get the desired results?
 ****
 
+== 26.6 One More Problem: Waiting For Another
+
+* This chapter has set up the problem of concurrency as if only one type of
+  interaction occurs between threads, that of accessing shared variables and
+  the need to support atomicity for critical sections.
+* As it turns out, there is another common interaction that arises, where one
+  thread must wait for another to complete some action before it continues.
+* This interaction arises, for example, when a process performs a disk I/O and
+  is put to sleep; when the I/O completes, the process needs to be roused from
+  its slumber so it can continue.
+
+'''
+
+* Thus, in the coming chapters, we'll be not only studying how to build
+  support for synchronization primitives to support atomicity but also for
+  mechanisms to support this type of sleeping/waking interaction that is
+  common in multi-threaded programs.
+* If this doesn't make sense right now, that is OK!
+* It will soon enough, when you read the chapter on *condition variables*.
+* If it doesn't by then, well, then it is less OK, and you should read that
+  chapter again (and again) until it does make sense.
+
+.Aside: Key concurrency terms critical section, race condition, indeterminate, mutual exclusion
+****
+* These four terms are so central to concurrent code that we thought it worth
+  while to call them out explicitly.
+* See some of Dijkstra's early work [D65,D68] for more details.
+
+'''
+
+* A *critical section* is a piece of code that accesses a shared resource,
+  usually a variable or data structure.
+* A *race condition* (or *data race* [NM92]) arises if multiple threads of
+  execution enter the critical section at roughly the same time; both attempt
+  to update the shared data structure, leading to a surprising (and perhaps
+  undesirable) outcome.
+* An *indeterminate* program consists of one or more race conditions; the
+  output of the program varies from run to run, depending on which threads ran
+  when. +
+  The outcome is thus not deterministic, something we usually expect from
+  computer systems.
+* To avoid these problems, threads should use some kind of *mutual exclusion*
+  primitives; doing so guarantees that only a single thread ever enters a
+  critical section, thus avoiding races, and resulting in deterministic
+  program outputs.
+****
+
 == References
+
+[D65] "Solution of a problem in concurrent programming control" by E. W. Dijkstra. Communications of the ACM, 8(9):569, September 1965.::
+* Pointed to as the first paper of Dijkstra's where he outlines the mutual
+  exclusion problem and a solution.
+* The solution, however, is not widely used; advanced hardware and OS support
+  is needed, as we will see in the coming chapters.
 
 [D68] "Cooperating sequential processes" by Edsger W. Dijkstra. 1968. Available at this site: http://www.cs.utexas.edu/users/EWD/ewd01xx/EWD123.PDF.::
 * Dijkstra has an amazing number of his old papers, notes, and thoughts
@@ -567,6 +620,12 @@ mov %eax, 0x8049a1c
 * A nice text on some of the theory and practice of atomic transactions for
   distributed systems.
 * Perhaps a bit formal for some, but lots of good material is found herein.
+
+[NM92] "What Are Race Conditions? Some Issues and Formalizations" by Robert H.  B. Netzer and Barton P. Miller. ACM Letters on Programming Languages and Systems, Volume 1:1, March 1992.::
+* An excellent discussion of the different types of races found in concurrent
+  programs.
+* In this chapter (and the next few), we focus on data races, but later we
+  will broaden to discuss general races as well.
 
 [SR05] "Advanced Programming in the UNIX Environment" by W. Richard Stevens and Stephen A. Rago. Addison-Wesley, 2005.::
 * As we've said many times, buy this book, and read it, in little chunks,
