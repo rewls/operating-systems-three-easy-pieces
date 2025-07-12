@@ -469,6 +469,77 @@ image::figure-26-07.png[]
 * If that doesn't make sense, don't worry -- it will, in some future chapter.
 ****
 
+== 26.5 The Wish For Atomicity
+
+* One way to solve this problem would be to have more powerful instructions
+  that, in a single step, did exactly whatever we needed done and thus removed
+  the possibility of an untimely interrupt.
+* For example, what if we had a super instruction that looked like this:
++
+....
+memory-add 0x8049a1c, $0x1
+....
+
+'''
+
+* Assume this instruction adds a value to a memory location, and the hardware
+  guarantees that it executes *atomically*; when the instruction executed, it
+  would perform the update as desired.
+* It could not be interrupted mid-instruction, because that is precisely the
+  guarantee we receive from the hardware: when an interrupt occurs, either the
+  instruction has not run at all, or it has run to completion; there is no
+  in-between state.
+* Hardware can be a beautiful thing, no?
+
+'''
+
+* Atomically, in this context, means "as a unit", which sometimes we take as
+  "all or none."
+* What we'd like is to execute the three instruction sequence atomically:
++
+[source,assembly]
+mov 0x8049a1c, %eax
+add $0x1, %eax
+mov %eax, 0x8049a1c
+
+* As we said, if we had a single instruction to do this, we could just issue
+  that instruction and be done.
+* But in the general case, we won't have such an instruction.
+* Imagine we were building a concurrent B-tree, and wished to update it; would
+  we really want the hardware to support an "atomic update of B-tree"
+  instruction?
+* Probably not, at least in a sane instruction set.
+
+'''
+
+* Thus, what we will instead do is ask the hardware for a few useful
+  instructions upon which we can build a general set of what we call
+  *synchronization primitives*.
+* By using this hardware support, in combination with some help from the
+  operating system, we will be able to build multi-threaded code that accesses
+  critical sections in a synchronized and controlled manner, and thus reliably
+  produces the correct result despite the challenging nature of concurrent
+  execution.
+* Pretty awesome, right?
+
+'''
+
+* This is the problem we will study in this section of the book.
+* It is a wonderful and hard problem, and should make your mind hurt (a bit).
+* If it doesn't, then you don't understand!
+* Keep working until your head hurts; you then know you're headed in the right
+  direction.
+* At that point, take a break; we don't want your head hurting too much.
+
+.The crux: How to support synchronization
+****
+* What support do we need from the hardware in order to build useful
+  synchronization primitives?
+* What support do we need from the OS?
+* How can we build these primitives correctly and efficiently?
+* How can programs use them to get the desired results?
+****
+
 == References
 
 [D68] "Cooperating sequential processes" by Edsger W. Dijkstra. 1968. Available at this site: http://www.cs.utexas.edu/users/EWD/ewd01xx/EWD123.PDF.::
