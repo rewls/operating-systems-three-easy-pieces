@@ -508,7 +508,7 @@ ____
 ** [x] 26.1 Why Use Threads? 306
 ** [x] 26.2 An Example: Thread Creation 307
 ** [x] 26.3 Why It Gets Worse: Shared Data 310
-** [ ] 26.4 The Heart Of The Problem: Uncontrolled Scheduling 313
+** [x] 26.4 The Heart Of The Problem: Uncontrolled Scheduling 313
 ** [ ] 26.5 The Wish For Atomicity 315
 ** [ ] 26.6 One More Problem: Waiting For Another 316
 ** [ ] 26.7 Summary: Why in OS Class? 317

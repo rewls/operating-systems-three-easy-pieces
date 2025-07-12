@@ -325,7 +325,177 @@ prompt> objdump -d main
   you'll be able to build.
 ****
 
+== 26.4 The Heart Of The Problem: Uncontrolled Scheduling
+
+* To understand why this happens, we must understand the code sequence that
+  the compiler generates for the update to `counter`.
+* In this case, we wish to simply add a number (1) to `counter`.
+* Thus, the code sequence for doing so might look something like this (in
+  x86);
++
+[source,assembly]
+mov 0x8049a1c, %eax
+add $0x1, %eax
+mov %eax, 0x8049a1c
+
+'''
+
+* This example assumes that the variable `counter` is located at address
+  `0x8049a1c`.
+* In this three-instruction sequence, the x86 `mov` instruction is used first
+  to get the memory value at the address and put it into register `eax`.
+* Then, the add is performed, adding 1 (0x1) to the contents of the `eax`
+  register, and finally, the contents of `eax` are stored back into memory at
+  the same address.
+
+'''
+
+* Let us imagine one of our two threads (Thread 1) enters this region of code,
+  and is thus about to increment counter by one.
+* It loads the value of `counter` (let's say it's 50 to begin with) into its
+  register `eax`.
+* Thus, `eax=50` for Thread 1.
+* Then it adds one to the register; thus `eax=51`.
+* Now, something unfortunate happens: a timer interrupt goes off; thus, the OS
+  saves the state of the currently running thread (its PC, its registers
+  including `eax`, etc.) to the thread's TCB.
+
+'''
+
+* Now something worse happens: Thread 2 is chosen to run, and it enters this
+  same piece of code.
+* It also executes the first instruction, getting the value of `counter` and
+  putting it into its `eax` (remember: each thread when running has its own
+  private registers; the registers are virtualized by the context-switch code
+  that saves and restores them).
+* The value of `counter` is still 50 at this point, and thus Thread 2 has
+  `eax=50`.
+* Let's then assume that Thread 2 executes the next two instructions,
+  incrementing `eax` by 1 (thus `eax=51`), and then saving the contents of
+  `eax` into `counter` (address `0x8049a1c`).
+* Thus, the global variable counter now has the value 51.
+
+'''
+
+* Finally, another context switch occurs, and Thread 1 resumes running.
+* Recall that it had just executed the `mov` and `add`, and is now about to
+  perform the final `mov` instruction.
+* Recall also that `eax=51`.
+* Thus, the final `mov` instruction executes, and saves the value to memory;
+  the `counter` is set to 51 again.
+
+'''
+
+* Put simply, what has happened is this: the code to increment counter has
+  been run twice, but counter, which started at 50, is now only equal to 51.
+* A "correct" version of this program should have resulted in the variable
+  counter equal to 52.
+
+'''
+
+* Let's look at a detailed execution trace to understand the problem better.
+* Assume, for this example, that the above code is loaded at address 100 in
+  memory, like the following sequence (note for those of you used to nice,
+  RISC-like instruction sets: x86 has variable-length instructions; this `mov`
+  instruction takes up 5 bytes of memory, and the `add` only 3):
+
+'''
+
+* With these assumptions, what happens is shown in Figure 26.7 (page 10).
+* Assume the counter starts at value 50, and trace through this example to
+  make sure you understand what is going on.
+
+.The Problem: Up Close and Personal
+image::figure-26-07.png[]
+
+* What we have demonstrated here is called a *race condition* (or, more
+  specifically, a *data race*): the results depend on the timing of the code's
+  execution.
+* With some bad luck (i.e., context switches that occur at untimely points in
+  the execution), we get the wrong result.
+* In fact, we may get a different result each time; thus, instead of a nice
+  *deterministic* computation (which we are used to from computers), we call
+  this result *indeterminate*, where it is not known what the output will be
+  and it is indeed likely to be different across runs.
+
+'''
+
+* Because multiple threads executing this code can result in a race condition,
+  we call this code a *critical section*.
+* A critical section is a piece of code that accesses a shared variable (or
+  more generally, a shared resource) and must not be concurrently executed by
+  more than one thread.
+
+'''
+
+* What we really want for this code is what we call *mutual exclusion*.
+* This property guarantees that if one thread is executing within the critical
+  section, the others will be prevented from doing so.
+
+'''
+
+* Virtually all of these terms, by the way, were coined by Edsger Dijkstra,
+  who was a pioneer in the field and indeed won the Turing Award because of
+  this and other work; see his 1968 paper on "Cooperating Sequential
+  Processes" [D68] for an amazingly clear description of the problem.
+* We'll be hearing more about Dijkstra in this section of the book.
+
+.Tip: Use atomic operations
+****
+* Atomic operations are one of the most powerful underlying techniques in
+  building computer systems, from the computer architecture, to concurrent
+  code (what we are studying here), to file systems (which we'll study soon
+  enough), database management systems, and even distributed systems [L+93].
+
+'''
+
+* The idea behind making a series of actions *atomic* is simply expressed with
+  the phrase "all or nothing"; it should either appear as if all of the
+  actions you wish to group together occurred, or that none of them occurred,
+  with no in-between state visible.
+* Sometimes, the grouping of many actions into a single atomic action is
+  called a *transaction*, an idea developed in great detail in the world of
+  databases and transaction processing [GR92].
+
+'''
+
+* In our theme of exploring concurrency, we'll be using synchronization
+  primitives to turn short sequences of instructions into atomic blocks of
+  execution, but the idea of atomicity is much bigger than that, as we will
+  see.
+* For example, file systems use techniques such as journaling or copy-on-write
+  in order to atomically transition their on-disk state, critical for
+  operating correctly in the face of system failures.
+* If that doesn't make sense, don't worry -- it will, in some future chapter.
+****
+
 == References
+
+[D68] "Cooperating sequential processes" by Edsger W. Dijkstra. 1968. Available at this site: http://www.cs.utexas.edu/users/EWD/ewd01xx/EWD123.PDF.::
+* Dijkstra has an amazing number of his old papers, notes, and thoughts
+  recorded (for posterity) on this website at the last place he worked, the
+  University of Texas.
+* Much of his foundational work, however, was done years earlier while he was
+  at the Technische Technische Hogeschool Eindhoven (THE), including this
+  famous paper on "cooperating sequential processes", which basically outlines
+  all of the thinking that has to go into writing multi-threaded programs.
+* Dijkstra discovered much of this while working on an operating system named
+  after his school: the "THE" operating system (said "T", "H", "E", and not
+  like the word "the").
+
+[GR92] "Transaction Processing: Concepts and Techniques" by Jim Gray and Andreas Reuter. Morgan Kaufmann, September 1992.::
+* This book is the bible of transaction processing, written by one of the
+  legends of the field, Jim Gray.
+* It is, for this reason, also considered Jim Gray's "brain dump", in which he
+  wrote down everything he knows about how database management systems work.
+* Sadly, Gray passed away tragically a few years back, and many of us lost a
+  friend and great mentor, including the co-authors of said book, who were
+  lucky enough to interact with Gray during their graduate school years.
+
+[L+93] "Atomic Transactions" by Nancy Lynch, Michael Merritt, William Weihl, Alan Fekete. Morgan Kaufmann, August 1993.::
+* A nice text on some of the theory and practice of atomic transactions for
+  distributed systems.
+* Perhaps a bit formal for some, but lots of good material is found herein.
 
 [SR05] "Advanced Programming in the UNIX Environment" by W. Richard Stevens and Stephen A. Rago. Addison-Wesley, 2005.::
 * As we've said many times, buy this book, and read it, in little chunks,
