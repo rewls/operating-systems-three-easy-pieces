@@ -1,7 +1,13 @@
-CFLAGS = -Wall -Wextra -Werror -g
-CPPFLAGS = -I../include -pthread
+CFLAGS := -Wall -Wextra -Werror -g
+CPPFLAGS := -I../include -pthread
 
-all: t0 t1
+sources := t0.c t1.c
+programs := $(sources:.c=)
+headers := common_thread.h
+
+all: $(programs)
 
 clean:
-	$(RM) t0 t1
+	$(RM) $(programs)
+
+$(programs): $(headers)
