@@ -1,6 +1,8 @@
 = 26 Concurrency: An Introduction
 :figure-caption: Figure 26.
-:imagesdir: image
+:imagesdir: ../images
+:source-highlighter: rouge
+:tabsize: 8
 :toc: left
 
 * Thus far, we have seen the development of the basic abstractions that the OS
@@ -333,7 +335,7 @@ prompt> objdump -d main
 * Thus, the code sequence for doing so might look something like this (in
   x86);
 +
-[source,assembly]
+[source,as]
 mov 0x8049a1c, %eax
 add $0x1, %eax
 mov %eax, 0x8049a1c

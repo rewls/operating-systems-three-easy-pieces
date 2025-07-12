@@ -503,8 +503,7 @@ ____
 
 * [x] link:25-a-dialogue-on-concurrency.adoc[25 A Dialogue on Concurrency 303]
 
-* link:26-concurrency-an-introduction.adoc[26 Concurrency: An Introduction
-  305]
+* link:26-concurrency-an-introduction/[26 Concurrency: An Introduction 305]
 ** [x] 26.1 Why Use Threads? 306
 ** [x] 26.2 An Example: Thread Creation 307
 ** [x] 26.3 Why It Gets Worse: Shared Data 310
