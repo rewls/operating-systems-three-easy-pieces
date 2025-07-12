@@ -130,3 +130,82 @@ image::figure-26-01.png[]
   and hence are a natural choice when constructing these types of programs.
 * Processes are a more sound choice for logically separate tasks where little
   sharing of data structures in memory is needed.
+
+== 26.2 An Example: Thread Creation
+
+* Let's get into some of the details.
+* Say we wanted to run a program that creates two threads, each of which does
+  some independent work, in this case printing "A" or "B".
+* The code is shown in Figure 26.2 (page 4).
+
+:figure-number: 2
+.{figure-caption} {figure-number}. Simple Thread Creation Code (`t0.c`)
+[,c]
+----
+include::t0.c[]
+----
+
+* The main program creates two threads, each of which will run the function
+  `mythread()`, though with different arguments (the string `A` or `B`).
+* Once a thread is created, it may start running right away (depending on the
+  whims of the scheduler); alternately, it may be put in a "ready" but not
+  "running" state and thus not run yet.
+* Of course, on a multiprocessor, the threads could even be running at the
+  same time, but let's not worry about this possibility quite yet.
+
+'''
+
+* After creating the two threads (let's call them T1 and T2), the main thread
+  calls `pthread_join()`, which waits for a particular thread to complete.
+* It does so twice, thus ensuring T1 and T2 will run and complete before
+  finally allowing the main thread to run again; when it does, it will print
+  "main: end" and exit.
+* Overall, three threads were employed during this run: the main thread, T1,
+  and T2.
+
+'''
+
+* Let us examine the possible execution ordering of this little program.
+* In the execution diagram (Figure 26.3, page 5), time increases in the
+  downwards direction, and each column shows when a different thread (the main
+  one, or Thread 1, or Thread 2) is running.
+
+.Thread Trace (1)
+image::figure-26-03.png[]
+
+* Note, however, that this ordering is not the only possible ordering.
+* In fact, given a sequence of instructions, there are quite a few, depending
+  on which thread the scheduler decides to run at a given point.
+* For example, once a thread is created, it may run immediately, which would
+  lead to the execution shown in Figure 26.4 (page 5).
+
+.Thread Trace (2)
+image::figure-26-04.png[]
+
+* We also could even see "B" printed before "A", if, say, the scheduler
+  decided to run Thread 2 first even though Thread 1 was created earlier;
+  there is no reason to assume that a thread that is created first will run
+  first.
+* Figure 26.5 (page 6) shows this final execution ordering, with Thread 2
+  getting to strut its stuff before Thread 1.
+
+.Thread Trace (3)
+image::figure-26-05.png[]
+
+* As you might be able to see, one way to think about thread creation is that
+  it is a bit like making a function call; however, instead of first executing
+  the function and then returning to the caller, the system instead creates a
+  new thread of execution for the routine that is being called, and it runs
+  independently of the caller, perhaps before returning from the create, but
+  perhaps much later.
+* What runs next is determined by the OS scheduler, and although the scheduler
+  likely implements some sensible algorithm, it is hard to know what will run
+  at any given moment in time.
+
+'''
+
+* As you also might be able to tell from this example, threads make life
+  complicated: it is already hard to tell what will run when!
+* Computers are hard enough to understand without concurrency.
+* Unfortunately, with concurrency, it simply gets worse.
+* Much worse.

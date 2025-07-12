@@ -506,7 +506,7 @@ ____
 * link:26-concurrency-an-introduction.adoc[26 Concurrency: An Introduction
   305]
 ** [x] 26.1 Why Use Threads? 306
-** [ ] 26.2 An Example: Thread Creation 307
+** [x] 26.2 An Example: Thread Creation 307
 ** [ ] 26.3 Why It Gets Worse: Shared Data 310
 ** [ ] 26.4 The Heart Of The Problem: Uncontrolled Scheduling 313
 ** [ ] 26.5 The Wish For Atomicity 315
