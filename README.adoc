@@ -295,8 +295,8 @@ ____
 ** [x] 2.5 Design Goals 13
 ** [ ] 2.6 Some History 14
 ** [ ] 2.7 Summary 19
-** [ ] References 20
-** [ ] Homework 21
+** References 20
+** Homework 21
 
 === 1 Virtualization
 
@@ -308,8 +308,8 @@ ____
 ** [ ] 4.4 Process States 31
 ** [ ] 4.5 Data Structures 33
 ** [ ] 4.6 Summary 35
-** [ ] References 37
-** [ ] Homework (Simulation) 38
+** References 37
+** Homework (Simulation) 38
 
 * 5 Interlude: Process API 41
 ** [ ] 5.1 The fork() System Call 41
@@ -319,9 +319,9 @@ ____
 ** [ ] 5.5 Process Control And Users 48
 ** [ ] 5.6 Useful Tools 49
 ** [ ] 5.7 Summary 50
-** [ ] References 52
-** [ ] Homework (Simulation) 53
-** [ ] Homework (Code) 54
+** References 52
+** Homework (Simulation) 53
+** Homework (Code) 54
 
 * 6 Mechanism: Limited Direct Execution 57
 ** [ ] 6.1 Basic Technique: Limited Direct Execution 57
@@ -329,8 +329,8 @@ ____
 ** [ ] 6.3 Problem #2: Switching Between Processes 63
 ** [ ] 6.4 Worried About Concurrency? 67
 ** [ ] 6.5 Summary 68
-** [ ] References 71
-** [ ] Homework (Measurement) 72
+** References 71
+** Homework (Measurement) 72
 
 *  7 Scheduling: Introduction 73
 ** [ ] 7.1 Workload Assumptions 73
@@ -343,8 +343,8 @@ ____
 ** [ ] 7.8 Incorporating I/O 81
 ** [ ] 7.9 No More Oracle 82
 ** [ ] 7.10 Summary 83
-** [ ] References 84
-** [ ] Homework (Simulation) 85
+** References 84
+** Homework (Simulation) 85
 
 * 8 Scheduling: The Multi-Level Feedback Queue 87
 ** [ ] 8.1 MLFQ: Basic Rules 88
@@ -353,8 +353,8 @@ ____
 ** [ ] 8.4 Attempt #3: Better Accounting 93
 ** [ ] 8.5 Tuning MLFQ And Other Issues 94
 ** [ ] 8.6 MLFQ: Summary 96
-** [ ] References 97
-** [ ] Homework (Simulation) 98
+** References 97
+** Homework (Simulation) 98
 
 * 9 Scheduling: Proportional Share 99
 ** [ ] 9.1 Basic Concept: Tickets Represent Your Share 99
@@ -365,8 +365,8 @@ ____
 ** [ ] 9.6 Stride Scheduling 104
 ** [ ] 9.7 The Linux Completely Fair Scheduler (CFS) 105
 ** [ ] 9.8 Summary 110
-** [ ] References 111
-** [ ] Homework (Simulation) 112
+** References 111
+** Homework (Simulation) 112
 
 * 10 Multiprocessor Scheduling (Advanced) 113
 ** [ ] 10.1 Background: Multiprocessor Architecture 114
@@ -376,8 +376,8 @@ ____
 ** [ ] 10.5 Multi-Queue Scheduling 119
 ** [ ] 10.6 Linux Multiprocessor Schedulers 122
 ** [ ] 10.7 Summary 122
-** [ ] References 123
-** [ ] Homework (Simulation) 124
+** References 123
+** Homework (Simulation) 124
 
 * [ ] 11 Summary Dialogue on CPU Virtualization 127
 * [ ] 12 A Dialogue on Memory Virtualization 129
@@ -388,8 +388,8 @@ ____
 ** [ ] 13.3 The Address Space 133
 ** [ ] 13.4 Goals 135
 ** [ ] 13.5 Summary 136
-** [ ] References 138
-** [ ] Homework (Code) 139
+** References 138
+** Homework (Code) 139
 
 * 14 Interlude: Memory API 141
 ** [ ] 14.1 Types of Memory 141
@@ -399,8 +399,8 @@ ____
 ** [ ] 14.5 Underlying OS Support 148
 ** [ ] 14.6 Other Calls 148
 ** [ ] 14.7 Summary 149
-** [ ] References 150
-** [ ] Homework (Code) 151
+** References 150
+** Homework (Code) 151
 
 * 15 Mechanism: Address Translation 153
 ** [ ] 15.1 Assumptions 154
@@ -409,8 +409,8 @@ ____
 ** [ ] 15.4 Hardware Support: A Summary 160
 ** [ ] 15.5 Operating System Issues 161
 ** [ ] 15.6 Summary 163
-** [ ] References 166
-** [ ] Homework (Simulation) 167
+** References 166
+** Homework (Simulation) 167
 
 * 16 Segmentation 169
 ** [ ] 16.1 Segmentation: Generalized Base/Bounds 169
@@ -420,8 +420,8 @@ ____
 ** [ ] 16.5 Fine-grained vsCoarse-grained Segmentation 175
 ** [ ] 16.6 OS Support 176
 ** [ ] 16.7 Summary 178
-** [ ] References 179
-** [ ] Homework (Simulation) 180
+** References 179
+** Homework (Simulation) 180
 
 * 17 Free-Space Management 181
 ** [ ] 17.1 Assumptions 182
@@ -429,8 +429,8 @@ ____
 ** [ ] 17.3 Basic Strategies 191
 ** [ ] 17.4 Other Approaches 193
 ** [ ] 17.5 Summary 195
-** [ ] References 197
-** [ ] Homework (Simulation) 198
+** References 197
+** Homework (Simulation) 198
 
 * 18 Paging: Introduction 199
 ** [ ] 18.1 A Simple Example And Overview 199
@@ -439,8 +439,8 @@ ____
 ** [ ] 18.4 Paging: Also Too Slow 206
 ** [ ] 18.5 A Memory Trace 207
 ** [ ] 18.6 Summary 210
-** [ ] References 211
-** [ ] Homework (Simulation) 212
+** References 211
+** Homework (Simulation) 212
 
 * 19 Paging: Faster Translations (TLBs) 215
 ** [ ] 19.1 TLB Basic Algorithm 216
@@ -451,8 +451,8 @@ ____
 ** [ ] 19.6 Issue: Replacement Policy 225
 ** [ ] 19.7 A Real TLB Entry 225
 ** [ ] 19.8 Summary 226
-** [ ] References 228
-** [ ] Homework (Measurement) 229
+** References 228
+** Homework (Measurement) 229
 
 * 20 Paging: Smaller Tables 231
 ** [ ] 20.1 Simple Solution: Bigger Pages 231
@@ -461,8 +461,8 @@ ____
 ** [ ] 20.4 Inverted Page Tables 243
 ** [ ] 20.5 Swapping the Page Tables to Disk 243
 ** [ ] 20.6 Summary 243
-** [ ] References 244
-** [ ] Homework (Simulation) 245
+** References 244
+** Homework (Simulation) 245
 
 * 21 Beyond Physical Memory: Mechanisms 247
 ** [ ] 21.1 Swap Space 248
@@ -472,8 +472,8 @@ ____
 ** [ ] 21.5 Page Fault Control Flow 252
 ** [ ] 21.6 When Replacements Really Occur 253
 ** [ ] 21.7 Summary 254
-** [ ] References 255
-** [ ] Homework (Measurement) 256
+** References 255
+** Homework (Measurement) 256
 
 * 22 Beyond Physical Memory: Policies 259
 ** [ ] 22.1 Cache Management 259
@@ -488,20 +488,20 @@ ____
 ** [ ] 22.10 Other VM Policies 272
 ** [ ] 22.11 Thrashing 272
 ** [ ] 22.12 Summary 273
-** [ ] References 274
-** [ ] Homework (Simulation) 276
+** References 274
+** Homework (Simulation) 276
 
 * 23 Complete Virtual Memory Systems 277
 ** [ ] 23.1 VAX/VMS Virtual Memory 278
 ** [ ] 23.2 The Linux Virtual Memory System 284
 ** [ ] 23.3 Summary 293
-** [ ] References 295
+** References 295
 
 * [ ] 24 Summary Dialogue on Memory Virtualization 297
 
 === 2 Concurrency
 
-* [ ] 25 A Dialogue on Concurrency 303
+* [x] link:25-a-dialogue-on-concurrency.adoc[25 A Dialogue on Concurrency 303]
 
 * 26 Concurrency: An Introduction 305
 ** [ ] 26.1 Why Use Threads? 306
@@ -511,8 +511,8 @@ ____
 ** [ ] 26.5 The Wish For Atomicity 315
 ** [ ] 26.6 One More Problem: Waiting For Another 316
 ** [ ] 26.7 Summary: Why in OS Class? 317
-** [ ] References 318
-** [ ] Homework (Simulation) 319
+** References 318
+** Homework (Simulation) 319
 
 * 27 Interlude: Thread API 321
 ** [ ] 27.1 Thread Creation 321
@@ -521,8 +521,8 @@ ____
 ** [ ] 27.4 Condition Variables 327
 ** [ ] 27.5 Compiling and Running 329
 ** [ ] 27.6 Summary 329
-** [ ] References 331
-** [ ] Homework (Code) 332
+** References 331
+** Homework (Code) 332
 
 * 28 Locks 333
 ** [ ] 28.1 Locks: The Basic Idea 333
@@ -542,8 +542,8 @@ ____
 ** [ ] 28.15 Different OS, Different Support 350
 ** [ ] 28.16 Two-Phase Locks 352
 ** [ ] 28.17 Summary 352
-** [ ] References 353
-** [ ] Homework (Simulation) 354
+** References 353
+** Homework (Simulation) 354
 
 * 29 Lock-based Concurrent Data Structures 355
 ** [ ] 29.1 Concurrent Counters 355
@@ -551,16 +551,16 @@ ____
 ** [ ] 29.3 Concurrent Queues 364
 ** [ ] 29.4 Concurrent Hash Table 366
 ** [ ] 29.5 Summary 366
-** [ ] References 369
-** [ ] Homework (Code) 370
+** References 369
+** Homework (Code) 370
 
 * 30 Condition Variables 371
 ** [ ] 30.1 Definition and Routines 372
 ** [ ] 30.2 The Producer/Consumer (Bounded Buffer) Problem 376
 ** [ ] 30.3 Covering Conditions 384
 ** [ ] 30.4 Summary 386
-** [ ] References 387
-** [ ] Homework (Code) 388
+** References 387
+** Homework (Code) 388
 
 * 31 Semaphores 391
 ** [ ] 31.1 Semaphores: A Definition 391
@@ -572,16 +572,16 @@ ____
 ** [ ] 31.7 Thread Throttling 406
 ** [ ] 31.8 How To Implement Semaphores 406
 ** [ ] 31.9 Summary 407
-** [ ] References 409
-** [ ] Homework (Code) 410
+** References 409
+** Homework (Code) 410
 
 * 32 Common Concurrency Problems 411
 ** [ ] 32.1 What Types Of Bugs Exist? 411
 ** [ ] 32.2 Non-Deadlock Bugs 412
 ** [ ] 32.3 Deadlock Bugs 415
 ** [ ] 32.4 Summary 424
-** [ ] References 425
-** [ ] Homework (Code) 426
+** References 425
+** Homework (Code) 426
 
 * 33 Event-based Concurrency (Advanced) 427
 ** [ ] 33.1 The Basic Idea: An Event Loop 427
@@ -593,8 +593,8 @@ ____
 ** [ ] 33.7 Another Problem: State Management 433
 ** [ ] 33.8 What Is Still Difficult With Events 435
 ** [ ] 33.9 Summary 436
-** [ ] References 437
-** [ ] Homework (Code) 438
+** References 437
+** Homework (Code) 438
 
 * [ ] 34 Summary Dialogue on Concurrency 439
 
@@ -613,7 +613,7 @@ ____
 ** [ ] 36.8 Case Study: A Simple IDE Disk Driver 453
 ** [ ] 36.9 Historical Notes 455
 ** [ ] 36.10 Summary 457
-** [ ] References 458
+** References 458
 
 * 37 Hard Disk Drives 459
 ** [ ] 37.1 The Interface 459
@@ -622,8 +622,8 @@ ____
 ** [ ] 37.4 I/O Time: Doing The Math 464
 ** [ ] 37.5 Disk Scheduling 468
 ** [ ] 37.6 Summary 472
-** [ ] References 473
-** [ ] Homework (Simulation) 474
+** References 473
+** Homework (Simulation) 474
 
 * 38 Redundant Arrays of Inexpensive Disks (RAIDs) 475
 ** [ ] 38.1 Interface And RAID Internals 476
@@ -636,8 +636,8 @@ ____
 ** [ ] 38.8 RAID Comparison: A Summary 489
 ** [ ] 38.9 Other Interesting RAID Issues 490
 ** [ ] 38.10 Summary 490
-** [ ] References 491
-** [ ] Homework (Simulation) 492
+** References 491
+** Homework (Simulation) 492
 
 * 39 Interlude: Files and Directories 493
 ** [ ] 39.1 Files And Directories 493
@@ -658,8 +658,8 @@ ____
 ** [ ] 39.16 Permission Bits And Access Control Lists 514
 ** [ ] 39.17 Making And Mounting A File System 516
 ** [ ] 39.18 Summary 518
-** [ ] References 520
-** [ ] Homework (Code) 521
+** References 520
+** Homework (Code) 521
 
 * 40 File System Implementation 523
 ** [ ] 40.1 The Way To Think 523
@@ -670,8 +670,8 @@ ____
 ** [ ] 40.6 Access Paths: Reading and Writing 532
 ** [ ] 40.7 Caching and Buffering 536
 ** [ ] 40.8 Summary 538
-** [ ] References 539
-** [ ] Homework (Simulation) 540
+** References 539
+** Homework (Simulation) 540
 
 * 41 Locality and The Fast File System 541
 ** [ ] 41.1 The Problem: Poor Performance 541
@@ -682,8 +682,8 @@ ____
 ** [ ] 41.6 The Large-File Exception 548
 ** [ ] 41.7 A Few Other Things About FFS 550
 ** [ ] 41.8 Summary 552
-** [ ] References 553
-** [ ] Homework (Simulation) 554
+** References 553
+** Homework (Simulation) 554
 
 * 42 Crash Consistency: FSCK and Journaling 555
 ** [ ] 42.1 A Detailed Example 556
@@ -691,8 +691,8 @@ ____
 ** [ ] 42.3 Solution #2: Journaling (or Write-Ahead Logging) 561
 ** [ ] 42.4 Solution #3: Other Approaches 571
 ** [ ] 42.5 Summary 572
-** [ ] References 573
-** [ ] Homework (Simulation) 575
+** References 573
+** Homework (Simulation) 575
 
 * 43 Log-structured File Systems 577
 ** [ ] 43.1 Writing To Disk Sequentially 578
@@ -708,8 +708,8 @@ ____
 ** [ ] 43.11 A Policy Question: Which Blocks To Clean, And When? 587
 ** [ ] 43.12 Crash Recovery And The Log 588
 ** [ ] 43.13 Summary 588
-** [ ] References 590
-** [ ] Homework (Simulation) 591
+** References 590
+** Homework (Simulation) 591
 
 * 44 Flash-based SSDs 593
 ** [ ] 44.1 Storing a Single Bit 593
@@ -724,8 +724,8 @@ ____
 ** [ ] 44.10 Wear Leveling 609
 ** [ ] 44.11 SSD Performance And Cost 609
 ** [ ] 44.12 Summary 611
-** [ ] References 613
-** [ ] Homework (Simulation) 615
+** References 613
+** Homework (Simulation) 615
 
 * 45 Data Integrity and Protection 617
 ** [ ] 45.1 Disk Failure Modes 617
@@ -737,9 +737,9 @@ ____
 ** [ ] 45.7 Scrubbing 625
 ** [ ] 45.8 Overheads Of Checksumming 626
 ** [ ] 45.9 Summary 627
-** [ ] References 628
-** [ ] Homework (Simulation) 629
-** [ ] Homework (Code) 630
+** References 628
+** Homework (Simulation) 629
+** Homework (Code) 630
 
 * [ ] 46 Summary Dialogue on Persistence 631
 * [ ] 47 A Dialogue on Distribution 633
@@ -751,8 +751,8 @@ ____
 ** [ ] 48.4 Communication Abstractions 642
 ** [ ] 48.5 Remote Procedure Call (RPC) 643
 ** [ ] 48.6 Summary 648
-** [ ] References 649
-** [ ] Homework (Code) 650
+** References 649
+** Homework (Code) 650
 
 * 49 Sun's Network File System (NFS) 653
 ** [ ] 49.1 A Basic Distributed File System 654
@@ -767,8 +767,8 @@ ____
 ** [ ] 49.10 Assessing NFS Cache Consistency 665
 ** [ ] 49.11 Implications On Server-Side Write Buffering 665
 ** [ ] 49.12 Summary 667
-** [ ] References 669
-** [ ] Homework (Measurement) 670
+** References 669
+** Homework (Measurement) 670
 
 * 50 The Andrew File System (AFS) 671
 ** [ ] 50.1 AFS Version 1 671
@@ -780,8 +780,8 @@ ____
 ** [ ] 50.7 Scale And Performance Of AFSv2 679
 ** [ ] 50.8 AFS: Other Improvements 681
 ** [ ] 50.9 Summary 682
-** [ ] References 683
-** [ ] Homework (Simulation) 684
+** References 683
+** Homework (Simulation) 684
 
 * [ ] 51 Summary Dialogue on Distribution 685
 
@@ -804,7 +804,7 @@ ____
 ** [ ] B.4 Virtualizing Memory
 ** [ ] B.5 The information Gap
 ** [ ] B.6 Summary
-** [ ] References
+** References
 * C Dialogue
 * D Monitors
 * E Dialogue
