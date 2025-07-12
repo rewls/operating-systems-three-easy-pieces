@@ -587,6 +587,35 @@ mov %eax, 0x8049a1c
   program outputs.
 ****
 
+== 26.7 Summary: Why in OS Class?
+
+* Before wrapping up, one question that you might have is: why are we studying
+  this in OS class?
+* "History" is the one-word answer; the OS was the first concurrent program,
+  and many techniques were created for use within the OS.
+* Later, with multi-threaded processes, application programmers also had to
+  consider such things.
+
+'''
+
+* For example, imagine the case where there are two processes running.
+* Assume they both call `write()` to write to the file, and both wish to
+  append the data to the file (i.e., add the data to the end of the file, thus
+  increasing its length).
+* To do so, both must allocate a new block, record in the inode of the file
+  where this block lives, and change the size of the file to reflect the new
+  larger size (among other things; we'll learn more about files in the third
+  part of the book).
+* Because an interrupt may occur at any time, the code that updates these
+  shared structures (e.g., a bitmap for allocation, or the file's inode) are
+  critical sections; thus, OS designers, from the very beginning of the
+  introduction of the interrupt, had to worry about how the OS updates
+  internal structures.
+* An untimely interrupt causes all of the problems described above.
+* Not surprisingly, page tables, process lists, file system structures, and
+  virtually every kernel data structure has to be carefully accessed, with the
+  proper synchronization primitives, to work correctly.
+
 == References
 
 [D65] "Solution of a problem in concurrent programming control" by E. W. Dijkstra. Communications of the ACM, 8(9):569, September 1965.::
