@@ -516,7 +516,7 @@ ____
 
 * link:27-interlude-thread-api/[27 Interlude: Thread API 321]
 ** [x] 27.1 Thread Creation 321
-** [ ] 27.2 Thread Completion 322
+** [x] 27.2 Thread Completion 322
 ** [ ] 27.3 Locks 325
 ** [ ] 27.4 Condition Variables 327
 ** [ ] 27.5 Compiling and Running 329
