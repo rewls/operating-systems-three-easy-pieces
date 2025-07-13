@@ -131,6 +131,128 @@ int main(int argc, char *argv[]) {
   all the currently existing threads in the program.
 * The fun thus begins!
 
+== 27.2 Thread Completion
+
+* The example above shows how to create a thread.
+* However, what happens if you want to wait for a thread to complete?
+* You need to do something special in order to wait for completion; in
+  particular, you must call the routine `pthread_join()`.
+
+[source,c]
+int pthread_join(pthread_t thread, void **value_ptr);
+
+* This routine takes two arguments.
+* The first is of type `pthread_t`, and is used to specify which thread to
+  wait for.
+* This variable is initialized by the thread creation routine (when you pass a
+  pointer to it as an argument to `pthread_create()`); if you keep it around,
+  you can use it to wait for that thread to terminate.
+
+'''
+
+* The second argument is a pointer to the return value you expect to get back.
+* Because the routine can return anything, it is defined to return a pointer
+  to void; because the `pthread_join()` routine changes the value of the passed
+  in argument, you need to pass in a pointer to that value, not just the value
+  itself.
+
+'''
+
+* Let's look at another example (Figure 27.2, page 4).
+* In the code, a single thread is again created, and passed a couple of
+  arguments via the `myarg_t` structure.
+* To return values, the `myret_t` type is used.
+* Once the thread is finished running, the main thread, which has been waiting
+  inside of the `pthread_join()` routine{empty}footnote:[Note we use wrapper
+  functions here; specifically, we call `Malloc()`, `Pthread_join()`, and
+  `Pthread_create()`, which just call their similarly-named lower-case
+  versions and make sure the routines did not return anything unexpected.],
+  then returns, and we can access the values returned from the thread, namely
+  whatever is in `myret_t`.
+
+:figure-number: 2
+.{figure-caption} {figure-number}. Waiting for Thread Completion
+[,c]
+----
+include::thread_create.c[]
+----
+
+* A few things to note about this example.
+* First, often times we don't have to do all of this painful packing and
+  unpacking of arguments.
+* For example, if we just create a thread with no arguments, we can pass
+  `NULL` in as an argument when the thread is created.
+* Similarly, we can pass `NULL` into `pthread_join()` if we don't care about
+  the return value.
+
+'''
+
+* Second, if we are just passing in a single value (e.g., a `long long int`),
+  we don't have to package it up as an argument.
+* Figure 27.3 (page 5) shows an example.
+* In this case, life is a bit simpler, as we don't have to package arguments
+  and return values inside of structures.
+
+:figure-number: 3
+.{figure-caption} {figure-number}. Simpler Argument Passing to a Thread
+[,c]
+----
+include::thread_create_simple_args.c[]
+----
+
+* Third, we should note that one has to be extremely careful with how values
+  are returned from a thread.
+* Specifically, never return a pointer which refers to something allocated on
+  the thread's call stack.
+* If you do, what do you think will happen?
+* (think about it!)
+* Here is an example of a dangerous piece of code, modified from the example
+  in Figure 27.2.
+
+[,c]
+----
+void *mythread(void *arg) {
+	myarg_t *args = (myarg_t *) arg;
+	printf("%d %d\n", args->a, args->b);
+	myret_t oops; // ALLOCATED ON STACK: BAD!
+	oops.x = 1;
+	oops.y = 2;
+	return (void *) &oops;
+}
+----
+
+* In this case, the variable `oops` is allocated on the stack of `mythread`.
+* However, when it returns, the value is automatically deallocated (that's why
+  the stack is so easy to use, after all!), and thus, passing back a pointer
+  to a now deallocated variable will lead to all sorts of bad results.
+* Certainly, when you print out the values you think you returned, you'll
+  probably (but not necessarily!) be surprised.
+* Try it and find out for yourself{empty}footnote:[Fortunately the compiler
+  `gcc` will likely complain when you write code like this, which is yet
+  another reason to pay attention to compiler warnings.]!
+
+'''
+
+* Finally, you might notice that the use of `pthread_create()` to create a
+  thread, followed by an immediate call to `pthread_join()`, is a pretty
+  strange way to create a thread.
+* In fact, there is an easier way to accomplish this exact task; it's called a
+  *procedure call*.
+* Clearly, we'll usually be creating more than just one thread and waiting for
+  it to complete, otherwise there is not much purpose to using threads at all.
+
+'''
+
+* We should note that not all code that is multi-threaded uses the join
+  routine.
+* For example, a multi-threaded web server might create a number of worker
+  threads, and then use the main thread to accept requests and pass them to
+  the workers, indefinitely.
+* Such long-lived programs thus may not need to join.
+* However, a parallel program that creates threads to execute a particular
+  task (in parallel) will likely use join to make sure all such work completes
+  before exiting or moving onto the next stage of computation.
+
 == References
 
 [B89] "An Introduction to Programming with Threads" by Andrew D. Birrell. DEC Technical Report, January, 1989. Available: https://birrell.org/andrew/papers/035-Threads.pdf::
