@@ -28,3 +28,104 @@ image::figure-13-01.png[]
   at physical address 64k in this example) and used the rest of memory.
 * There were few illusions here, and the user didn't expect much from the OS.
 * Life was sure easy for OS developers in those days, wasn't it?
+
+== 13.2 Multiprogramming and Time Sharing
+
+* After a time, because machines were expensive, people began to share
+  machines more effectively.
+* Thus the era of *multiprogramming* was born [DV66], in which multiple
+  processes were ready to run at a given time, and the OS would switch between
+  them, for example when one decided to perform an I/O.
+* Doing so increased the effective *utilization* of the CPU.
+* Such increases in *efficiency* were particularly important in those days where
+  each machine cost hundreds of thousands or even millions of dollars (and you
+  thought your Mac was expensive!).
+
+'''
+
+* Soon enough, however, people began demanding more of machines, and the era
+  of time sharing was born [S59, L60, M62, M83].
+* Specifically, many realized the limitations of batch computing, particularly
+  on programmers themselves [CV65], who were tired of long (and hence
+  ineffective) program-debug cycles.
+* The notion of *interactivity* became important, as many users might be
+  concurrently using a machine, each waiting for (or hoping for) a timely
+  response from their currently-executing tasks.
+
+'''
+
+* One way to implement time sharing would be to run one process for a short
+  while, giving it full access to all memory (Figure 13.1), then stop it, save
+  all of its state to some kind of disk (including all of physical memory),
+  load some other process's state, run it for a while, and thus implement some
+  kind of crude sharing of the machine [M+63].
+
+'''
+
+* Unfortunately, this approach has a big problem: it is way too slow,
+  particularly as memory grows.
+* While saving and restoring register-level state (the PC, general-purpose
+  registers, etc.) is relatively fast, saving the entire contents of memory to
+  disk is brutally non-performant.
+* Thus, what we'd rather do is leave processes in memory while switching
+  between them, allowing the OS to implement time sharing efficiently (as
+  shown in Figure 13.2, page 3).
+
+.Three Processes: Sharing Memory
+image::figure-13-02.png[]
+
+* In the diagram, there are three processes (A, B, and C) and each of them
+  have a small part of the 512KB physical memory carved out for them.
+* Assuming a single CPU, the OS chooses to run one of the processes (say A),
+  while the others (B and C) sit in the ready queue waiting to run.
+
+'''
+
+* As time sharing became more popular, you can probably guess that new demands
+  were placed on the operating system.
+* In particular, allowing multiple programs to reside concurrently in memory
+  makes *protection* an important issue; you don't want a process to be able
+  to read, or worse, write some other process's memory.
+
+== References
+
+[CV65] "Introduction and Overview of the Multics System" by F. J. Corbato, V.  A. Vyssotsky.  Fall Joint Computer Conference, 1965.::
+* A great early Multics paper.
+* Here is the great quote about time sharing: +
+  "The impetus for time-sharing first arose from professional programmers
+  because of their constant frustration in debugging programs at batch
+  processing installations. +
+  Thus, the original goal was to time-share computers to allow simultaneous
+  access by several persons while giving to each of them the illusion of
+  having the whole machine at his disposal."
+
+[DV66] "Programming Semantics for Multiprogrammed Computations" by Jack B.  Dennis, Earl C. Van Horn. Communications of the ACM, Volume 9, Number 3, March 1966.::
+* An early paper (but not the first) on multiprogramming.
+
+[L60] "Man-Computer Symbiosis" by J. C. R. Licklider. IRE Transactions on Human Factors in Electronics, HFE-1:1, March 1960.::
+* A funky paper about how computers and people are going to enter into a
+  symbiotic age; clearly well ahead of its time but a fascinating read
+  nonetheless.
+
+[M62] "Time-Sharing Computer Systems" by J. McCarthy. Management and the Computer of the Future, MIT Press, Cambridge, MA, 1962.::
+* Probably McCarthy’s earliest recorded paper on time sharing.
+* In another paper [M83], he claims to have been thinking of the idea since
+  1957.
+* McCarthy left the systems area and went on to become a giant in Artificial
+  Intelligence at Stanford, including the creation of the LISP programming
+  language.
+* See McCarthy's home page for more info:
+  `http://www-formal.stanford.edu/jmc/`
+
+[M+63] "A Time-Sharing Debugging System for a Small Computer" by J. McCarthy, S. Boilen, E. Fredkin, J. C. R. Licklider. AFIPS '63 (Spring), New York, NY, May 1963.::
+* A great early example of a system that swapped program memory to the "drum"
+  when the program wasn't running, and then back into "core" memory when it
+  was about to be run.
+
+[M83] "Reminiscences on the History of Time Sharing" by John McCarthy. 1983.  Available: http://www-formal.stanford.edu/jmc/history/timesharing/timesharing.html.::
+* A terrific historical note on where the idea of time-sharing might have come
+  from including some doubts towards those who cite Strachey's work [S59] as
+  the pioneering work in this area.
+
+[S59] "Time Sharing in Large Fast Computers" by C. Strachey. Proceedings of the International Conference on Information Processing, UNESCO, June 1959.::
+* One of the earliest references on time sharing.
