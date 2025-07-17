@@ -386,8 +386,9 @@ ____
 * [x] link:12-a-dialogue-on-memory-virtualization.adoc[12 A Dialogue on Memory
   Virtualization 129]
 
-* 13 The Abstraction: Address Spaces 131
-** [ ] 13.1 Early Systems 131
+* link:13-the-abstraction-address-spaces/[13 The Abstraction: Address Spaces
+  131]
+** [x] 13.1 Early Systems 131
 ** [ ] 13.2 Multiprogramming and Time Sharing 131
 ** [ ] 13.3 The Address Space 133
 ** [ ] 13.4 Goals 135
