@@ -380,7 +380,11 @@ ____
 ** Homework (Simulation) 124
 
 * [ ] 11 Summary Dialogue on CPU Virtualization 127
-* [ ] 12 A Dialogue on Memory Virtualization 129
+
+'''
+
+* [x] link:12-a-dialogue-on-memory-virtualization.adoc[12 A Dialogue on Memory
+  Virtualization 129]
 
 * 13 The Abstraction: Address Spaces 131
 ** [ ] 13.1 Early Systems 131
