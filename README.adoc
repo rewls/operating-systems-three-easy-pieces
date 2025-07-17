@@ -293,7 +293,7 @@ ____
 ** [x] 2.3 Concurrency 9 
 ** [x] 2.4 Persistence 11
 ** [x] 2.5 Design Goals 13
-** [ ] 2.6 Some History 14
+** [x] 2.6 Some History 14
 ** [ ] 2.7 Summary 19
 ** References 20
 ** Homework 21
