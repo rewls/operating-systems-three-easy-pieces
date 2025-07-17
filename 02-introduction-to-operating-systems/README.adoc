@@ -875,6 +875,37 @@ include::io.c[]
 * Even better is that these ideas continue to develop, providing more features
   and making modern systems even better for users and applications.
 
+== 2.7 Summary
+
+* Thus, we have an introduction to the OS.
+* Today's operating systems make systems relatively easy to use, and virtually
+  all operating systems you use today have been influenced by the developments
+  we will discuss throughout the book.
+
+'''
+
+* Unfortunately, due to time constraints, there are a number of parts of the
+  OS we won't cover in the book.
+* For example, there is a lot of networking code in the operating system; we
+  leave it to you to take the networking class to learn more about that.
+* Similarly, graphics devices are particularly important; take the graphics
+  course to expand your knowledge in that direction.
+* Finally, some operating system books talk a great deal about security; we
+  will do so in the sense that the OS must provide protection between running
+  programs and give users the ability to protect their files, but we won't
+  delve into deeper security issues that one might find in a security course.
+
+'''
+
+* However, there are many important topics that we will cover, including the
+  basics of virtualization of the CPU and memory, concurrency, and persistence
+  via devices and file systems.
+* Don't worry!
+* While there is a lot of ground to cover, most of it is quite cool, and at
+  the end of the road, you'll have a new appreciation for how computer systems
+  really work.
+* Now get to work!
+
 == References
 
 [BS+09] "Tolerating File-System Mistakes with EnvyFS" by L. Bairavasundaram, S. Sundararaman, A. Arpaci-Dusseau, R. Arpaci-Dusseau. USENIX '09, San Diego, CA, June 2009.::
@@ -945,7 +976,7 @@ include::io.c[]
   became the SDS system) was Butler Lampson, who later won a Turing award for
   his contributions in systems.
 
-[SS+10] "Membrane: Operating System Support for Restartable File Systems" by S. Sundararaman, S. Subramanian, A. Rajimwale, A. Arpaci-Dusseau, R.  Arpaci-Dusseau, M. Swift. FAST ’10, San Jose, CA, February 2010.::
+[SS+10] "Membrane: Operating System Support for Restartable File Systems" by S. Sundararaman, S. Subramanian, A. Rajimwale, A. Arpaci-Dusseau, R.  Arpaci-Dusseau, M. Swift. FAST '10, San Jose, CA, February 2010.::
 * The great thing about writing your own class notes: you can advertise your
   own research.
 * But this paper is actually pretty neat -- when a file system hits a bug and
