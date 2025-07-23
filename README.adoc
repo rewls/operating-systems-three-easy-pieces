@@ -311,7 +311,7 @@ ____
 ** [x] 4.5 Data Structures 33
 ** [x] 4.6 Summary 35
 ** [x] References 37
-** Homework (Simulation) 38
+** [x] Homework (Simulation) 38
 
 * 5 Interlude: Process API 41
 ** [ ] 5.1 The fork() System Call 41
