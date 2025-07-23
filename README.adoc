@@ -309,7 +309,7 @@ ____
 ** [x] 4.3 Process Creation: A Little More Detail 30
 ** [x] 4.4 Process States 31
 ** [x] 4.5 Data Structures 33
-** [ ] 4.6 Summary 35
+** [x] 4.6 Summary 35
 ** [x] References 37
 ** Homework (Simulation) 38
 
