@@ -1,0 +1,152 @@
+= 4 The Abstraction: The Process
+:toc: left
+
+* In this chapter, we discuss one of the most fundamental abstractions that
+  the OS provides to users: the *process*.
+* The definition of a process, informally, is quite simple: it is a running
+  program [V+65,BH70].
+* The program itself is a lifeless thing: it just sits there on the disk, a
+  bunch of instructions (and maybe some static data), waiting to spring into
+  action.
+* It is the operating system that takes these bytes and gets them running,
+  transforming the program into something useful.
+
+'''
+
+* It turns out that one often wants to run more than one program at once; for
+  example, consider your desktop or laptop where you might like to run a web
+  browser, mail program, a game, a music player, and so forth.
+* In fact, a typical system may be seemingly running tens or even hundreds of
+  processes at the same time.
+* Doing so makes the system easy to use, as one never need be concerned with
+  whether a CPU is available; one simply runs programs.
+* Hence our challenge:
+
+.The crux of the problem: How to provide the illusion of many CPUs?
+****
+* Although there are only a few physical CPUs available, how can the OS
+  provide the illusion of a nearly-endless supply of said CPUs?
+****
+
+* The OS creates this illusion by *virtualizing* the CPU.
+* By running one process, then stopping it and running another, and so forth,
+  the OS can promote the illusion that many virtual CPUs exist when in fact
+  there is only one physical CPU (or a few).
+* This basic technique, known as *time sharing* of the CPU, allows users to
+  run as many concurrent processes as they would like; the potential cost is
+  performance, as each will run more slowly if the CPU(s) must be shared.
+
+'''
+
+* To implement virtualization of the CPU, and to implement it well, the OS
+  will need both some low-level machinery and some high-level intelligence.
+* We call the low-level machinery *mechanisms*; mechanisms are low-level
+  methods or protocols that implement a needed piece of functionality.
+* For example, we'll learn later how to implement a *context switch*, which
+  gives the OS the ability to stop running one program and start running
+  another on a given CPU; this *time-sharing* mechanism is employed by all
+  modern OSes.
+
+.Tip: Use time sharing (and space sharing)
+****
+* *Time sharing* is a basic technique used by an OS to share a resource.
+* By allowing the resource to be used for a little while by one entity, and
+  then a little while by another, and so forth, the resource in question
+  (e.g., the CPU, or a network link) can be shared by many.
+* The counterpart of time sharing is *space sharing*, where a resource is
+  divided (in space) among those who wish to use it.
+* For example, disk space is naturally a space-shared resource; once a block
+  is assigned to a file, it is normally not assigned to another file until the
+  user deletes the original file.
+****
+
+* On top of these mechanisms resides some of the intelligence in the OS, in
+  the form of *policies*.
+* Policies are algorithms for making some kind of decision within the OS.
+* For example, given a number of possible programs to run on a CPU, which
+  program should the OS run?
+* A *scheduling policy* in the OS will make this decision, likely using
+  historical information (e.g., which program has run more over the last
+  minute?), workload knowledge (e.g., what types of programs are run), and
+  performance metrics (e.g., is the system optimizing for interactive
+  performance, or throughput?) to make its decision.
+
+== 4.1 The Abstraction: A Process
+
+* The abstraction provided by the OS of a running program is something we will
+  call a *process*.
+* As we said above, a process is simply a running program; at any instant in
+  time, we can summarize a process by taking an inventory of the different
+  pieces of the system it accesses or affects during the course of its
+  execution.
+
+'''
+
+* To understand what constitutes a process, we thus have to understand its
+  *machine state*: what a program can read or update when it is running.
+* At any given time, what parts of the machine are important to the execution
+  of this program?
+
+'''
+
+* One obvious component of machine state that comprises a process is its
+  _memory_.
+* Instructions lie in memory; the data that the running program reads and
+  writes sits in memory as well.
+* Thus the memory that the process can address (called its *address space*) is
+  part of the process.
+
+'''
+
+* Also part of the process's machine state are _registers_; many instructions
+  explicitly read or update registers and thus clearly they are important to
+  the execution of the process.
+
+'''
+
+* Note that there are some particularly special registers that form part of
+  this machine state.
+* For example, the *program counter* (*PC*) (sometimes called the *instruction
+  pointer* or *IP*) tells us which instruction of the program will execute
+  next; similarly a *stack pointer* and associated *frame pointer* are used to
+  manage the stack for function parameters, local variables, and return
+  addresses.
+
+.Tip: Separate policy and mechanism
+****
+* In many operating systems, a common design paradigm is to separate
+  high-level policies from their low-level mechanisms [L+75].
+* You can think of the mechanism as providing the answer to a _how_ question
+  about a system; for example, _how_ does an operating system perform a
+  context switch?
+* The policy provides the answer to a _which_ question; for example, _which_
+  process should the operating system run right now?
+* Separating the two allows one easily to change policies without having to
+  rethink the mechanism and is thus a form of *modularity*, a general software
+  design principle.
+****
+
+* Finally, programs often access persistent storage devices too.
+* Such _I/O information_ might include a list of the files the process
+  currently has open.
+
+== References
+
+[BH70] "The Nucleus of a Multiprogramming System" by Per Brinch Hansen. Communications of the ACM, Volume 13:4, April 1970.::
+* This paper introduces one of the first *microkernels* in operating systems
+  history, called Nucleus.
+* The idea of smaller, more minimal systems is a theme that rears its head
+  repeatedly in OS history; it all began with Brinch Hansen's work described
+  herein.
+
+[L+75] "Policy/mechanism separation in Hydra" by R. Levin, E. Cohen, W. Corwin, F. Pollack, W. Wulf. SOSP '75, Austin, Texas, November 1975.::
+* An early paper about how to structure operating systems in a research OS
+  known as Hydra.
+* While Hydra never became a mainstream OS, some of its ideas influenced OS
+  designers.
+
+[V+65] "Structure of the Multics Supervisor" by V.A. Vyssotsky, F. J. Corbato, R. M. Graham.  Fall Joint Computer Conference, 1965.::
+* An early paper on Multics, which described many of the basic ideas and terms
+  that we find in modern systems.
+* Some of the vision behind computing as a utility are finally being realized
+  in modern cloud systems.
