@@ -305,7 +305,7 @@ ____
 
 * link:04-the-abstraction-the-process.adoc[4 The Abstraction: The Process 27]
 ** [x] 4.1 The Abstraction: A Process 28
-** [ ] 4.2 Process API 29
+** [x] 4.2 Process API 29
 ** [ ] 4.3 Process Creation: A Little More Detail 30
 ** [ ] 4.4 Process States 31
 ** [ ] 4.5 Data Structures 33
