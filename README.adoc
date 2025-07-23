@@ -300,7 +300,9 @@ ____
 
 === 1 Virtualization
 
-* [ ] 3 A Dialogue on Virtualization 25
+* [x] link:03-dialogue-on-virtualization.adoc[3 A Dialogue on Virtualization
+  25]
+
 * 4 The Abstraction: The Process 27
 ** [ ] 4.1 The Abstraction: A Process 28
 ** [ ] 4.2 Process API 29
