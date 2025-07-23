@@ -307,7 +307,7 @@ ____
 ** [x] 4.1 The Abstraction: A Process 28
 ** [x] 4.2 Process API 29
 ** [x] 4.3 Process Creation: A Little More Detail 30
-** [ ] 4.4 Process States 31
+** [x] 4.4 Process States 31
 ** [ ] 4.5 Data Structures 33
 ** [ ] 4.6 Summary 35
 ** [ ] References 37

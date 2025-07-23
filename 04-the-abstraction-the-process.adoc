@@ -1,5 +1,6 @@
 = 4 The Abstraction: The Process
 :figure-caption: Figure 4.
+:table-caption!:
 :imagesdir: images
 :toc: left
 
@@ -247,6 +248,113 @@ image::figure-04-01.png[]
   will discuss next chapter), the OS transfers control of the CPU to the
   newly-created process, and thus the program begins its execution.
 
+== 4.4 Process States
+
+* Now that we have some idea of what a process is (though we will continue to
+  refine this notion), and (roughly) how it is created, let us talk about the
+  different *states* a process can be in at a given time.
+* The notion that a process can be in one of these states arose in early
+  computer systems [DV66,V+65].
+* In a simplified view, a process can be in one of three states:
+
+'''
+
+Running::
+* In the running state, a process is running on a processor.
+* This means it is executing instructions.
+Ready::
+* In the ready state, a process is ready to run but for some reason the OS has
+  chosen not to run it at this given moment.
+Blocked::
+* In the blocked state, a process has performed some kind of operation that
+  makes it not ready to run until some other event takes place.
+* A common example: when a process initiates an I/O request to a disk, it
+  becomes blocked and thus some other process can use the processor.
+
+'''
+
+* If we were to map these states to a graph, we would arrive at the diagram in
+  Figure 4.2.
+* As you can see in the diagram, a process can be moved between the ready and
+  running states at the discretion of the OS.
+* Being moved from ready to running means the process has been *scheduled*;
+  being moved from running to ready means the process has been *descheduled*.
+* Once a process has become blocked (e.g., by initiating an I/O operation),
+  the OS will keep it as such until some event occurs (e.g., I/O completion);
+  at that point, the process moves to the ready state again (and potentially
+  immediately to running again, if the OS so decides).
+
+.Process: State Transitions
+image::figure-04-02.png[]
+
+* Let's look at an example of how two processes might transition through some
+  of these states.
+* First, imagine two processes running, each of which only use the CPU (they
+  do no I/O).
+* In this case, a trace of the state of each process might look like this
+  (Figure 4.3).
+
+:figure-number: {counter:figure-number}
+.{figure-caption} {figure-number}. Tracing Process State: CPU Only
+[%autowidth]
+|===
+|Time		|Process~0~	|Process~1~	|Notes
+
+|{counter:i}	|Running	|Ready		|
+|{counter:i}	|Running	|Ready		|
+|{counter:i}	|Running	|Ready		|
+|{counter:i}	|Running	|Ready		|Process~0~ now done
+|{counter:i}	|-		|Running	|
+|{counter:i}	|-		|Running	|
+|{counter:i}	|-		|Running	|
+|{counter:i}	|-		|Running	|Process~1~ now done
+|===
+
+* In this next example, the first process issues an I/O after running for some
+  time.
+* At that point, the process is blocked, giving the other process a chance to
+  run.
+* Figure 4.4 shows a trace of this scenario.
+
+:figure-number: {counter:figure-number}
+.{figure-caption} {figure-number}. Tracing Process State: CPU and I/O
+[%autowidth]
+|===
+|Time		|Process~0~	|Process~1~	|Notes
+
+|{counter:i}	|Running	|Ready		|
+|{counter:i}	|Running	|Ready		|
+|{counter:i}	|Running	|Ready		|Process~0~ initiates I/O
+|{counter:i}	|Blocked	|Running	|Process~0~ is blocked,
+|{counter:i}	|Blocked	|Running	|so Process~1~ runs
+|{counter:i}	|Blocked	|Running	|
+|{counter:i}	|Ready		|Running	|I/O done
+|{counter:i}	|Ready		|Running	|Process~1~ now done
+|{counter:i}	|Running	|-		|
+|{counter:i}	|Running	|-		|Process~0~ now done
+|===
+
+* More specifically, Process~0~ initiates an I/O and becomes blocked waiting
+  for it to complete; processes become blocked, for example, when reading from
+  a disk or waiting for a packet from a network.
+* The OS recognizes Process~0~ is not using the CPU and starts running
+  Process~1~.
+* While Process~1~ is running, the I/O completes, moving Process~0~ back to
+  ready.
+* Finally, Process~1~ finishes, and Process~0~ runs and then is done.
+
+'''
+
+* Note that there are many decisions the OS must make, even in this simple
+  example.
+* First, the system had to decide to run Process~1~ while Process~0~ issued an
+  I/O; doing so improves resource utilization by keeping the CPU busy.
+* Second, the system decided not to switch back to Process~0~ when its I/O
+  completed; it is not clear if this is a good decision or not.
+* What do you think?
+* These types of decisions are made by the OS *scheduler*, a topic we will
+  discuss a few chapters in the future.
+
 == References
 
 [BH70] "The Nucleus of a Multiprogramming System" by Per Brinch Hansen. Communications of the ACM, Volume 13:4, April 1970.::
@@ -255,6 +363,10 @@ image::figure-04-01.png[]
 * The idea of smaller, more minimal systems is a theme that rears its head
   repeatedly in OS history; it all began with Brinch Hansen's work described
   herein.
+
+[DV66] "Programming Semantics for Multiprogrammed Computations" by Jack B. Dennis, Earl C. Van Horn. Communications of the ACM, Volume 9, Number 3, March 1966.::
+* This paper defined many of the early terms and concepts around building
+  multiprogrammed systems.
 
 [L+75] "Policy/mechanism separation in Hydra" by R. Levin, E. Cohen, W. Corwin, F. Pollack, W. Wulf. SOSP '75, Austin, Texas, November 1975.::
 * An early paper about how to structure operating systems in a research OS
