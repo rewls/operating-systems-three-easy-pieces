@@ -308,9 +308,9 @@ ____
 ** [x] 4.2 Process API 29
 ** [x] 4.3 Process Creation: A Little More Detail 30
 ** [x] 4.4 Process States 31
-** [ ] 4.5 Data Structures 33
+** [x] 4.5 Data Structures 33
 ** [ ] 4.6 Summary 35
-** [ ] References 37
+** [x] References 37
 ** Homework (Simulation) 38
 
 * 5 Interlude: Process API 41
