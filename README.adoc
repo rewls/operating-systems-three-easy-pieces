@@ -317,7 +317,7 @@ ____
 ** [x] 5.1 The `fork()` System Call 41
 ** [x] 5.2 The `wait()` System Call 44
 ** [x] 5.3 Finally, The `exec()` System Call 44
-** [ ] 5.4 Why? Motivating The API 46
+** [x] 5.4 Why? Motivating The API 46
 ** [ ] 5.5 Process Control And Users 48
 ** [ ] 5.6 Useful Tools 49
 ** [ ] 5.7 Summary 50
