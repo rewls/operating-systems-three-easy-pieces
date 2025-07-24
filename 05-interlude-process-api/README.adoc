@@ -412,12 +412,66 @@ prompt>
   operating system to parcel out resources (such as CPU, memory, and disk) to
   each user (and their processes) to meet overall system goals.
 
+== 5.6 Useful Tools
+
+* There are many command-line tools that are useful as well.
+* For example, using the `ps` command allows you to see which processes are
+  running; read the *man pages* for some useful flags to pass to `ps`.
+* The tool `top` is also quite helpful, as it displays the processes of the
+  system and how much CPU and other resources they are eating up.
+* Humorously, many times when you run it, `top` claims it is the top resource
+  hog; perhaps it is a bit of an egomaniac.
+* The command `kill` can be used to send arbitrary signals to processes, as
+  can the slightly more user friendly `killall`.
+* Be sure to use these carefully; if you accidentally kill your window
+  manager, the computer you are sitting in front of may become quite difficult
+  to use.
+
+.Aside: The superuser (root)
+****
+* A system generally needs a user who can *administer* the system, and is not
+  limited in the way most users are.
+* Such a user should be able to kill an arbitrary process (e.g., if it is
+  abusing the system in some way), even though that process was not started by
+  this user.
+* Such a user should also be able to run powerful commands such as
+  `shutdown` (which, unsurprisingly, shuts down the system).
+* In UNIX-based systems, these special abilities are given to the
+  *superuser* (sometimes called *root*).
+* While most users can't kill other users processes, the superuser can.
+* Being root is much like being Spider-Man: with great power comes great
+  responsibility [QI15].
+* Thus, to increase *security* (and avoid costly mistakes), it's usually better
+  to be a regular user; if you do need to be root, tread carefully, as all of
+  the destructive powers of the computing world are now at your fingertips.
+****
+
+* Finally, there are many different kinds of CPU meters you can use to get a
+  quick glance understanding of the load on your system; for example, we
+  always keep *MenuMeters* (from Raging Menace software) running on our
+  Macintosh toolbars, so we can see how much CPU is being utilized at any
+  moment in time.
+* In general, the more information about what is going on, the better.
+
 == References
 
 [L83] "Hints for Computer Systems Design" by Butler Lampson. ACM Operating Systems Review, Volume 15:5, October 1983.::
 * Lampson's famous hints on how to design computer systems.
 * You should read it at some point in your life, and probably at many points
   in your life.
+
+[QI15] "With Great Power Comes Great Responsibility" by The Quote Investigator. Available: https://quoteinvestigator.com/2015/07/23/great-power.::
+* The quote investigator concludes that the earliest mention of this concept
+  is 1793, in a collection of decrees made at the French National Convention.
+* The specific quote: "Ils doivent envisager qu’une grande responsabilit´e est
+  la suite ins´eparable d’un grand pouvoir", which roughly translates to "They
+  must consider that great responsibility follows inseparably from great
+  power."
+* Only in 1962 did the following words appear in Spider-Man: "...with great
+  power there must also come -- great responsibility!"
+* So it looks like the French Revolution gets credit for this one, not Stan
+  Lee.
+* Sorry, Stan.
 
 [SR05] "Advanced Programming in the UNIX Environment" by W. Richard Stevens, Stephen A. Rago. Addison-Wesley, 2005.::
 * All nuances and subtleties of using UNIX APIs are found herein.
