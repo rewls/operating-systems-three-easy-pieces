@@ -520,7 +520,7 @@ ____
 ** [x] 26.6 One More Problem: Waiting For Another 316
 ** [x] 26.7 Summary: Why in OS Class? 317
 ** [x] References 318
-** Homework (Simulation) 319
+** [x] Homework (Simulation) 319
 
 * link:27-interlude-thread-api/[27 Interlude: Thread API 321]
 ** [x] 27.1 Thread Creation 321
