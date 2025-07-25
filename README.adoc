@@ -393,7 +393,7 @@ ____
   131]
 ** [x] 13.1 Early Systems 131
 ** [x] 13.2 Multiprogramming and Time Sharing 131
-** [ ] 13.3 The Address Space 133
+** [x] 13.3 The Address Space 133
 ** [ ] 13.4 Goals 135
 ** [ ] 13.5 Summary 136
 ** [ ] References 138
