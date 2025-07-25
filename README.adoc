@@ -322,7 +322,7 @@ ____
 ** [x] 5.6 Useful Tools 49
 ** [x] 5.7 Summary 50
 ** [x] References 52
-** Homework (Simulation) 53
+** [x] Homework (Simulation) 53
 ** Homework (Code) 54
 
 * link:06-mechanism-limited-direct-execution.adoc[6 Mechanism: Limited Direct

@@ -553,3 +553,680 @@ prompt>
 * Buy this book!
 * Read it!
 * And most importantly, *live it*.
+
+== Homework (Simulation)
+
+* This simulation homework focuses on `fork.py`, a simple process creation
+  simulator that shows how processes are related in a single "familial" tree.
+* Read the relevant README for details about how to run the simulator.
+
+=== Overview
+
+* There are now two simulators related to this chapter.
+* The first, `fork.py`, is a simple tool to show what a process tree looks
+  like when processes are created and destroyed.
+
+'''
+
+* The second is a program, `generator.py`, that creates real C programs that
+  use `fork()`, `wait()`, and `exit()` to show how fork works in running
+  programs.
+
+==== `fork.py` 
+
+* The simulator `fork.py` is a simple tool to show what a process tree looks
+  like when processes are created and destroyed.
+
+'''
+
+* To run it, just:
++
+....
+prompt> ./fork.py
+....
+
+* What you'll see then is a list of actions, such as whether a process calls
+  `fork` to create another process, or whether a process calls `exit` to stop
+  running.
+
+'''
+
+* Each process that is running can have multiple children (or none).
+* Every process, except the initial process (which we call `a` here for
+  simplicity), has a single parent.
+* Thus, all processes are related in a tree, rooted at the initial process.
+* We will call this tree the `Process Tree` and understanding what it looks like
+  as processes are created and destroyed is the point of this simple homework.
+
+==== Simple Example
+
+* Here is a simple example:
++
+....
+prompt> ./fork.py -s 4
+
+                           Process Tree:
+                               a
+Action: a forks b
+Process Tree?
+Action: a forks c
+Process Tree?
+Action: b forks d
+Process Tree?
+Action: d EXITS
+Process Tree?
+Action: a forks e
+Process Tree?
+....
+
+* From the output, you can see two things.
+* First, on the right, is the initial state of the system.
+* As you can see, it contains one process, `a`.
+* Operating systems often create one or a few initial processes to get things
+  going; on Unix, for example, the initial process is called `init` which
+  spawns other processes as the system runs.
+
+'''
+
+* Second, on the left, you can see a series of `Action` listings, in which
+  various actions take place, and then a question is posed about the state of
+  the process tree is at that point.
+
+'''
+
+* To solve, and show all outputs, use the `-c` flag, as follows:
++
+....
+prompt> ./fork.py -s 4 -c
+
+                           Process Tree:
+                               a
+
+Action: a forks b
+                               a
+                               └── b
+Action: a forks c
+                               a
+                               ├── b
+                               └── c
+Action: b forks d
+                               a
+                               ├── b
+                               │   └── d
+                               └── c
+Action: d EXITS
+                               a
+                               ├── b
+                               └── c
+Action: a forks e
+                               a
+                               ├── b
+                               ├── c
+                               └── e
+prompt>
+....
+
+* As you can see, the expected tree that results (shown left-to-right) from a
+  particular operation is shown now.
+* After the first action, `a forks b`, you see a very simple tree, with `a`
+  shown as ``b``'s parent.
+* After a few more forks, a call to `exit` is made by `d`, which reduces the
+  tree.
+* Finally, `e` is created, and the final tree, with `a` as parent of `b`, `c`,
+  and `e` (which are considered "siblings"), as the final state.
+
+'''
+
+* In a simplified mode, you can just test yourself by trying to write down the
+  final process tree, using the `-F` flag:
++
+....
+prompt> ./fork.py -s 4 -F
+                           Process Tree:
+                               a
+
+Action: a forks b
+Action: a forks c
+Action: b forks d
+Action: d EXITS
+Action: a forks e
+
+                        Final Process Tree?
+....
+
+* Once again, you can use the `-c` flag to compute the answer and see if you
+  were right (in this case, you should be, because it's the same problem!)
+
+==== Other Options
+
+* A number of other options exist with the fork simulator.
+
+'''
+
+* You can flip the question around with the `-t` flag, which allows you to
+  view process tree states and then guess what action must have taken place.
+
+'''
+
+* You can use different random seeds (`-s` flag) or just don't specify one to
+  get different randomly generated sequences.
+
+'''
+
+* You can change what percent of actions are forks (vs exits) with the `-f`
+  flag.
+
+'''
+
+* You can specify specific fork and exit sequences with the `-A` flag.
+* For example, to have `a` fork `b`, `b` then fork `c`; `c` exit, and finally,
+  `a` fork `d`, just type (we show `-c` here to solve the problem, too):
++
+....
+prompt> ./fork.py -A a+b,b+c,c-,a+d -c
+
+                           Process Tree:
+                               a
+
+Action: a forks b
+                               a
+                               └── b
+Action: b forks c
+                               a
+                               └── b
+                                   └── c
+Action: c EXITS
+                               a
+                               └── b
+Action: a forks d
+                               a
+                               ├── b
+                               └── d
+....
+
+* You can only show the final output (and see if you can guess all the
+  intermediates to get there) with the `-F` flag.
+
+'''
+
+* Finally, you can change the printing style of the tree with the `-P` flag.
+
+==== `generator.py` 
+
+* This tool, `generator.py`, allows the user to create little C programs that
+  exercise `fork` in different ways so as to gain better understanding of how
+  `fork` works.
+
+'''
+
+* A sample usage is just as follows:
++
+....
+prompt> ./generator.py -n 1 -s 0
+....
+
+* The output you will see when you run this is a randomly generated C program.
+* In this case, you will see something like this:
++
+[,c]
+----
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/time.h>
+#include <sys/wait.h>
+#include <unistd.h>
+
+void wait_or_die() {
+    int rc = wait(NULL);
+    assert(rc > 0);
+}
+
+int fork_or_die() {
+    int rc = fork();
+    assert(rc >= 0);
+    return rc;
+}
+
+int main(int argc, char *argv[]) {
+    // process a
+    if (fork_or_die() == 0) {
+        sleep(6);
+        // process b
+        exit(0);
+    }
+    wait_or_die();
+    return 0;
+}
+----
+
+* Let's understand this code a bit.
+* The first part (from the top, up to the beginning of `main()`) will be
+  included in every generated C program.
+* The two pieces of code, `wait_or_die()` and `fork_or_die()`, are just simple
+  wrappers to the `wait` and `fork` system calls, and either succeed (as they
+  usually will) or detect an error (by checking the return code, stored in
+  `rc`) and exit, via the `assert()` call.
+* The wrappers are useful when it's OK to simply exit upon failure (which it
+  is here, but not always), and make the code in `main()` easier to read.
+
+'''
+
+Aside::
+* `assert()`, if you're not familiar with it, is a macro that simply checks
+  the truth of the expression you pass to it.
+* If the assertion is true, `assert()` simply returns and the program
+  continues.
+* If it is false, the process will exit.
+
+'''
+
+* The interesting part of the code, which changes with different random seeds,
+  is found in `main()`.
+* Here we see the main process, which we will refer to as "process a" (or just
+  "a" for short) start, call `fork_or_die()` to create another process, and then
+  wait for that process to complete (by calling `wait_or_die()`).
+
+'''
+
+* The child process (called "b") just sleeps for some period of time (here, 4
+  seconds) and then exits.
+
+'''
+
+* The challenge for you, then, is to predict what the output will look like
+  when this program runs.
+* As usual, we can get the result simply by using the `-c` flag:
++
+....
+prompt> ./generator.py -n 1 -s 0 -c
+  0 a+
+  0 a->b
+  6      b+
+  6      b-
+  6 a<-b
+prompt> 
+....
+
+* The way to read the output is as follows.
+* The first column shows the time when certain events take place.
+* In this case, there are two events that happen at time 0.
+* First, process a starts running (shown by `a+`); then, a forks and creates b
+  (shown by `a->b`).
+
+'''
+
+* Then, b starts running and immediately sleeps for 6 seconds, as shown in the
+  code.
+* Once this sleep is done, b prints that it has been created (`b+`), but it
+  doesn't do much; in fact, it just exits, which is shown as well (`b-`).
+* These are shown to both happen at time 6 in the output; however, in reality,
+  we know that `b+` happens just before `b-`.
+
+'''
+
+* Finally, once b has exited, the `wait_or_die()` call in its parent process,
+  a, returns, and then a final print out takes place (`a<-b`) to indicate this
+  has happened.
+
+'''
+
+* A number of flags control the randomly generated code that gets created.
+* They are:
+** `-s SEED` - different random seeds yield different programs
+** `-n NUM_ACTIONS` - how many actions (`fork`, `wait`) a program should
+   include
+** `-f FORK_CHANCE` - the chances, from 1-99 percent, that a `fork()` will be
+   added
+** `-w WAIT_CHANCE` - same, but a `wait()` (of course, there must be an
+   outstanding `fork` for this to be called)
+** `-e EXIT_CHANCE` - same, but the chances the process will exit
+** `-S MAX_SLEEP_TIME` - the max sleep time that is chosen when adding sleeps
+   into the code
+
+* There are also a few flags that control which C files get created for the
+  code:
+** `-r READABLE` - this is the file shown to you (and optimized for
+   readability)
+** `-R RUNNABLE` - this is the file that will be compiled and run; it is
+   identical to the above but adds print statements and such
+
+'''
+
+* Finally, there is one other flag, `-A`, that lets you specify a program
+  exactly.
+* For example:
++
+....
+prompt> ./generator.py -A "fork b,1 {} wait"
+....
+
+* The resulting C code:
++
+[,c]
+----
+int main(int argc, char *argv[]) {
+    // process a
+    if (fork_or_die() == 0) {
+        sleep(1);
+        // process b
+        exit(0);
+    }
+    wait_or_die();
+    return 0;
+}
+----
+
+* This command creates the default process ("a"), which then creates "b" which
+  sleeps for 1 but doesn't do anything else; in the meanwhile, "a" then waits
+  for "b" to complete.
+
+'''
+
+* More complex examples can be created.
+* For example:
+** `-A "fork b,1 {} fork c,2 {} wait wait"` - process "a" creates two
+   processes, "b" and "c", and then waits for both
+** `-A "fork b,1 {fork c,2 {} fork d,3 {} wait wait} wait"` - process "a"
+   creates "b" and then waits for it to complete; "b" creates "c" and "d" and
+   waits for them to complete.
+* Read through and do the homework questions to gain a fuller understanding of
+  `fork`.
+
+=== Questions
+:example-caption:
+:example-number: 0
+
+.{empty}
+====
+* Run `./fork.py -s 10` and see which actions are taken.
+* Can you predict what the process tree looks like at each step?
+* Use the `-c` flag to check your answers.
+* Try some different random seeds (`-s`) or add more actions (`-a`) to get the
+  hang of it.
+====
+
+[%collapsible]
+....
+ARG seed 10
+ARG fork_percentage 0.7
+ARG actions 5
+ARG action_list 
+ARG show_tree False
+ARG just_final False
+ARG leaf_only False
+ARG local_reparent False
+ARG print_style fancy
+ARG solve True
+
+                           Process Tree:
+                               a
+
+Action: a forks b
+                               a
+                               └── b
+Action: a forks c
+                               a
+                               ├── b
+                               └── c
+Action: c EXITS
+                               a
+                               └── b
+Action: a forks d
+                               a
+                               ├── b
+                               └── d
+Action: a forks e
+                               a
+                               ├── b
+                               ├── d
+                               └── e
+....
+
+.{empty}
+====
+* One control the simulator gives you is the `fork` percentage, controlled by
+  the `-f` flag.
+* The higher it is, the more likely the next action is a `fork`; the lower it
+  is, the more likely the action is an exit.
+* Run the simulator with a large number of actions (e.g., `-a 100`) and vary
+  the fork percentage from 0.1 to 0.9.
+* What do you think the resulting final process trees will look like as the
+  percentage changes?
+* Check your answer with `-c`.
+====
+
+.`-a 100 -f 0.1`
+[%collapsible]
+====
+....
+include::q1-a100-f0.1.txt[]
+....
+====
+
+.`-a 100 -f 0.5`
+[%collapsible]
+====
+....
+include:q1-a100-f0.5.txt[]
+....
+====
+
+.`-a 100 -f 0.9`
+[%collapsible]
+====
+....
+include::q1-a100-f0.9.txt[]
+....
+====
+
+.{empty}
+====
+* Now, switch the output by using the `-t` flag (e.g., run `./fork.py -t`).
+* Given a set of process trees, can you tell which actions were taken?
+====
+
+....
+ARG seed 10
+ARG fork_percentage 0.7
+ARG actions 5
+ARG action_list 
+ARG show_tree True
+ARG just_final False
+ARG leaf_only False
+ARG local_reparent False
+ARG print_style fancy
+ARG solve False
+
+                           Process Tree:
+                               a
+
+Action?
+                               a
+                               └── b
+Action?
+                               a
+                               ├── b
+                               └── c
+Action?
+                               a
+                               └── b
+Action?
+                               a
+                               ├── b
+                               └── d
+Action?
+                               a
+                               ├── b
+                               ├── d
+                               └── e
+....
+
+.{empty}
+====
+* One interesting thing to note is what happens when a child exits; what
+  happens to its children in the process tree?
+* To study this, let's create a specific example: `./fork.py -A
+  a+b,b+c,c+d,c+e,c-`.
+* This example has process 'a' create 'b', which in turn creates 'c', which
+  then creates 'd' and 'e'.
+* However, then, 'c' exits.
+* What do you think the process tree should like after the exit?
+* What if you use the `-R` flag?
+* Learn more about what happens to orphaned processes on your own to add more
+  context.
+====
+
+....
+ARG seed -1
+ARG fork_percentage 0.7
+ARG actions 5
+ARG action_list a+b,b+c,c+d,c+e,c-
+ARG show_tree False
+ARG just_final False
+ARG leaf_only False
+ARG local_reparent False
+ARG print_style fancy
+ARG solve True
+
+                           Process Tree:
+                               a
+
+Action: a forks b
+                               a
+                               └── b
+Action: b forks c
+                               a
+                               └── b
+                                   └── c
+Action: c forks d
+                               a
+                               └── b
+                                   └── c
+                                       └── d
+Action: c forks e
+                               a
+                               └── b
+                                   └── c
+                                       ├── d
+                                       └── e
+Action: c EXITS
+                               a
+                               ├── b
+                               ├── d
+                               └── e
+....
+
+....
+
+ARG seed -1
+ARG fork_percentage 0.7
+ARG actions 5
+ARG action_list a+b,b+c,c+d,c+e,c-
+ARG show_tree False
+ARG just_final False
+ARG leaf_only False
+ARG local_reparent True
+ARG print_style fancy
+ARG solve True
+
+                           Process Tree:
+                               a
+
+Action: a forks b
+                               a
+                               └── b
+Action: b forks c
+                               a
+                               └── b
+                                   └── c
+Action: c forks d
+                               a
+                               └── b
+                                   └── c
+                                       └── d
+Action: c forks e
+                               a
+                               └── b
+                                   └── c
+                                       ├── d
+                                       └── e
+Action: c EXITS
+                               a
+                               └── b
+                                   ├── d
+                                   └── e
+....
+
+.{empty}
+====
+* One last flag to explore is the `-F` flag, which skips intermediate steps
+  and only asks to fill in the final process tree.
+* Run `./fork.py -F` and see if you can write down the final tree by looking
+  at the series of actions generated.
+* Use different random seeds to try this a few times.
+====
+
+....
+ARG seed -1
+ARG fork_percentage 0.7
+ARG actions 5
+ARG action_list a+b,b+c,c+d,c+e,c-
+ARG show_tree False
+ARG just_final True
+ARG leaf_only False
+ARG local_reparent False
+ARG print_style fancy
+ARG solve False
+
+                           Process Tree:
+                               a
+
+Action: a forks b
+Action: b forks c
+Action: c forks d
+Action: c forks e
+Action: c EXITS
+
+                        Final Process Tree?
+....
+
+.{empty}
+====
+* Finally, use both `-t` and `-F` together.
+* This shows the final process tree, but then asks you to fill in the actions
+  that took place.
+* By looking at the tree, can you determine the exact actions that took place?
+* In which cases can you tell?
+* In which can't you tell?
+* Try some different random seeds to delve into this question.
+====
+
+....
+ARG seed -1
+ARG fork_percentage 0.7
+ARG actions 5
+ARG action_list a+b,b+c,c+d,c+e,c-
+ARG show_tree True
+ARG just_final True
+ARG leaf_only False
+ARG local_reparent False
+ARG print_style fancy
+ARG solve False
+
+                           Process Tree:
+                               a
+
+Action?
+Action?
+Action?
+Action?
+Action?
+
+                        Final Process Tree:
+                               a
+                               ├── b
+                               ├── d
+                               └── e
+....
