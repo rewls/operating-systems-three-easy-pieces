@@ -172,3 +172,95 @@ image::figure-13-03.png[]
   (where A is loaded into memory).
 * This is the key to virtualization of memory, which underlies every modern
   computer system in the world.
+
+== 13.4 Goals
+
+* Thus we arrive at the job of the OS in this set of notes: to virtualize
+  memory.
+* The OS will not only virtualize memory, though; it will do so with style.
+* To make sure the OS does so, we need some goals to guide us.
+* We have seen these goals before (think of the Introduction), and we'll see
+  them again, but they are certainly worth repeating.
+
+'''
+
+* One major goal of a virtual memory (VM) system is
+  *transparency*{empty}footnote:[This usage of transparency is sometimes
+  confusing; some students think that "being transparent" means keeping
+  everything out in the open, i.e., what government should be like. Here, it
+  means the opposite: that the illusion provided by the OS should not be
+  visible to applications. Thus, in common usage, a transparent system is one
+  that is hard to notice, not one that responds to requests as stipulated by
+  the Freedom of Information Act.].
+* The OS should implement virtual memory in a way that is invisible to the
+  running program.
+* Thus, the program shouldn't be aware of the fact that memory is virtualized;
+  rather, the program behaves as if it has its own private physical memory.
+* Behind the scenes, the OS (and hardware) does all the work to multiplex
+  memory among many different jobs, and hence implements the illusion.
+
+'''
+
+* Another goal of VM is *efficiency*.
+* The OS should strive to make the virtualization as efficient as possible,
+  both in terms of time (i.e., not making programs run much more slowly) and
+  space (i.e., not using too much memory for structures needed to support
+  virtualization).
+* In implementing time-efficient virtualization, the OS will have to rely on
+  hardware support, including hardware features such as TLBs (which we will
+  learn about in due course).
+
+'''
+
+* Finally, a third VM goal is *protection*.
+* The OS should make sure to protect processes from one another as well as the
+  OS itself from processes.
+* When one process performs a load, a store, or an instruction fetch, it
+  should not be able to access or affect in any way the memory contents of any
+  other process or the OS itself (that is, anything _outside_ its address
+  space).
+* Protection thus enables us to deliver the property of *isolation* among
+  processes; each process should be running in its own isolated cocoon, safe
+  from the ravages of other faulty or even malicious processes.
+
+.Tip: The principle of isolation
+****
+* Isolation is a key principle in building reliable systems.
+* If two entities are properly isolated from one another, this implies that
+  one can fail without affecting the other.
+* Operating systems strive to isolate processes from each other and in this
+  way prevent one from harming the other.
+* By using memory isolation, the OS further ensures that running programs
+  cannot affect the operation of the underlying OS.
+* Some modern OS's take isolation even further, by walling off pieces of the
+  OS from other pieces of the OS.
+* Such microkernels [BH70, R+89, S+03] thus may provide greater reliability
+  than typical monolithic kernel designs.
+****
+
+* In the next chapters, we'll focus our exploration on the basic mechanisms
+  needed to virtualize memory, including hardware and operating systems
+  support.
+* We'll also investigate some of the more relevant policies that you'll
+  encounter in operating systems, including how to manage free space and which
+  pages to kick out of memory when you run low on space.
+* In doing so, we'll build up your understanding of how a modern virtual
+  memory system really works{empty}footnote:[Or, we'll convince you to drop
+  the course. But hold on; if you make it through VM, you'll likely make it
+  all the way!].
+
+== References
+
+[BH70] "The Nucleus of a Multiprogramming System" by Per Brinch Hansen. Communications of the ACM, 13:4, April 1970.::
+* The first paper to suggest that the OS, or kernel, should be a minimal and
+  flexible substrate for building customized operating systems; this theme is
+  revisited throughout OS research history.
+
+[R+89] "Mach: A System Software kernel" by R. Rashid, D. Julin, D. Orr, R.  Sanzi, R. Baron, A. Forin, D. Golub, M. Jones. COMPCON '89, February 1989.::
+* Although not the first project on microkernels per se, the Mach project at
+  CMU was well-known and influential; it still lives today deep in the bowels
+  of Mac OS X.
+
+[S+03] "Improving the Reliability of Commodity Operating Systems" by M. M.  Swift, B. N. Bershad, H. M. Levy. SOSP '03.::
+* The first paper to show how microkernel-like thinking can improve operating
+  system reliability.
