@@ -1,0 +1,82 @@
+= 6 Mechanism: Limited Direct Execution
+:figure-caption: Figure 6.
+:toc: left
+
+* In order to virtualize the CPU, the operating system needs to somehow share
+  the physical CPU among many jobs running seemingly at the same time.
+* The basic idea is simple: run one process for a little while, then run
+  another one, and so forth.
+* By *time sharing* the CPU in this manner, virtualization is achieved.
+
+'''
+
+* There are a few challenges, however, in building such virtualization
+  machinery.
+* The first is performance: how can we implement virtualization without adding
+  excessive overhead to the system?
+* The second is control: how can we run processes efficiently while retaining
+  control over the CPU?
+* Control is particularly important to the OS, as it is in charge of
+  resources; without control, a process could simply run forever and take over
+  the machine, or access information that it should not be allowed to access.
+* Obtaining high performance while maintaining control is thus one of the
+  central challenges in building an operating system.
+
+.The crux: How to efficiently virtualize the CPU with control
+****
+* The OS must virtualize the CPU in an efficient manner while retaining
+  control over the system.
+* To do so, both hardware and operating-system support will be required.
+* The OS will often use a judicious bit of hardware support in order to
+  accomplish its work effectively.
+****
+
+== 6.1 Basic Technique: Limited Direct Execution
+
+* To make a program run as fast as one might expect, not surprisingly OS
+  developers came up with a technique, which we call *limited direct
+  execution*.
+* The "direct execution" part of the idea is simple: just run the program
+  directly on the CPU.
+* Thus, when the OS wishes to start a program running, it creates a process
+  entry for it in a process list, allocates some memory for it, loads the
+  program code into memory (from disk), locates its entry point (i.e., the
+  `main()` routine or something similar), jumps to it, and starts running the
+  user's code.
+* Figure 6.1 shows this basic direct execution protocol (without any limits,
+  yet), using a normal call and return to jump to the program's `main()` and
+  later back into the kernel.
+
+:figure-number: {counter:figure-number}
+.{figure-caption} {figure-number}. Direct Execution Protocol (Without Limits)
+[%autowidth]
+|===
+|OS				|Program
+
+|Create entry for process list
+|Allocate memory for program
+|Load program into memory
+|Set up stack with argc/argv
+|Clear registers
+|Execute *call* main()
+				|Run main()
+				|Execute *return* from main
+|Free memory of process
+|Remove from process list
+|===
+
+* Sounds simple, no?
+* But this approach gives rise to a few problems in our quest to virtualize
+  the CPU.
+* The first is simple: if we just run a program, how can the OS make sure the
+  program doesn't do anything that we don't want it to do, while still running
+  it efficiently?
+* The second: when we are running a process, how does the operating system
+  stop it from running and switch to another process, thus implementing the
+  *time sharing* we require to virtualize the CPU?
+* In answering these questions below, we'll get a much better sense of what is
+  needed to virtualize the CPU.
+* In developing these techniques, we'll also see where the "limited" part of
+  the name arises from; without limits on running programs, the OS wouldn't be
+  in control of anything and thus would be "just a library" -- a very sad
+  state of affairs for an aspiring operating system!

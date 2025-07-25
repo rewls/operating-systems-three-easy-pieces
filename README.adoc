@@ -325,8 +325,9 @@ ____
 ** Homework (Simulation) 53
 ** Homework (Code) 54
 
-* 6 Mechanism: Limited Direct Execution 57
-** [ ] 6.1 Basic Technique: Limited Direct Execution 57
+* link:06-mechanism-limited-direct-execution.adoc[6 Mechanism: Limited Direct
+  Execution 57]
+** [x] 6.1 Basic Technique: Limited Direct Execution 57
 ** [ ] 6.2 Problem #1: Restricted Operations 58
 ** [ ] 6.3 Problem #2: Switching Between Processes 63
 ** [ ] 6.4 Worried About Concurrency? 67
