@@ -395,8 +395,8 @@ ____
 ** [x] 13.2 Multiprogramming and Time Sharing 131
 ** [x] 13.3 The Address Space 133
 ** [x] 13.4 Goals 135
-** [ ] 13.5 Summary 136
-** [ ] References 138
+** [x] 13.5 Summary 136
+** [x] References 138
 ** Homework (Code) 139
 
 * 14 Interlude: Memory API 141

@@ -1,6 +1,8 @@
 = 13 The Abstraction: Address Spaces
 :figure-caption: Figure 13.
 :imagesdir: ../images
+:source-highlighter: rouge
+:tabsize: 8
 :toc: left
 
 * In the early days, building computer systems was easy.
@@ -249,6 +251,73 @@ image::figure-13-03.png[]
   the course. But hold on; if you make it through VM, you'll likely make it
   all the way!].
 
+== 13.5 Summary
+
+* We have seen the introduction of a major OS subsystem: virtual memory.
+* The VM system is responsible for providing the illusion of a large, sparse,
+  private address space to each running program; each virtual address space
+  contains all of a program's instructions and data, which can be referenced
+  by the program via virtual addresses.
+* The OS, with some serious hardware help, will take each of these virtual
+  memory references and turn them into physical addresses, which can be
+  presented to the physical memory in order to fetch or update the desired
+  information.
+* The OS will provide this service for many processes at once, making sure to
+  protect programs from one another, as well as protect the OS.
+* The entire approach requires a great deal of mechanism (i.e., lots of
+  low-level machinery) as well as some critical policies to work; we'll start
+  from the bottom up, describing the critical mechanisms first.
+* And thus we proceed!
+
+.Aside: Every address you see is virtual
+****
+* Ever write a C program that prints out a pointer?
+* The value you see (some large number, often printed in hexadecimal), is a
+  *virtual address*.
+* Ever wonder where the code of your program is found?
+* You can print that out too, and yes, if you can print it, it also is a
+  virtual address.
+* In fact, any address you can see as a programmer of a user-level program is
+  a virtual address.
+* It's only the OS, through its tricky techniques of virtualizing memory, that
+  knows where in the physical memory of the machine these instructions and
+  data values lie.
+* So never forget: if you print out an address in a program, it's a virtual
+  one, an illusion of how things are laid out in memory; only the OS (and the
+  hardware) knows the real truth.
+
+'''
+
+* Here's a little program (`va.c`) that prints out the locations of the
+  `main()` routine (where code lives), the value of a heap-allocated value
+  returned from `malloc()`, and the location of an integer on the stack:
++
+[source,c]
+#include <stdio.h>
+#include <stdlib.h>
+int main(int argc, char *argv[]) {
+	printf("location of code : %p\n", main);
+	printf("location of heap : %p\n", malloc(100e6));
+	int x = 3;
+	printf("location of stack: %p\n", &x);
+	return x;
+}
+
+* When run on a 64-bit Mac, we get the following output:
++
+....
+location of code : 0x1095afe50
+location of heap : 0x1096008c0
+location of stack: 0x7fff691aea64
+....
+
+* From this, you can see that code comes first in the address space, then the
+  heap, and the stack is all the way at the other end of this large virtual
+  space.
+* All of these addresses are virtual, and will be translated by the OS and
+  hardware in order to fetch values from their true physical locations.
+****
+
 == References
 
 [BH70] "The Nucleus of a Multiprogramming System" by Per Brinch Hansen. Communications of the ACM, 13:4, April 1970.::
@@ -256,10 +325,56 @@ image::figure-13-03.png[]
   flexible substrate for building customized operating systems; this theme is
   revisited throughout OS research history.
 
+[CV65] "Introduction and Overview of the Multics System" by F. J. Corbato, V. A. Vyssotsky. Fall Joint Computer Conference, 1965.::
+* A great early Multics paper.
+* Here is the great quote about time sharing: "The impetus for time-sharing
+  first arose from professional programmers because of their constant
+  frustration in debugging programs at batch processing installations. Thus,
+  the original goal was to time-share computers to allow simultaneous access
+  by several persons while giving to each of them the illusion of having the
+  whole machine at his disposal."
+
+[DV66] "Programming Semantics for Multiprogrammed Computations" by Jack B.  Dennis, Earl C. Van Horn. Communications of the ACM, Volume 9, Number 3, March 1966.::
+* An early paper (but not the first) on multiprogramming.
+
+[L60] "Man-Computer Symbiosis" by J. C. R. Licklider. IRE Transactions on Human Factors in Electronics, HFE-1:1, March 1960.::
+* A funky paper about how computers and people are going to enter into a
+  symbiotic age; clearly well ahead of its time but a fascinating read
+  nonetheless.
+
+[M62] "Time-Sharing Computer Systems" by J. McCarthy. Management and the Computer of the Future, MIT Press, Cambridge, MA, 1962.::
+* Probably McCarthy's earliest recorded paper on time sharing.
+* In another paper [M83], he claims to have been thinking of the idea since
+  1957.
+* McCarthy left the systems area and went on to become a giant in Artificial
+  Intelligence at Stanford, including the creation of the LISP programming
+  language.
+* See McCarthy's home page for more info:
+  `http://www-formal.stanford.edu/jmc/`
+
+[M+63] "A Time-Sharing Debugging System for a Small Computer" by J. McCarthy, S. Boilen, E. Fredkin, J. C. R. Licklider. AFIPS '63 (Spring), New York, NY, May 1963.::
+* A great early example of a system that swapped program memory to the "drum"
+  when the program wasn't running, and then back into "core" memory when it
+  was about to be run.
+
+[M83] "Reminiscences on the History of Time Sharing" by John McCarthy. 1983. Available: http://www-formal.stanford.edu/jmc/history/timesharing/timesharing.html.::
+* A terrific historical note on where the idea of time-sharing might have come
+  from including some doubts towards those who cite Strachey's work [S59] as
+  the pioneering work in this area.
+
+[NS07] "Valgrind: A Framework for Heavyweight Dynamic Binary Instrumentation" by N. Nethercote, J. Seward. PLDI 2007, San Diego, California, June 2007.::
+* Valgrind is a lifesaver of a program for those who use unsafe languages like
+  C.
+* Read this paper to learn about its very cool binary instrumentation
+  techniques -- it's really quite impressive.
+
 [R+89] "Mach: A System Software kernel" by R. Rashid, D. Julin, D. Orr, R.  Sanzi, R. Baron, A. Forin, D. Golub, M. Jones. COMPCON '89, February 1989.::
 * Although not the first project on microkernels per se, the Mach project at
   CMU was well-known and influential; it still lives today deep in the bowels
   of Mac OS X.
+
+[S59] "Time Sharing in Large Fast Computers" by C. Strachey. Proceedings of the International Conference on Information Processing, UNESCO, June 1959.::
+* One of the earliest references on time sharing.
 
 [S+03] "Improving the Reliability of Commodity Operating Systems" by M. M.  Swift, B. N. Bershad, H. M. Levy. SOSP '03.::
 * The first paper to show how microkernel-like thinking can improve operating
