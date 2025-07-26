@@ -548,7 +548,7 @@ ____
 ** [x] 28.13 A Simple Approach: Just Yield, Baby 346
 ** [x] 28.14 Using Queues: Sleeping Instead Of Spinning 347
 ** [x] 28.15 Different OS, Different Support 350
-** [ ] 28.16 Two-Phase Locks 352
+** [x] 28.16 Two-Phase Locks 352
 ** [ ] 28.17 Summary 352
 ** [ ] References 353
 ** Homework (Simulation) 354
