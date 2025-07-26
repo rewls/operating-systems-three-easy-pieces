@@ -544,8 +544,8 @@ ____
 ** [x] 28.9 Compare-And-Swap 342
 ** [x] 28.10 Load-Linked and Store-Conditional 343
 ** [x] 28.11 Fetch-And-Add 344
-** [ ] 28.12 Too Much Spinning: What Now? 345
-** [ ] 28.13 A Simple Approach: Just Yield, Baby 346
+** [x] 28.12 Too Much Spinning: What Now? 345
+** [x] 28.13 A Simple Approach: Just Yield, Baby 346
 ** [ ] 28.14 Using Queues: Sleeping Instead Of Spinning 347
 ** [ ] 28.15 Different OS, Different Support 350
 ** [ ] 28.16 Two-Phase Locks 352
