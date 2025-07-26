@@ -539,7 +539,7 @@ ____
 ** [x] 28.4 Evaluating Locks 335
 ** [x] 28.5 Controlling Interrupts 336
 ** [x] 28.6 A Failed Attempt: Just Using Loads/Stores 337
-** [ ] 28.7 Building Working Spin Locks with Test-And-Set 338
+** [x] 28.7 Building Working Spin Locks with Test-And-Set 338
 ** [ ] 28.8 Evaluating Spin Locks 341
 ** [ ] 28.9 Compare-And-Swap 342
 ** [ ] 28.10 Load-Linked and Store-Conditional 343

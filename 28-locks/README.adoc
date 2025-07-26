@@ -397,3 +397,139 @@ void unlock() {
   than they were before.
 * Yet more research relegated to the dustbin of history...
 ****
+
+== 28.7 Building Working Spin Locks with Test-And-Set
+
+* Because disabling interrupts does not work on multiple processors, and
+  because simple approaches using loads and stores (as shown above) don't
+  work, system designers started to invent hardware support for locking.
+* The earliest multiprocessor systems, such as the Burroughs B5000 in the
+  early 1960's [M82], had such support; today all systems provide this type of
+  support, even for single CPU systems.
+* The simplest bit of hardware support to understand is known as a
+  *test-and-set* (or *atomic exchange{empty}footnote:[Each architecture that
+  supports test-and-set calls it by a different name. On SPARC it is called
+  the load/store unsigned byte instruction (`ldstub`); on x86 it is the locked
+  version of the atomic exchange (`xchg`).]) instruction.
+* We define what the test-and-set instruction does via the following C code
+  snippet:
+
+[source,c]
+int TestAndSet(int *old_ptr, int new) {
+	int old = *old_ptr;	// fetch old value at old_ptr
+	*old_ptr = new;		// store 'new' into old_ptr
+	return old;		// return the old value
+}
+
+'''
+
+* What the test-and-set instruction does is as follows.
+* It returns the old value pointed to by the `old_ptr`, and simultaneously
+  updates said value to new.
+* The key, of course, is that this sequence of operations is performed
+  *atomically*.
+* The reason it is called "test and set" is that it enables you to "test" the
+  old value (which is what is returned) while simultaneously "setting" the
+  memory location to a new value; as it turns out, this slightly more powerful
+  instruction is enough to build a simple spin lock, as we now examine in
+  Figure 28.3.
+* Or better yet: figure it out first yourself!
+
+:figure-number: {counter:figure-number}
+.{figure-caption} {figure-number}. A Simple Spin Lock Using Test-and-set
+[,c]
+----
+typedef struct __lock_t {
+	int flag;
+} lock_t;
+
+void init(lock_t *lock) {
+	// 0: lock is available, 1: lock is held
+	lock->flag = 0;
+}
+
+void lock(lock_t *lock) {
+	while (TestAndSet(&lock->flag, 1) == 1)
+		; // spin-wait (do nothing)
+}
+
+void unlock(lock_t *lock) {
+	lock->flag = 0;
+}
+----
+
+* Let's make sure we understand why this lock works.
+* Imagine first the case where a thread calls `lock()` and no other thread
+  currently holds the lock; thus, flag should be 0.
+* When the thread calls `TestAndSet(flag, 1)`, the routine will return the old
+  value of flag, which is 0; thus, the calling thread, which is testing the
+  value of flag, will not get caught spinning in the while loop and will
+  acquire the lock.
+* The thread will also atomically set the value to 1, thus indicating that the
+  lock is now held.
+* When the thread is finished with its critical section, it calls `unlock()`
+  to set the flag back to zero.
+
+'''
+
+* The second case we can imagine arises when one thread already has the lock
+  held (i.e., flag is 1).
+* In this case, this thread will call `lock()` and then call `TestAndSet(flag,
+  1)` as well.
+* This time, `TestAndSet()` will return the old value at flag, which is 1
+  (because the lock is held), while simultaneously setting it to 1 again.
+* As long as the lock is held by another thread, `TestAndSet()` will
+  repeatedly return 1, and thus this thread will spin and spin until the lock
+  is finally released.
+* When the flag is finally set to 0 by some other thread, this thread will
+  call `TestAndSet()` again, which will now return 0 while atomically setting
+  the value to 1 and thus acquire the lock and enter the critical section.
+
+'''
+
+* By making both the *test* (of the old lock value) and *set* (of the new
+  value) a single atomic operation, we ensure that only one thread acquires
+  the lock.
+* And that's how to build a working mutual exclusion primitive!
+
+.Tip: Think about concurrency as a malicious scheduler
+****
+* From this example, you might get a sense of the approach you need to take to
+  understand concurrent execution.
+* What you should try to do is to pretend you are a *malicious scheduler*, one
+  that interrupts threads at the most inopportune of times in order to foil
+  their feeble attempts at building synchronization primitives.
+* What a mean scheduler you are!
+* Although the exact sequence of interrupts may be _improbable_, it is
+  _possible_, and that is all we need to demonstrate that a particular
+  approach does not work.
+* It can be useful to think maliciously!
+* (at least, sometimes)
+****
+
+* You may also now understand why this type of lock is usually referred to as
+  a *spin lock*.
+* It is the simplest type of lock to build, and simply spins, using CPU
+  cycles, until the lock becomes available.
+* To work correctly on a single processor, it requires a *preemptive
+  scheduler* (i.e., one that will interrupt a thread via a timer, in order to
+  run a different thread, from time to time).
+* Without preemption, spin locks don't make much sense on a single CPU, as a
+  thread spinning on a CPU will never relinquish it.
+
+== References
+
+[D68] "Cooperating sequential processes" by Edsger W. Dijkstra. 1968. Available online here: http://www.cs.utexas.edu/users/EWD/ewd01xx/EWD123.PDF.::
+* One of the early seminal papers.
+* Discusses how Dijkstra posed the original concurrency problem, and Dekker's
+  solution.
+
+[M82] "The Architecture of the Burroughs B5000: 20 Years Later and Still Ahead of the Times?" by A. Mayer. 1982. Available: www.ajwm.net/amayer/papers/B5000.html.::
+* "It (RDLK) is an indivisible operation which reads from and writes into a
+  memory location."
+* RDLK is thus test-and-set!
+* Dave Dahm created spin locks ("Buzz Locks") and a two-phase lock called
+  "Dahm Locks."
+
+[P81] "Myths About the Mutual Exclusion Problem" by G.L. Peterson. Information Processing Letters, 12(3), pages 115-116, 1981.::
+* Peterson's algorithm introduced here.
