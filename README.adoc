@@ -532,8 +532,8 @@ ____
 ** [x] References 331
 ** [x] Homework (Code) 332
 
-* 28 Locks 333
-** [ ] 28.1 Locks: The Basic Idea 333
+* link:28-locks/[28 Locks 333]
+** [x] 28.1 Locks: The Basic Idea 333
 ** [ ] 28.2 Pthread Locks 334
 ** [ ] 28.3 Building A Lock 335
 ** [ ] 28.4 Evaluating Locks 335
