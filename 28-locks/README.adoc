@@ -138,3 +138,38 @@ Pthread_mutex_unlock(&lock);
   build a mutual exclusion primitive like a lock.
 * We will also study how the OS gets involved to complete the picture and
   enable us to build a sophisticated locking library.
+
+== 28.4 Evaluating Locks
+
+* Before building any locks, we should first understand what our goals are,
+  and thus we ask how to evaluate the efficacy of a particular lock
+  implementation.
+* To evaluate whether a lock works (and works well), we should establish some
+  basic criteria.
+* The first is whether the lock does its basic task, which is to provide
+  *mutual exclusion*.
+* Basically, does the lock work, preventing multiple threads from entering a
+  critical section?
+
+'''
+
+* The second is *fairness*.
+* Does each thread contending for the lock get a fair shot at acquiring it
+  once it is free?
+* Another way to look at this is by examining the more extreme case: does any
+  thread contending for the lock *starve* while doing so, thus never obtaining
+  it?
+
+'''
+
+* The final criterion is *performance*, specifically the time overheads added
+  by using the lock.
+* There are a few different cases that are worth considering here.
+* One is the case of no contention; when a single thread is running and grabs
+  and releases the lock, what is the overhead of doing so?
+* Another is the case where multiple threads are contending for the lock on a
+  single CPU; in this case, are there performance concerns?
+* Finally, how does the lock perform when there are multiple CPUs involved,
+  and threads on each contending for the lock?
+* By comparing these different scenarios, we can better understand the
+  performance impact of using various locking techniques, as described below.
