@@ -572,12 +572,81 @@ void unlock(lock_t *lock) {
 * Spinning to wait for a lock held on another processor doesn't waste many
   cycles in this case, and thus can be effective.
 
+== 28.9 Compare-And-Swap
+
+* Another hardware primitive that some systems provide is known as the
+  *compare-and-swap* instruction (as it is called on SPARC, for example), or
+  *compare-and-exchange* (as it called on x86).
+* The C pseudocode for this single instruction is found in Figure 28.4.
+
+:figure-number: {counter:figure-number}
+.{figure-caption} {figure-number}. Compare-and-swap
+[,c]
+----
+int CompareAndSwap(int *ptr, int expected, int new) {
+	int original = *ptr;
+	if (original == expected)
+		*ptr = new;
+	return original;
+}
+----
+
+* The basic idea is for compare-and-swap to test whether the value at the
+  address specified by `ptr` is equal to `expected`; if so, update the memory
+  location pointed to by `ptr` with the new value.
+* If not, do nothing.
+* In either case, return the original value at that memory location, thus
+  allowing the code calling compare-and-swap to know whether it succeeded or
+  not.
+
+'''
+
+* With the compare-and-swap instruction, we can build a lock in a manner quite
+  similar to that with test-and-set.
+* For example, we could just replace the `lock()` routine above with the
+  following:
+
+[,c]
+----
+void lock(lock_t *lock) {
+	while (CompareAndSwap(&lock->flag, 0, 1) == 1)
+		; // spin
+}
+----
+
+* The rest of the code is the same as the test-and-set example above.
+* This code works quite similarly; it simply checks if the flag is 0 and if
+  so, atomically swaps in a 1 thus acquiring the lock.
+* Threads that try to acquire the lock while it is held will get stuck
+  spinning until the lock is finally released.
+
+'''
+
+* If you want to see how to really make a C-callable x86-version of
+  compare-and-swap, the code sequence (from [S05]) might be
+  useful{empty}footnote:[github.com/remzi-arpacidusseau/ostep-code/tree/master/threads-locks].
+
+'''
+
+* Finally, as you may have sensed, compare-and-swap is a more powerful
+  instruction than test-and-set.
+* We will make some use of this power in the future when we briefly delve into
+  topics such as *lock-free synchronization* [H91].
+* However, if we just build a simple spin lock with it, its behavior is
+  identical to the spin lock we analyzed above.
+
 == References
 
 [D68] "Cooperating sequential processes" by Edsger W. Dijkstra. 1968. Available online here: http://www.cs.utexas.edu/users/EWD/ewd01xx/EWD123.PDF.::
 * One of the early seminal papers.
 * Discusses how Dijkstra posed the original concurrency problem, and Dekker's
   solution.
+
+[H91] "Wait-free Synchronization" by Maurice Herlihy. ACM TOPLAS, Volume 13: 1, January 1991.::
+* A landmark paper introducing a different approach to building concurrent
+  data structures.
+* Because of the complexity involved, some of these ideas have been slow to
+  gain acceptance in deployment.
 
 [M82] "The Architecture of the Burroughs B5000: 20 Years Later and Still Ahead of the Times?" by A. Mayer. 1982. Available: www.ajwm.net/amayer/papers/B5000.html.::
 * "It (RDLK) is an indivisible operation which reads from and writes into a
@@ -588,3 +657,5 @@ void unlock(lock_t *lock) {
 
 [P81] "Myths About the Mutual Exclusion Problem" by G.L. Peterson. Information Processing Letters, 12(3), pages 115-116, 1981.::
 * Peterson's algorithm introduced here.
+
+[S05] "Guide to porting from Solaris to Linux on x86" by Ajay Sood, April 29, 2005. Available: http://www.ibm.com/developerworks/linux/library/l-solar/.::
