@@ -1115,9 +1115,94 @@ queue_add(m->q, gettid());
 setpark(); // new code
 m->guard = 0;
 
+'''
+
 * A different solution could pass the guard into the kernel.
 * In that case, the kernel could take precautions to atomically release the
   lock and dequeue the running thread.
+
+== 28.15 Different OS, Different Support
+
+* We have thus far seen one type of support that an OS can provide in order to
+  build a more efficient lock in a thread library.
+* Other OS's provide similar support; the details vary.
+
+'''
+
+* For example, Linux provides a *futex* which is similar to the Solaris
+  interface but provides more in-kernel functionality.
+* Specifically, each futex has associated with it a specific physical memory
+  location, as well as a per-futex in-kernel queue.
+* Callers can use futex calls (described below) to sleep and wake as need be.
+
+'''
+
+* Specifically, two calls are available.
+* The call to `futex_wait(address, expected)` puts the calling thread to
+  sleep, assuming the value at the address `address` is equal to `expected`.
+* If it is not equal, the call returns immediately.
+* The call to the routine `futex_wake(address)` wakes one thread that is
+  waiting on the queue.
+* The usage of these calls in a Linux mutex is shown in Figure 28.10 (page
+  19).
+
+:figure-number: {counter:figure-number}
+.{figure-caption} {figure-number}. Linux-based Futex Locks
+----
+void mutex_lock (int *mutex) {
+	int v;
+	// Bit was clear, we got the mutex (fastpath)
+	if (atomic_bit_test_set (mutex, 31) == 0)
+		return;
+	atomic_increment (mutex);
+	while (1) {
+		if (atomic_bit_test_set (mutex, 31) == 0) {
+			atomic_decrement (mutex);
+			return;
+		}
+		// Have to waitFirst to make sure futex value
+		// we are monitoring is negative (locked).
+		v = *mutex;
+		if (v >= 0)
+			continue;
+		futex_wait (mutex, v);
+	}
+}
+
+void mutex_unlock (int *mutex) {
+	// Adding 0xto counter results in if and
+	// only if there are not other interested threads
+	if (atomic_add_zero (mutex, 0x80000000))
+		return;
+
+	// There are other threads waiting for this mutex,
+	// wake one of them up.
+	futex_wake (mutex);
+}
+----
+
+* This code snippet from `lowlevellock.h` in the nptl library (part of the gnu
+  libc library) [L09] is interesting for a few reasons.
+* First, it uses a single integer to track both whether the lock is held or
+  not (the high bit of the integer) and the number of waiters on the lock (all
+  the other bits).
+* Thus, if the lock is negative, it is held (because the high bit is set and
+  that bit determines the sign of the integer).
+
+'''
+
+* Second, the code snippet shows how to optimize for the common case,
+  specifically when there is no contention for the lock; with only one thread
+  acquiring and releasing a lock, very little work is done (the atomic bit
+  test-and-set to lock and an atomic add to release the lock).
+* See if you can puzzle through the rest of this "real-world" lock to
+  understand how it works.
+* Do it and become a master of Linux locking, or at least somebody who listens
+  when a book tells you to do something{empty}footnote:[Like buy a print copy
+  of OSTEP! Even though the book is available for free online, wouldn't you
+  just love a hard cover for your desk? Or, better yet, ten copies to share
+  with friends and family? And maybe one extra copy to throw at an enemy? (the
+  book _is_ heavy, and thus chucking it is surprisingly effective)].
 
 == References
 
@@ -1146,6 +1231,10 @@ m->guard = 0;
 * A must-read retrospective about the development of the Pilot OS, an early PC
   operating system.
 * Fun and full of insights.
+
+[L09] "glibc 2.9 (include Linux pthreads implementation)" by Many authors.. Available here: http://ftp.gnu.org/gnu/glibc.::
+* In particular, take a look at the nptl subdirectory where you will find most
+  of the pthread support in Linux today.
 
 [M82] "The Architecture of the Burroughs B5000: 20 Years Later and Still Ahead of the Times?" by A. Mayer. 1982. Available: www.ajwm.net/amayer/papers/B5000.html.::
 * "It (RDLK) is an indivisible operation which reads from and writes into a
