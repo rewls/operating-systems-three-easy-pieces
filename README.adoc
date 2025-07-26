@@ -537,7 +537,7 @@ ____
 ** [x] 28.2 Pthread Locks 334
 ** [x] 28.3 Building A Lock 335
 ** [x] 28.4 Evaluating Locks 335
-** [ ] 28.5 Controlling Interrupts 336
+** [x] 28.5 Controlling Interrupts 336
 ** [ ] 28.6 A Failed Attempt: Just Using Loads/Stores 337
 ** [ ] 28.7 Building Working Spin Locks with Test-And-Set 338
 ** [ ] 28.8 Evaluating Spin Locks 341
