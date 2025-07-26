@@ -1,4 +1,5 @@
 = 28 Locks
+:figure-caption: Figure 28.
 :source-highlighter: rouge
 :tabsize: 8
 :toc: left
@@ -249,3 +250,150 @@ void unlock() {
   least to prevent certain messy interrupt handling situations from arising.
 * This usage makes sense, as the trust issue disappears inside the OS, which
   always trusts itself to perform privileged operations anyhow.
+
+== 28.6 A Failed Attempt: Just Using Loads/Stores
+
+* To move beyond interrupt-based techniques, we will have to rely on CPU
+  hardware and the instructions it provides us to build a proper lock.
+* Let's first try to build a simple lock by using a single flag variable.
+* In this failed attempt, we'll see some of the basic ideas needed to build a
+  lock, and (hopefully) see why just using a single variable and accessing it
+  via normal loads and stores is insufficient.
+
+'''
+
+* In this first attempt (Figure 28.1), the idea is quite simple: use a simple
+  variable (`flag`) to indicate whether some thread has possession of a lock.
+* The first thread that enters the critical section will call `lock()`, which
+  *tests* whether the flag is equal to 1 (in this case, it is not), and then
+  *sets* the flag to 1 to indicate that the thread now *holds* the lock.
+* When finished with the critical section, the thread calls `unlock()` and
+  clears the flag, thus indicating that the lock is no longer held.
+
+:figure-number: {counter:figure-number}
+.{figure-caption} {figure-number}. First Attempt: A Simple Flag
+[,c]
+----
+typedef struct __lock_t { int flag; } lock_t;
+
+void init(lock_t *mutex) {
+	// 0 -> lock is available, 1 -> held
+	mutex->flag = 0;
+}
+
+void lock(lock_t *mutex) {
+	while (mutex->flag == 1) // TEST the flag
+		; // spin-wait (do nothing)
+	mutex->flag = 1; // now SET it!
+}
+
+void unlock(lock_t *mutex) {
+	mutex->flag = 0;
+}
+----
+
+* If another thread happens to call `lock()` while that first thread is in the
+  critical section, it will simply *spin-wait* in the while loop for that
+  thread to call `unlock()` and clear the flag.
+* Once that first thread does so, the waiting thread will fall out of the
+  while loop, set the flag to 1 for itself, and proceed into the critical
+  section.
+
+'''
+
+* Unfortunately, the code has two problems: one of correctness, and another of
+  performance.
+* The correctness problem is simple to see once you get used to thinking about
+  concurrent programming.
+* Imagine the code interleaving in Figure 28.2; assume `flag=0` to begin.
+
+:figure-number: {counter:figure-number}
+.{figure-caption} {figure-number}. Trace: No Mutual Exclusion
+[%autowidth]
+|===
+|Thread 1				|Thread 2
+
+|call `lock()`
+|while (flag == 1)
+|*interrupt: switch to Thread 2*
+|					|call `lock()`
+|					|while (flag == 1)
+|					|flag = 1;
+|					|*interrupt: switch to Thread 1*
+|flag = 1; // set flag to 1 (too!)
+|===
+
+* As you can see from this interleaving, with timely (untimely?) interrupts,
+  we can easily produce a case where both threads set the flag to 1 and both
+  threads are thus able to enter the critical section.
+* This behavior is what professionals call "bad" -- we have obviously failed
+  to provide the most basic requirement: providing mutual exclusion.
+
+'''
+
+* The performance problem, which we will address more later on, is the fact
+  that the way a thread waits to acquire a lock that is already held: it
+  endlessly checks the value of flag, a technique known as *spin-waiting*.
+* Spin-waiting wastes time waiting for another thread to release a lock.
+* The waste is exceptionally high on a uniprocessor, where the thread that the
+  waiter is waiting for cannot even run (at least, until a context switch
+  occurs)!
+* Thus, as we move forward and develop more sophisticated solutions, we should
+  also consider ways to avoid this kind of waste.
+
+.Aside: Dekker's and Peterson's algorithms
+****
+* In the 1960's, Dijkstra posed the concurrency problem to his friends, and
+  one of them, a mathematician named Theodorus Jozef Dekker, came up with a
+  solution [D68].
+* Unlike the solutions we discuss here, which use special hardware
+  instructions and even OS support, *Dekker's algorithm* uses just loads and
+  stores (assuming they are atomic with respect to each other, which was true
+  on early hardware).
+
+'''
+
+* Dekker's approach was later refined by Peterson [P81].
+* Once again, just loads and stores are used, and the idea is to ensure that
+  two threads never enter a critical section at the same time.
+* Here is *Peterson's algorithm* (for two threads); see if you can understand
+  the code.
+* What are the `flag` and `turn` variables used for?
+
+[,c]
+----
+int flag[2];
+int turn;
+
+void init() {
+    // indicate you intend to hold the lock w/ 'flag'
+    flag[0] = flag[1] = 0;
+    // whose turn is it? (thread 0 or 1)
+    turn = 0;
+}
+
+void lock() {
+    // 'self' is the thread ID of caller
+    flag[self] = 1;
+    // make it other thread's turn
+    turn = 1 - self;
+    while ((flag[1-self] == 1) && (turn == 1 - self))
+	; // spin-wait while it’s not your turn
+}
+void unlock() {
+    // simply undo your intent
+    flag[self] = 0;
+}
+----
+
+* For some reason, developing locks that work without special hardware support
+  became all the rage for a while, giving theory-types a lot of problems to
+  work on.
+* Of course, this line of work became quite useless when people realized it is
+  much easier to assume a little hardware support (and indeed that support had
+  been around from the earliest days of multiprocessing).
+* Further, algorithms like the ones above don't work on modern hardware (due
+  to relaxed memory consistency models), thus making them even less useful
+  than they were before.
+* Yet more research relegated to the dustbin of history...
+****
