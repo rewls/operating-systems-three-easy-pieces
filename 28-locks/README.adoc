@@ -82,3 +82,31 @@ unlock(&mutex);
   single thread can ever be active within that code.
 * Thus locks help transform the chaos that is traditional OS scheduling into a
   more controlled activity.
+
+== 28.2 Pthread Locks
+
+* The name that the POSIX library uses for a lock is a *mutex*, as it is used
+  to provide mutual exclusion between threads, i.e., if one thread is in the
+  critical section, it excludes the others from entering until it has
+  completed the section.
+* Thus, when you see the following POSIX threads code, you should understand
+  that it is doing the same thing as above (we again use our wrappers that
+  check for errors upon lock and unlock):
+
+[,c]
+----
+pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+
+Pthread_mutex_lock(&lock); // wrapper; exits on failure
+balance = balance + 1;
+Pthread_mutex_unlock(&lock);
+----
+
+* You might also notice here that the POSIX version passes a variable to lock
+  and unlock, as we may be using _different_ locks to protect different
+  variables.
+* Doing so can increase concurrency: instead of one big lock that is used any
+  time any critical section is accessed (a *coarse-grained* locking strategy),
+  one will often protect different data and data structures with different
+  locks, thus allowing more threads to be in locked code at once (a more
+  *fine-grained* approach).
