@@ -1,6 +1,7 @@
 = 28 Locks
 :figure-caption: Figure 28.
 :source-highlighter: rouge
+:stem: latexmath
 :tabsize: 8
 :toc: left
 
@@ -516,6 +517,60 @@ void unlock(lock_t *lock) {
   run a different thread, from time to time).
 * Without preemption, spin locks don't make much sense on a single CPU, as a
   thread spinning on a CPU will never relinquish it.
+
+== 28.8 Evaluating Spin Locks
+
+* Given our basic spin lock, we can now evaluate how effective it is along our
+  previously described axes.
+* The most important aspect of a lock is *correctness*: does it provide mutual
+  exclusion?
+* The answer here is yes: the spin lock only allows a single thread to enter
+  the critical section at a time.
+* Thus, we have a correct lock.
+
+'''
+
+* The next axis is *fairness*.
+* How fair is a spin lock to a waiting thread?
+* Can you guarantee that a waiting thread will ever enter the critical
+  section?
+* The answer here, unfortunately, is bad news: spin locks don't provide any
+  fairness guarantees.
+* Indeed, a thread spinning may spin forever, under contention.
+* Simple spin locks (as discussed thus far) are not fair and may lead to
+  starvation.
+
+'''
+
+* The final axis is *performance*.
+* What are the costs of using a spin lock?
+* To analyze this more carefully, we suggest thinking about a few different
+  cases.
+* In the first, imagine threads competing for the lock on a single processor;
+  in the second, consider threads spread out across many CPUs.
+
+'''
+
+* For spin locks, in the single CPU case, performance overheads can be quite
+  painful; imagine the case where the thread holding the lock is preempted
+  within a critical section.
+* The scheduler might then run every other thread (imagine there are stem:[N -
+  1] others), each of which tries to acquire the lock.
+* In this case, each of those threads will spin for the duration of a time
+  slice before giving up the CPU, a waste of CPU cycles.
+
+'''
+
+* However, on multiple CPUs, spin locks work reasonably well (if the number of
+  threads roughly equals the number of CPUs).
+* The thinking goes as follows: imagine Thread A on CPU 1 and Thread B on CPU
+  2, both contending for a lock.
+* If Thread A (CPU 1) grabs the lock, and then Thread B tries to, B will spin
+  (on CPU 2).
+* However, presumably the critical section is short, and thus soon the lock
+  becomes available, and is acquired by Thread B.
+* Spinning to wait for a lock held on another processor doesn't waste many
+  cycles in this case, and thus can be effective.
 
 == References
 
