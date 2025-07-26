@@ -530,7 +530,7 @@ ____
 ** [x] 27.5 Compiling and Running 329
 ** [x] 27.6 Summary 329
 ** [x] References 331
-** Homework (Code) 332
+** [x] Homework (Code) 332
 
 * 28 Locks 333
 ** [ ] 28.1 Locks: The Basic Idea 333
