@@ -542,7 +542,7 @@ ____
 ** [x] 28.7 Building Working Spin Locks with Test-And-Set 338
 ** [x] 28.8 Evaluating Spin Locks 341
 ** [x] 28.9 Compare-And-Swap 342
-** [ ] 28.10 Load-Linked and Store-Conditional 343
+** [x] 28.10 Load-Linked and Store-Conditional 343
 ** [ ] 28.11 Fetch-And-Add 344
 ** [ ] 28.12 Too Much Spinning: What Now? 345
 ** [ ] 28.13 A Simple Approach: Just Yield, Baby 346

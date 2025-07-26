@@ -635,12 +635,118 @@ void lock(lock_t *lock) {
 * However, if we just build a simple spin lock with it, its behavior is
   identical to the spin lock we analyzed above.
 
+== 28.10 Load-Linked and Store-Conditional
+
+* Some platforms provide a pair of instructions that work in concert to help
+  build critical sections.
+* On the MIPS architecture [H93], for example, the *load-linked* and
+  *store-conditional* instructions can be used in tandem to build locks and
+  other concurrent structures.
+* The C pseudocode for these instructions is as found in Figure 28.5.
+* Alpha, PowerPC, and ARM provide similar instructions [W09].
+
+:figure-number: {counter:figure-number}
+.{figure-caption} {figure-number}. Load-linked And Store-conditional
+----
+int LoadLinked(int *ptr) {
+	return *ptr;
+}
+
+int StoreConditional(int *ptr, int value) {
+	if (no update to *ptr since LL to this addr) {
+		*ptr = value;
+		return 1; // success!
+	} else {
+		return 0; // failed to update
+	}
+}
+----
+
+* The load-linked operates much like a typical load instruction, and simply
+  fetches a value from memory and places it in a register.
+* The key difference comes with the store-conditional, which only succeeds
+  (and updates the value stored at the address just load-linked from) if no
+  intervening store to the address has taken place.
+* In the case of success, the store-conditional returns 1 and updates the value
+  at `ptr` to `value`; if it fails, the value at `ptr` is _not_ updated and 0
+  is returned.
+
+'''
+
+* As a challenge to yourself, try thinking about how to build a lock using
+  load-linked and store-conditional.
+* Then, when you are finished, look at the code below which provides one
+  simple solution.
+* Do it!
+* The solution is in Figure 28.6.
+
+:figure-number: {counter:figure-number}
+.{figure-caption} {figure-number}. Using LL/SC To Build A Lock
+[,c]
+----
+void lock(lock_t *lock) {
+	while (1) {
+		while (LoadLinked(&lock->flag) == 1)
+			; // spin until it’s zero
+		if (StoreConditional(&lock->flag, 1) == 1)
+			return; // if set-to-1 was success: done
+					// otherwise: try again
+	}
+}
+
+void unlock(lock_t *lock) {
+	lock->flag = 0;
+}
+----
+
+* The `lock()` code is the only interesting piece.
+* First, a thread spins waiting for the flag to be set to 0 (and thus indicate
+  the lock is not held).
+* Once so, the thread tries to acquire the lock via the store-conditional; if
+  it succeeds, the thread has atomically changed the flag's value to 1 and
+  thus can proceed into the critical section.
+
+'''
+
+* Note how failure of the store-conditional might arise.
+* One thread calls `lock()` and executes the load-linked, returning 0 as the
+  lock is not held.
+* Before it can attempt the store-conditional, it is interrupted and another
+  thread enters the lock code, also executing the load-linked instruction, and
+  also getting a 0 and continuing.
+* At this point, two threads have each executed the load-linked and each are
+  about to attempt the store-conditional.
+* The key feature of these instructions is that only one of these threads will
+  succeed in updating the flag to 1 and thus acquire the lock; the second
+  thread to attempt the store-conditional will fail (because the other thread
+  updated the value of flag between its load-linked and store-conditional) and
+  thus have to try to acquire the lock again.
+
+'''
+
+* In class a few years ago, undergraduate student David Capel suggested a more
+  concise form of the above, for those of you who enjoy short-circuiting
+  boolean conditionals.
+* See if you can figure out why it is equivalent.
+* It certainly is shorter!
+
+[source,c]
+void lock(lock_t *lock) {
+	while (LoadLinked(&lock->flag) ||
+			!StoreConditional(&lock->flag, 1))
+		; // spin
+}
+
 == References
 
 [D68] "Cooperating sequential processes" by Edsger W. Dijkstra. 1968. Available online here: http://www.cs.utexas.edu/users/EWD/ewd01xx/EWD123.PDF.::
 * One of the early seminal papers.
 * Discusses how Dijkstra posed the original concurrency problem, and Dekker's
   solution.
+
+[H93] "MIPS R4000 Microprocessor User's Manual" by Joe Heinrich.  Prentice-Hall, June 1993.  Available: http://cag.csail.mit.edu/raw/documents/R4400_Uman_book_Ed2.pdf.::
+* The old MIPS user's manual.
+* Download it while it still exists.
 
 [H91] "Wait-free Synchronization" by Maurice Herlihy. ACM TOPLAS, Volume 13: 1, January 1991.::
 * A landmark paper introducing a different approach to building concurrent
@@ -659,3 +765,11 @@ void lock(lock_t *lock) {
 * Peterson's algorithm introduced here.
 
 [S05] "Guide to porting from Solaris to Linux on x86" by Ajay Sood, April 29, 2005. Available: http://www.ibm.com/developerworks/linux/library/l-solar/.::
+
+[W09] "Load-Link, Store-Conditional" by Many authors. `en.wikipedia.org/wiki/LoadLink/Store-Conditional`.::
+* Can you believe we referenced Wikipedia?
+* But, we found the information there and it felt wrong not to.
+* Further, it was useful, listing the instructions for the different
+  architectures: `ldl_l/stl_c` and `ldq_l/stq_c` (Alpha), `lwarx/stwcx`
+  (PowerPC), `ll/sc` (MIPS), and `ldrex/strex` (ARM).
+* Actually Wikipedia is pretty amazing, so don't be so harsh, OK?
