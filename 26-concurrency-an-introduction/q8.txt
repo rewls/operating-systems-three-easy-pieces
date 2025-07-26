@@ -1,0 +1,1619 @@
+ARG seed 0
+ARG numthreads 2
+ARG program looping-race-nolock.s
+ARG interrupt frequency 3
+ARG interrupt randomness False
+ARG argv bx=100
+ARG load address 1000
+ARG memsize 128
+ARG memtrace 2000
+ARG regtrace 
+ARG cctrace False
+ARG printstats False
+ARG verbose False
+
+ 2000          Thread 0                Thread 1         
+    0   
+    0   1000 mov 2000, %ax
+    0   1001 add $1, %ax
+    1   1002 mov %ax, 2000
+    1   ------ Interrupt ------  ------ Interrupt ------  
+    1                            1000 mov 2000, %ax
+    1                            1001 add $1, %ax
+    2                            1002 mov %ax, 2000
+    2   ------ Interrupt ------  ------ Interrupt ------  
+    2   1003 sub  $1, %bx
+    2   1004 test $0, %bx
+    2   1005 jgt .top
+    2   ------ Interrupt ------  ------ Interrupt ------  
+    2                            1003 sub  $1, %bx
+    2                            1004 test $0, %bx
+    2                            1005 jgt .top
+    2   ------ Interrupt ------  ------ Interrupt ------  
+    2   1000 mov 2000, %ax
+    2   1001 add $1, %ax
+    3   1002 mov %ax, 2000
+    3   ------ Interrupt ------  ------ Interrupt ------  
+    3                            1000 mov 2000, %ax
+    3                            1001 add $1, %ax
+    4                            1002 mov %ax, 2000
+    4   ------ Interrupt ------  ------ Interrupt ------  
+    4   1003 sub  $1, %bx
+    4   1004 test $0, %bx
+    4   1005 jgt .top
+    4   ------ Interrupt ------  ------ Interrupt ------  
+    4                            1003 sub  $1, %bx
+    4                            1004 test $0, %bx
+    4                            1005 jgt .top
+    4   ------ Interrupt ------  ------ Interrupt ------  
+    4   1000 mov 2000, %ax
+    4   1001 add $1, %ax
+    5   1002 mov %ax, 2000
+    5   ------ Interrupt ------  ------ Interrupt ------  
+    5                            1000 mov 2000, %ax
+    5                            1001 add $1, %ax
+    6                            1002 mov %ax, 2000
+    6   ------ Interrupt ------  ------ Interrupt ------  
+    6   1003 sub  $1, %bx
+    6   1004 test $0, %bx
+    6   1005 jgt .top
+    6   ------ Interrupt ------  ------ Interrupt ------  
+    6                            1003 sub  $1, %bx
+    6                            1004 test $0, %bx
+    6                            1005 jgt .top
+    6   ------ Interrupt ------  ------ Interrupt ------  
+    6   1000 mov 2000, %ax
+    6   1001 add $1, %ax
+    7   1002 mov %ax, 2000
+    7   ------ Interrupt ------  ------ Interrupt ------  
+    7                            1000 mov 2000, %ax
+    7                            1001 add $1, %ax
+    8                            1002 mov %ax, 2000
+    8   ------ Interrupt ------  ------ Interrupt ------  
+    8   1003 sub  $1, %bx
+    8   1004 test $0, %bx
+    8   1005 jgt .top
+    8   ------ Interrupt ------  ------ Interrupt ------  
+    8                            1003 sub  $1, %bx
+    8                            1004 test $0, %bx
+    8                            1005 jgt .top
+    8   ------ Interrupt ------  ------ Interrupt ------  
+    8   1000 mov 2000, %ax
+    8   1001 add $1, %ax
+    9   1002 mov %ax, 2000
+    9   ------ Interrupt ------  ------ Interrupt ------  
+    9                            1000 mov 2000, %ax
+    9                            1001 add $1, %ax
+   10                            1002 mov %ax, 2000
+   10   ------ Interrupt ------  ------ Interrupt ------  
+   10   1003 sub  $1, %bx
+   10   1004 test $0, %bx
+   10   1005 jgt .top
+   10   ------ Interrupt ------  ------ Interrupt ------  
+   10                            1003 sub  $1, %bx
+   10                            1004 test $0, %bx
+   10                            1005 jgt .top
+   10   ------ Interrupt ------  ------ Interrupt ------  
+   10   1000 mov 2000, %ax
+   10   1001 add $1, %ax
+   11   1002 mov %ax, 2000
+   11   ------ Interrupt ------  ------ Interrupt ------  
+   11                            1000 mov 2000, %ax
+   11                            1001 add $1, %ax
+   12                            1002 mov %ax, 2000
+   12   ------ Interrupt ------  ------ Interrupt ------  
+   12   1003 sub  $1, %bx
+   12   1004 test $0, %bx
+   12   1005 jgt .top
+   12   ------ Interrupt ------  ------ Interrupt ------  
+   12                            1003 sub  $1, %bx
+   12                            1004 test $0, %bx
+   12                            1005 jgt .top
+   12   ------ Interrupt ------  ------ Interrupt ------  
+   12   1000 mov 2000, %ax
+   12   1001 add $1, %ax
+   13   1002 mov %ax, 2000
+   13   ------ Interrupt ------  ------ Interrupt ------  
+   13                            1000 mov 2000, %ax
+   13                            1001 add $1, %ax
+   14                            1002 mov %ax, 2000
+   14   ------ Interrupt ------  ------ Interrupt ------  
+   14   1003 sub  $1, %bx
+   14   1004 test $0, %bx
+   14   1005 jgt .top
+   14   ------ Interrupt ------  ------ Interrupt ------  
+   14                            1003 sub  $1, %bx
+   14                            1004 test $0, %bx
+   14                            1005 jgt .top
+   14   ------ Interrupt ------  ------ Interrupt ------  
+   14   1000 mov 2000, %ax
+   14   1001 add $1, %ax
+   15   1002 mov %ax, 2000
+   15   ------ Interrupt ------  ------ Interrupt ------  
+   15                            1000 mov 2000, %ax
+   15                            1001 add $1, %ax
+   16                            1002 mov %ax, 2000
+   16   ------ Interrupt ------  ------ Interrupt ------  
+   16   1003 sub  $1, %bx
+   16   1004 test $0, %bx
+   16   1005 jgt .top
+   16   ------ Interrupt ------  ------ Interrupt ------  
+   16                            1003 sub  $1, %bx
+   16                            1004 test $0, %bx
+   16                            1005 jgt .top
+   16   ------ Interrupt ------  ------ Interrupt ------  
+   16   1000 mov 2000, %ax
+   16   1001 add $1, %ax
+   17   1002 mov %ax, 2000
+   17   ------ Interrupt ------  ------ Interrupt ------  
+   17                            1000 mov 2000, %ax
+   17                            1001 add $1, %ax
+   18                            1002 mov %ax, 2000
+   18   ------ Interrupt ------  ------ Interrupt ------  
+   18   1003 sub  $1, %bx
+   18   1004 test $0, %bx
+   18   1005 jgt .top
+   18   ------ Interrupt ------  ------ Interrupt ------  
+   18                            1003 sub  $1, %bx
+   18                            1004 test $0, %bx
+   18                            1005 jgt .top
+   18   ------ Interrupt ------  ------ Interrupt ------  
+   18   1000 mov 2000, %ax
+   18   1001 add $1, %ax
+   19   1002 mov %ax, 2000
+   19   ------ Interrupt ------  ------ Interrupt ------  
+   19                            1000 mov 2000, %ax
+   19                            1001 add $1, %ax
+   20                            1002 mov %ax, 2000
+   20   ------ Interrupt ------  ------ Interrupt ------  
+   20   1003 sub  $1, %bx
+   20   1004 test $0, %bx
+   20   1005 jgt .top
+   20   ------ Interrupt ------  ------ Interrupt ------  
+   20                            1003 sub  $1, %bx
+   20                            1004 test $0, %bx
+   20                            1005 jgt .top
+   20   ------ Interrupt ------  ------ Interrupt ------  
+   20   1000 mov 2000, %ax
+   20   1001 add $1, %ax
+   21   1002 mov %ax, 2000
+   21   ------ Interrupt ------  ------ Interrupt ------  
+   21                            1000 mov 2000, %ax
+   21                            1001 add $1, %ax
+   22                            1002 mov %ax, 2000
+   22   ------ Interrupt ------  ------ Interrupt ------  
+   22   1003 sub  $1, %bx
+   22   1004 test $0, %bx
+   22   1005 jgt .top
+   22   ------ Interrupt ------  ------ Interrupt ------  
+   22                            1003 sub  $1, %bx
+   22                            1004 test $0, %bx
+   22                            1005 jgt .top
+   22   ------ Interrupt ------  ------ Interrupt ------  
+   22   1000 mov 2000, %ax
+   22   1001 add $1, %ax
+   23   1002 mov %ax, 2000
+   23   ------ Interrupt ------  ------ Interrupt ------  
+   23                            1000 mov 2000, %ax
+   23                            1001 add $1, %ax
+   24                            1002 mov %ax, 2000
+   24   ------ Interrupt ------  ------ Interrupt ------  
+   24   1003 sub  $1, %bx
+   24   1004 test $0, %bx
+   24   1005 jgt .top
+   24   ------ Interrupt ------  ------ Interrupt ------  
+   24                            1003 sub  $1, %bx
+   24                            1004 test $0, %bx
+   24                            1005 jgt .top
+   24   ------ Interrupt ------  ------ Interrupt ------  
+   24   1000 mov 2000, %ax
+   24   1001 add $1, %ax
+   25   1002 mov %ax, 2000
+   25   ------ Interrupt ------  ------ Interrupt ------  
+   25                            1000 mov 2000, %ax
+   25                            1001 add $1, %ax
+   26                            1002 mov %ax, 2000
+   26   ------ Interrupt ------  ------ Interrupt ------  
+   26   1003 sub  $1, %bx
+   26   1004 test $0, %bx
+   26   1005 jgt .top
+   26   ------ Interrupt ------  ------ Interrupt ------  
+   26                            1003 sub  $1, %bx
+   26                            1004 test $0, %bx
+   26                            1005 jgt .top
+   26   ------ Interrupt ------  ------ Interrupt ------  
+   26   1000 mov 2000, %ax
+   26   1001 add $1, %ax
+   27   1002 mov %ax, 2000
+   27   ------ Interrupt ------  ------ Interrupt ------  
+   27                            1000 mov 2000, %ax
+   27                            1001 add $1, %ax
+   28                            1002 mov %ax, 2000
+   28   ------ Interrupt ------  ------ Interrupt ------  
+   28   1003 sub  $1, %bx
+   28   1004 test $0, %bx
+   28   1005 jgt .top
+   28   ------ Interrupt ------  ------ Interrupt ------  
+   28                            1003 sub  $1, %bx
+   28                            1004 test $0, %bx
+   28                            1005 jgt .top
+   28   ------ Interrupt ------  ------ Interrupt ------  
+   28   1000 mov 2000, %ax
+   28   1001 add $1, %ax
+   29   1002 mov %ax, 2000
+   29   ------ Interrupt ------  ------ Interrupt ------  
+   29                            1000 mov 2000, %ax
+   29                            1001 add $1, %ax
+   30                            1002 mov %ax, 2000
+   30   ------ Interrupt ------  ------ Interrupt ------  
+   30   1003 sub  $1, %bx
+   30   1004 test $0, %bx
+   30   1005 jgt .top
+   30   ------ Interrupt ------  ------ Interrupt ------  
+   30                            1003 sub  $1, %bx
+   30                            1004 test $0, %bx
+   30                            1005 jgt .top
+   30   ------ Interrupt ------  ------ Interrupt ------  
+   30   1000 mov 2000, %ax
+   30   1001 add $1, %ax
+   31   1002 mov %ax, 2000
+   31   ------ Interrupt ------  ------ Interrupt ------  
+   31                            1000 mov 2000, %ax
+   31                            1001 add $1, %ax
+   32                            1002 mov %ax, 2000
+   32   ------ Interrupt ------  ------ Interrupt ------  
+   32   1003 sub  $1, %bx
+   32   1004 test $0, %bx
+   32   1005 jgt .top
+   32   ------ Interrupt ------  ------ Interrupt ------  
+   32                            1003 sub  $1, %bx
+   32                            1004 test $0, %bx
+   32                            1005 jgt .top
+   32   ------ Interrupt ------  ------ Interrupt ------  
+   32   1000 mov 2000, %ax
+   32   1001 add $1, %ax
+   33   1002 mov %ax, 2000
+   33   ------ Interrupt ------  ------ Interrupt ------  
+   33                            1000 mov 2000, %ax
+   33                            1001 add $1, %ax
+   34                            1002 mov %ax, 2000
+   34   ------ Interrupt ------  ------ Interrupt ------  
+   34   1003 sub  $1, %bx
+   34   1004 test $0, %bx
+   34   1005 jgt .top
+   34   ------ Interrupt ------  ------ Interrupt ------  
+   34                            1003 sub  $1, %bx
+   34                            1004 test $0, %bx
+   34                            1005 jgt .top
+   34   ------ Interrupt ------  ------ Interrupt ------  
+   34   1000 mov 2000, %ax
+   34   1001 add $1, %ax
+   35   1002 mov %ax, 2000
+   35   ------ Interrupt ------  ------ Interrupt ------  
+   35                            1000 mov 2000, %ax
+   35                            1001 add $1, %ax
+   36                            1002 mov %ax, 2000
+   36   ------ Interrupt ------  ------ Interrupt ------  
+   36   1003 sub  $1, %bx
+   36   1004 test $0, %bx
+   36   1005 jgt .top
+   36   ------ Interrupt ------  ------ Interrupt ------  
+   36                            1003 sub  $1, %bx
+   36                            1004 test $0, %bx
+   36                            1005 jgt .top
+   36   ------ Interrupt ------  ------ Interrupt ------  
+   36   1000 mov 2000, %ax
+   36   1001 add $1, %ax
+   37   1002 mov %ax, 2000
+   37   ------ Interrupt ------  ------ Interrupt ------  
+   37                            1000 mov 2000, %ax
+   37                            1001 add $1, %ax
+   38                            1002 mov %ax, 2000
+   38   ------ Interrupt ------  ------ Interrupt ------  
+   38   1003 sub  $1, %bx
+   38   1004 test $0, %bx
+   38   1005 jgt .top
+   38   ------ Interrupt ------  ------ Interrupt ------  
+   38                            1003 sub  $1, %bx
+   38                            1004 test $0, %bx
+   38                            1005 jgt .top
+   38   ------ Interrupt ------  ------ Interrupt ------  
+   38   1000 mov 2000, %ax
+   38   1001 add $1, %ax
+   39   1002 mov %ax, 2000
+   39   ------ Interrupt ------  ------ Interrupt ------  
+   39                            1000 mov 2000, %ax
+   39                            1001 add $1, %ax
+   40                            1002 mov %ax, 2000
+   40   ------ Interrupt ------  ------ Interrupt ------  
+   40   1003 sub  $1, %bx
+   40   1004 test $0, %bx
+   40   1005 jgt .top
+   40   ------ Interrupt ------  ------ Interrupt ------  
+   40                            1003 sub  $1, %bx
+   40                            1004 test $0, %bx
+   40                            1005 jgt .top
+   40   ------ Interrupt ------  ------ Interrupt ------  
+   40   1000 mov 2000, %ax
+   40   1001 add $1, %ax
+   41   1002 mov %ax, 2000
+   41   ------ Interrupt ------  ------ Interrupt ------  
+   41                            1000 mov 2000, %ax
+   41                            1001 add $1, %ax
+   42                            1002 mov %ax, 2000
+   42   ------ Interrupt ------  ------ Interrupt ------  
+   42   1003 sub  $1, %bx
+   42   1004 test $0, %bx
+   42   1005 jgt .top
+   42   ------ Interrupt ------  ------ Interrupt ------  
+   42                            1003 sub  $1, %bx
+   42                            1004 test $0, %bx
+   42                            1005 jgt .top
+   42   ------ Interrupt ------  ------ Interrupt ------  
+   42   1000 mov 2000, %ax
+   42   1001 add $1, %ax
+   43   1002 mov %ax, 2000
+   43   ------ Interrupt ------  ------ Interrupt ------  
+   43                            1000 mov 2000, %ax
+   43                            1001 add $1, %ax
+   44                            1002 mov %ax, 2000
+   44   ------ Interrupt ------  ------ Interrupt ------  
+   44   1003 sub  $1, %bx
+   44   1004 test $0, %bx
+   44   1005 jgt .top
+   44   ------ Interrupt ------  ------ Interrupt ------  
+   44                            1003 sub  $1, %bx
+   44                            1004 test $0, %bx
+   44                            1005 jgt .top
+   44   ------ Interrupt ------  ------ Interrupt ------  
+   44   1000 mov 2000, %ax
+   44   1001 add $1, %ax
+   45   1002 mov %ax, 2000
+   45   ------ Interrupt ------  ------ Interrupt ------  
+   45                            1000 mov 2000, %ax
+   45                            1001 add $1, %ax
+   46                            1002 mov %ax, 2000
+   46   ------ Interrupt ------  ------ Interrupt ------  
+   46   1003 sub  $1, %bx
+   46   1004 test $0, %bx
+   46   1005 jgt .top
+   46   ------ Interrupt ------  ------ Interrupt ------  
+   46                            1003 sub  $1, %bx
+   46                            1004 test $0, %bx
+   46                            1005 jgt .top
+   46   ------ Interrupt ------  ------ Interrupt ------  
+   46   1000 mov 2000, %ax
+   46   1001 add $1, %ax
+   47   1002 mov %ax, 2000
+   47   ------ Interrupt ------  ------ Interrupt ------  
+   47                            1000 mov 2000, %ax
+   47                            1001 add $1, %ax
+   48                            1002 mov %ax, 2000
+   48   ------ Interrupt ------  ------ Interrupt ------  
+   48   1003 sub  $1, %bx
+   48   1004 test $0, %bx
+   48   1005 jgt .top
+   48   ------ Interrupt ------  ------ Interrupt ------  
+   48                            1003 sub  $1, %bx
+   48                            1004 test $0, %bx
+   48                            1005 jgt .top
+   48   ------ Interrupt ------  ------ Interrupt ------  
+   48   1000 mov 2000, %ax
+   48   1001 add $1, %ax
+   49   1002 mov %ax, 2000
+   49   ------ Interrupt ------  ------ Interrupt ------  
+   49                            1000 mov 2000, %ax
+   49                            1001 add $1, %ax
+   50                            1002 mov %ax, 2000
+   50   ------ Interrupt ------  ------ Interrupt ------  
+   50   1003 sub  $1, %bx
+   50   1004 test $0, %bx
+   50   1005 jgt .top
+   50   ------ Interrupt ------  ------ Interrupt ------  
+   50                            1003 sub  $1, %bx
+   50                            1004 test $0, %bx
+   50                            1005 jgt .top
+   50   ------ Interrupt ------  ------ Interrupt ------  
+   50   1000 mov 2000, %ax
+   50   1001 add $1, %ax
+   51   1002 mov %ax, 2000
+   51   ------ Interrupt ------  ------ Interrupt ------  
+   51                            1000 mov 2000, %ax
+   51                            1001 add $1, %ax
+   52                            1002 mov %ax, 2000
+   52   ------ Interrupt ------  ------ Interrupt ------  
+   52   1003 sub  $1, %bx
+   52   1004 test $0, %bx
+   52   1005 jgt .top
+   52   ------ Interrupt ------  ------ Interrupt ------  
+   52                            1003 sub  $1, %bx
+   52                            1004 test $0, %bx
+   52                            1005 jgt .top
+   52   ------ Interrupt ------  ------ Interrupt ------  
+   52   1000 mov 2000, %ax
+   52   1001 add $1, %ax
+   53   1002 mov %ax, 2000
+   53   ------ Interrupt ------  ------ Interrupt ------  
+   53                            1000 mov 2000, %ax
+   53                            1001 add $1, %ax
+   54                            1002 mov %ax, 2000
+   54   ------ Interrupt ------  ------ Interrupt ------  
+   54   1003 sub  $1, %bx
+   54   1004 test $0, %bx
+   54   1005 jgt .top
+   54   ------ Interrupt ------  ------ Interrupt ------  
+   54                            1003 sub  $1, %bx
+   54                            1004 test $0, %bx
+   54                            1005 jgt .top
+   54   ------ Interrupt ------  ------ Interrupt ------  
+   54   1000 mov 2000, %ax
+   54   1001 add $1, %ax
+   55   1002 mov %ax, 2000
+   55   ------ Interrupt ------  ------ Interrupt ------  
+   55                            1000 mov 2000, %ax
+   55                            1001 add $1, %ax
+   56                            1002 mov %ax, 2000
+   56   ------ Interrupt ------  ------ Interrupt ------  
+   56   1003 sub  $1, %bx
+   56   1004 test $0, %bx
+   56   1005 jgt .top
+   56   ------ Interrupt ------  ------ Interrupt ------  
+   56                            1003 sub  $1, %bx
+   56                            1004 test $0, %bx
+   56                            1005 jgt .top
+   56   ------ Interrupt ------  ------ Interrupt ------  
+   56   1000 mov 2000, %ax
+   56   1001 add $1, %ax
+   57   1002 mov %ax, 2000
+   57   ------ Interrupt ------  ------ Interrupt ------  
+   57                            1000 mov 2000, %ax
+   57                            1001 add $1, %ax
+   58                            1002 mov %ax, 2000
+   58   ------ Interrupt ------  ------ Interrupt ------  
+   58   1003 sub  $1, %bx
+   58   1004 test $0, %bx
+   58   1005 jgt .top
+   58   ------ Interrupt ------  ------ Interrupt ------  
+   58                            1003 sub  $1, %bx
+   58                            1004 test $0, %bx
+   58                            1005 jgt .top
+   58   ------ Interrupt ------  ------ Interrupt ------  
+   58   1000 mov 2000, %ax
+   58   1001 add $1, %ax
+   59   1002 mov %ax, 2000
+   59   ------ Interrupt ------  ------ Interrupt ------  
+   59                            1000 mov 2000, %ax
+   59                            1001 add $1, %ax
+   60                            1002 mov %ax, 2000
+   60   ------ Interrupt ------  ------ Interrupt ------  
+   60   1003 sub  $1, %bx
+   60   1004 test $0, %bx
+   60   1005 jgt .top
+   60   ------ Interrupt ------  ------ Interrupt ------  
+   60                            1003 sub  $1, %bx
+   60                            1004 test $0, %bx
+   60                            1005 jgt .top
+   60   ------ Interrupt ------  ------ Interrupt ------  
+   60   1000 mov 2000, %ax
+   60   1001 add $1, %ax
+   61   1002 mov %ax, 2000
+   61   ------ Interrupt ------  ------ Interrupt ------  
+   61                            1000 mov 2000, %ax
+   61                            1001 add $1, %ax
+   62                            1002 mov %ax, 2000
+   62   ------ Interrupt ------  ------ Interrupt ------  
+   62   1003 sub  $1, %bx
+   62   1004 test $0, %bx
+   62   1005 jgt .top
+   62   ------ Interrupt ------  ------ Interrupt ------  
+   62                            1003 sub  $1, %bx
+   62                            1004 test $0, %bx
+   62                            1005 jgt .top
+   62   ------ Interrupt ------  ------ Interrupt ------  
+   62   1000 mov 2000, %ax
+   62   1001 add $1, %ax
+   63   1002 mov %ax, 2000
+   63   ------ Interrupt ------  ------ Interrupt ------  
+   63                            1000 mov 2000, %ax
+   63                            1001 add $1, %ax
+   64                            1002 mov %ax, 2000
+   64   ------ Interrupt ------  ------ Interrupt ------  
+   64   1003 sub  $1, %bx
+   64   1004 test $0, %bx
+   64   1005 jgt .top
+   64   ------ Interrupt ------  ------ Interrupt ------  
+   64                            1003 sub  $1, %bx
+   64                            1004 test $0, %bx
+   64                            1005 jgt .top
+   64   ------ Interrupt ------  ------ Interrupt ------  
+   64   1000 mov 2000, %ax
+   64   1001 add $1, %ax
+   65   1002 mov %ax, 2000
+   65   ------ Interrupt ------  ------ Interrupt ------  
+   65                            1000 mov 2000, %ax
+   65                            1001 add $1, %ax
+   66                            1002 mov %ax, 2000
+   66   ------ Interrupt ------  ------ Interrupt ------  
+   66   1003 sub  $1, %bx
+   66   1004 test $0, %bx
+   66   1005 jgt .top
+   66   ------ Interrupt ------  ------ Interrupt ------  
+   66                            1003 sub  $1, %bx
+   66                            1004 test $0, %bx
+   66                            1005 jgt .top
+   66   ------ Interrupt ------  ------ Interrupt ------  
+   66   1000 mov 2000, %ax
+   66   1001 add $1, %ax
+   67   1002 mov %ax, 2000
+   67   ------ Interrupt ------  ------ Interrupt ------  
+   67                            1000 mov 2000, %ax
+   67                            1001 add $1, %ax
+   68                            1002 mov %ax, 2000
+   68   ------ Interrupt ------  ------ Interrupt ------  
+   68   1003 sub  $1, %bx
+   68   1004 test $0, %bx
+   68   1005 jgt .top
+   68   ------ Interrupt ------  ------ Interrupt ------  
+   68                            1003 sub  $1, %bx
+   68                            1004 test $0, %bx
+   68                            1005 jgt .top
+   68   ------ Interrupt ------  ------ Interrupt ------  
+   68   1000 mov 2000, %ax
+   68   1001 add $1, %ax
+   69   1002 mov %ax, 2000
+   69   ------ Interrupt ------  ------ Interrupt ------  
+   69                            1000 mov 2000, %ax
+   69                            1001 add $1, %ax
+   70                            1002 mov %ax, 2000
+   70   ------ Interrupt ------  ------ Interrupt ------  
+   70   1003 sub  $1, %bx
+   70   1004 test $0, %bx
+   70   1005 jgt .top
+   70   ------ Interrupt ------  ------ Interrupt ------  
+   70                            1003 sub  $1, %bx
+   70                            1004 test $0, %bx
+   70                            1005 jgt .top
+   70   ------ Interrupt ------  ------ Interrupt ------  
+   70   1000 mov 2000, %ax
+   70   1001 add $1, %ax
+   71   1002 mov %ax, 2000
+   71   ------ Interrupt ------  ------ Interrupt ------  
+   71                            1000 mov 2000, %ax
+   71                            1001 add $1, %ax
+   72                            1002 mov %ax, 2000
+   72   ------ Interrupt ------  ------ Interrupt ------  
+   72   1003 sub  $1, %bx
+   72   1004 test $0, %bx
+   72   1005 jgt .top
+   72   ------ Interrupt ------  ------ Interrupt ------  
+   72                            1003 sub  $1, %bx
+   72                            1004 test $0, %bx
+   72                            1005 jgt .top
+   72   ------ Interrupt ------  ------ Interrupt ------  
+   72   1000 mov 2000, %ax
+   72   1001 add $1, %ax
+   73   1002 mov %ax, 2000
+   73   ------ Interrupt ------  ------ Interrupt ------  
+   73                            1000 mov 2000, %ax
+   73                            1001 add $1, %ax
+   74                            1002 mov %ax, 2000
+   74   ------ Interrupt ------  ------ Interrupt ------  
+   74   1003 sub  $1, %bx
+   74   1004 test $0, %bx
+   74   1005 jgt .top
+   74   ------ Interrupt ------  ------ Interrupt ------  
+   74                            1003 sub  $1, %bx
+   74                            1004 test $0, %bx
+   74                            1005 jgt .top
+   74   ------ Interrupt ------  ------ Interrupt ------  
+   74   1000 mov 2000, %ax
+   74   1001 add $1, %ax
+   75   1002 mov %ax, 2000
+   75   ------ Interrupt ------  ------ Interrupt ------  
+   75                            1000 mov 2000, %ax
+   75                            1001 add $1, %ax
+   76                            1002 mov %ax, 2000
+   76   ------ Interrupt ------  ------ Interrupt ------  
+   76   1003 sub  $1, %bx
+   76   1004 test $0, %bx
+   76   1005 jgt .top
+   76   ------ Interrupt ------  ------ Interrupt ------  
+   76                            1003 sub  $1, %bx
+   76                            1004 test $0, %bx
+   76                            1005 jgt .top
+   76   ------ Interrupt ------  ------ Interrupt ------  
+   76   1000 mov 2000, %ax
+   76   1001 add $1, %ax
+   77   1002 mov %ax, 2000
+   77   ------ Interrupt ------  ------ Interrupt ------  
+   77                            1000 mov 2000, %ax
+   77                            1001 add $1, %ax
+   78                            1002 mov %ax, 2000
+   78   ------ Interrupt ------  ------ Interrupt ------  
+   78   1003 sub  $1, %bx
+   78   1004 test $0, %bx
+   78   1005 jgt .top
+   78   ------ Interrupt ------  ------ Interrupt ------  
+   78                            1003 sub  $1, %bx
+   78                            1004 test $0, %bx
+   78                            1005 jgt .top
+   78   ------ Interrupt ------  ------ Interrupt ------  
+   78   1000 mov 2000, %ax
+   78   1001 add $1, %ax
+   79   1002 mov %ax, 2000
+   79   ------ Interrupt ------  ------ Interrupt ------  
+   79                            1000 mov 2000, %ax
+   79                            1001 add $1, %ax
+   80                            1002 mov %ax, 2000
+   80   ------ Interrupt ------  ------ Interrupt ------  
+   80   1003 sub  $1, %bx
+   80   1004 test $0, %bx
+   80   1005 jgt .top
+   80   ------ Interrupt ------  ------ Interrupt ------  
+   80                            1003 sub  $1, %bx
+   80                            1004 test $0, %bx
+   80                            1005 jgt .top
+   80   ------ Interrupt ------  ------ Interrupt ------  
+   80   1000 mov 2000, %ax
+   80   1001 add $1, %ax
+   81   1002 mov %ax, 2000
+   81   ------ Interrupt ------  ------ Interrupt ------  
+   81                            1000 mov 2000, %ax
+   81                            1001 add $1, %ax
+   82                            1002 mov %ax, 2000
+   82   ------ Interrupt ------  ------ Interrupt ------  
+   82   1003 sub  $1, %bx
+   82   1004 test $0, %bx
+   82   1005 jgt .top
+   82   ------ Interrupt ------  ------ Interrupt ------  
+   82                            1003 sub  $1, %bx
+   82                            1004 test $0, %bx
+   82                            1005 jgt .top
+   82   ------ Interrupt ------  ------ Interrupt ------  
+   82   1000 mov 2000, %ax
+   82   1001 add $1, %ax
+   83   1002 mov %ax, 2000
+   83   ------ Interrupt ------  ------ Interrupt ------  
+   83                            1000 mov 2000, %ax
+   83                            1001 add $1, %ax
+   84                            1002 mov %ax, 2000
+   84   ------ Interrupt ------  ------ Interrupt ------  
+   84   1003 sub  $1, %bx
+   84   1004 test $0, %bx
+   84   1005 jgt .top
+   84   ------ Interrupt ------  ------ Interrupt ------  
+   84                            1003 sub  $1, %bx
+   84                            1004 test $0, %bx
+   84                            1005 jgt .top
+   84   ------ Interrupt ------  ------ Interrupt ------  
+   84   1000 mov 2000, %ax
+   84   1001 add $1, %ax
+   85   1002 mov %ax, 2000
+   85   ------ Interrupt ------  ------ Interrupt ------  
+   85                            1000 mov 2000, %ax
+   85                            1001 add $1, %ax
+   86                            1002 mov %ax, 2000
+   86   ------ Interrupt ------  ------ Interrupt ------  
+   86   1003 sub  $1, %bx
+   86   1004 test $0, %bx
+   86   1005 jgt .top
+   86   ------ Interrupt ------  ------ Interrupt ------  
+   86                            1003 sub  $1, %bx
+   86                            1004 test $0, %bx
+   86                            1005 jgt .top
+   86   ------ Interrupt ------  ------ Interrupt ------  
+   86   1000 mov 2000, %ax
+   86   1001 add $1, %ax
+   87   1002 mov %ax, 2000
+   87   ------ Interrupt ------  ------ Interrupt ------  
+   87                            1000 mov 2000, %ax
+   87                            1001 add $1, %ax
+   88                            1002 mov %ax, 2000
+   88   ------ Interrupt ------  ------ Interrupt ------  
+   88   1003 sub  $1, %bx
+   88   1004 test $0, %bx
+   88   1005 jgt .top
+   88   ------ Interrupt ------  ------ Interrupt ------  
+   88                            1003 sub  $1, %bx
+   88                            1004 test $0, %bx
+   88                            1005 jgt .top
+   88   ------ Interrupt ------  ------ Interrupt ------  
+   88   1000 mov 2000, %ax
+   88   1001 add $1, %ax
+   89   1002 mov %ax, 2000
+   89   ------ Interrupt ------  ------ Interrupt ------  
+   89                            1000 mov 2000, %ax
+   89                            1001 add $1, %ax
+   90                            1002 mov %ax, 2000
+   90   ------ Interrupt ------  ------ Interrupt ------  
+   90   1003 sub  $1, %bx
+   90   1004 test $0, %bx
+   90   1005 jgt .top
+   90   ------ Interrupt ------  ------ Interrupt ------  
+   90                            1003 sub  $1, %bx
+   90                            1004 test $0, %bx
+   90                            1005 jgt .top
+   90   ------ Interrupt ------  ------ Interrupt ------  
+   90   1000 mov 2000, %ax
+   90   1001 add $1, %ax
+   91   1002 mov %ax, 2000
+   91   ------ Interrupt ------  ------ Interrupt ------  
+   91                            1000 mov 2000, %ax
+   91                            1001 add $1, %ax
+   92                            1002 mov %ax, 2000
+   92   ------ Interrupt ------  ------ Interrupt ------  
+   92   1003 sub  $1, %bx
+   92   1004 test $0, %bx
+   92   1005 jgt .top
+   92   ------ Interrupt ------  ------ Interrupt ------  
+   92                            1003 sub  $1, %bx
+   92                            1004 test $0, %bx
+   92                            1005 jgt .top
+   92   ------ Interrupt ------  ------ Interrupt ------  
+   92   1000 mov 2000, %ax
+   92   1001 add $1, %ax
+   93   1002 mov %ax, 2000
+   93   ------ Interrupt ------  ------ Interrupt ------  
+   93                            1000 mov 2000, %ax
+   93                            1001 add $1, %ax
+   94                            1002 mov %ax, 2000
+   94   ------ Interrupt ------  ------ Interrupt ------  
+   94   1003 sub  $1, %bx
+   94   1004 test $0, %bx
+   94   1005 jgt .top
+   94   ------ Interrupt ------  ------ Interrupt ------  
+   94                            1003 sub  $1, %bx
+   94                            1004 test $0, %bx
+   94                            1005 jgt .top
+   94   ------ Interrupt ------  ------ Interrupt ------  
+   94   1000 mov 2000, %ax
+   94   1001 add $1, %ax
+   95   1002 mov %ax, 2000
+   95   ------ Interrupt ------  ------ Interrupt ------  
+   95                            1000 mov 2000, %ax
+   95                            1001 add $1, %ax
+   96                            1002 mov %ax, 2000
+   96   ------ Interrupt ------  ------ Interrupt ------  
+   96   1003 sub  $1, %bx
+   96   1004 test $0, %bx
+   96   1005 jgt .top
+   96   ------ Interrupt ------  ------ Interrupt ------  
+   96                            1003 sub  $1, %bx
+   96                            1004 test $0, %bx
+   96                            1005 jgt .top
+   96   ------ Interrupt ------  ------ Interrupt ------  
+   96   1000 mov 2000, %ax
+   96   1001 add $1, %ax
+   97   1002 mov %ax, 2000
+   97   ------ Interrupt ------  ------ Interrupt ------  
+   97                            1000 mov 2000, %ax
+   97                            1001 add $1, %ax
+   98                            1002 mov %ax, 2000
+   98   ------ Interrupt ------  ------ Interrupt ------  
+   98   1003 sub  $1, %bx
+   98   1004 test $0, %bx
+   98   1005 jgt .top
+   98   ------ Interrupt ------  ------ Interrupt ------  
+   98                            1003 sub  $1, %bx
+   98                            1004 test $0, %bx
+   98                            1005 jgt .top
+   98   ------ Interrupt ------  ------ Interrupt ------  
+   98   1000 mov 2000, %ax
+   98   1001 add $1, %ax
+   99   1002 mov %ax, 2000
+   99   ------ Interrupt ------  ------ Interrupt ------  
+   99                            1000 mov 2000, %ax
+   99                            1001 add $1, %ax
+  100                            1002 mov %ax, 2000
+  100   ------ Interrupt ------  ------ Interrupt ------  
+  100   1003 sub  $1, %bx
+  100   1004 test $0, %bx
+  100   1005 jgt .top
+  100   ------ Interrupt ------  ------ Interrupt ------  
+  100                            1003 sub  $1, %bx
+  100                            1004 test $0, %bx
+  100                            1005 jgt .top
+  100   ------ Interrupt ------  ------ Interrupt ------  
+  100   1000 mov 2000, %ax
+  100   1001 add $1, %ax
+  101   1002 mov %ax, 2000
+  101   ------ Interrupt ------  ------ Interrupt ------  
+  101                            1000 mov 2000, %ax
+  101                            1001 add $1, %ax
+  102                            1002 mov %ax, 2000
+  102   ------ Interrupt ------  ------ Interrupt ------  
+  102   1003 sub  $1, %bx
+  102   1004 test $0, %bx
+  102   1005 jgt .top
+  102   ------ Interrupt ------  ------ Interrupt ------  
+  102                            1003 sub  $1, %bx
+  102                            1004 test $0, %bx
+  102                            1005 jgt .top
+  102   ------ Interrupt ------  ------ Interrupt ------  
+  102   1000 mov 2000, %ax
+  102   1001 add $1, %ax
+  103   1002 mov %ax, 2000
+  103   ------ Interrupt ------  ------ Interrupt ------  
+  103                            1000 mov 2000, %ax
+  103                            1001 add $1, %ax
+  104                            1002 mov %ax, 2000
+  104   ------ Interrupt ------  ------ Interrupt ------  
+  104   1003 sub  $1, %bx
+  104   1004 test $0, %bx
+  104   1005 jgt .top
+  104   ------ Interrupt ------  ------ Interrupt ------  
+  104                            1003 sub  $1, %bx
+  104                            1004 test $0, %bx
+  104                            1005 jgt .top
+  104   ------ Interrupt ------  ------ Interrupt ------  
+  104   1000 mov 2000, %ax
+  104   1001 add $1, %ax
+  105   1002 mov %ax, 2000
+  105   ------ Interrupt ------  ------ Interrupt ------  
+  105                            1000 mov 2000, %ax
+  105                            1001 add $1, %ax
+  106                            1002 mov %ax, 2000
+  106   ------ Interrupt ------  ------ Interrupt ------  
+  106   1003 sub  $1, %bx
+  106   1004 test $0, %bx
+  106   1005 jgt .top
+  106   ------ Interrupt ------  ------ Interrupt ------  
+  106                            1003 sub  $1, %bx
+  106                            1004 test $0, %bx
+  106                            1005 jgt .top
+  106   ------ Interrupt ------  ------ Interrupt ------  
+  106   1000 mov 2000, %ax
+  106   1001 add $1, %ax
+  107   1002 mov %ax, 2000
+  107   ------ Interrupt ------  ------ Interrupt ------  
+  107                            1000 mov 2000, %ax
+  107                            1001 add $1, %ax
+  108                            1002 mov %ax, 2000
+  108   ------ Interrupt ------  ------ Interrupt ------  
+  108   1003 sub  $1, %bx
+  108   1004 test $0, %bx
+  108   1005 jgt .top
+  108   ------ Interrupt ------  ------ Interrupt ------  
+  108                            1003 sub  $1, %bx
+  108                            1004 test $0, %bx
+  108                            1005 jgt .top
+  108   ------ Interrupt ------  ------ Interrupt ------  
+  108   1000 mov 2000, %ax
+  108   1001 add $1, %ax
+  109   1002 mov %ax, 2000
+  109   ------ Interrupt ------  ------ Interrupt ------  
+  109                            1000 mov 2000, %ax
+  109                            1001 add $1, %ax
+  110                            1002 mov %ax, 2000
+  110   ------ Interrupt ------  ------ Interrupt ------  
+  110   1003 sub  $1, %bx
+  110   1004 test $0, %bx
+  110   1005 jgt .top
+  110   ------ Interrupt ------  ------ Interrupt ------  
+  110                            1003 sub  $1, %bx
+  110                            1004 test $0, %bx
+  110                            1005 jgt .top
+  110   ------ Interrupt ------  ------ Interrupt ------  
+  110   1000 mov 2000, %ax
+  110   1001 add $1, %ax
+  111   1002 mov %ax, 2000
+  111   ------ Interrupt ------  ------ Interrupt ------  
+  111                            1000 mov 2000, %ax
+  111                            1001 add $1, %ax
+  112                            1002 mov %ax, 2000
+  112   ------ Interrupt ------  ------ Interrupt ------  
+  112   1003 sub  $1, %bx
+  112   1004 test $0, %bx
+  112   1005 jgt .top
+  112   ------ Interrupt ------  ------ Interrupt ------  
+  112                            1003 sub  $1, %bx
+  112                            1004 test $0, %bx
+  112                            1005 jgt .top
+  112   ------ Interrupt ------  ------ Interrupt ------  
+  112   1000 mov 2000, %ax
+  112   1001 add $1, %ax
+  113   1002 mov %ax, 2000
+  113   ------ Interrupt ------  ------ Interrupt ------  
+  113                            1000 mov 2000, %ax
+  113                            1001 add $1, %ax
+  114                            1002 mov %ax, 2000
+  114   ------ Interrupt ------  ------ Interrupt ------  
+  114   1003 sub  $1, %bx
+  114   1004 test $0, %bx
+  114   1005 jgt .top
+  114   ------ Interrupt ------  ------ Interrupt ------  
+  114                            1003 sub  $1, %bx
+  114                            1004 test $0, %bx
+  114                            1005 jgt .top
+  114   ------ Interrupt ------  ------ Interrupt ------  
+  114   1000 mov 2000, %ax
+  114   1001 add $1, %ax
+  115   1002 mov %ax, 2000
+  115   ------ Interrupt ------  ------ Interrupt ------  
+  115                            1000 mov 2000, %ax
+  115                            1001 add $1, %ax
+  116                            1002 mov %ax, 2000
+  116   ------ Interrupt ------  ------ Interrupt ------  
+  116   1003 sub  $1, %bx
+  116   1004 test $0, %bx
+  116   1005 jgt .top
+  116   ------ Interrupt ------  ------ Interrupt ------  
+  116                            1003 sub  $1, %bx
+  116                            1004 test $0, %bx
+  116                            1005 jgt .top
+  116   ------ Interrupt ------  ------ Interrupt ------  
+  116   1000 mov 2000, %ax
+  116   1001 add $1, %ax
+  117   1002 mov %ax, 2000
+  117   ------ Interrupt ------  ------ Interrupt ------  
+  117                            1000 mov 2000, %ax
+  117                            1001 add $1, %ax
+  118                            1002 mov %ax, 2000
+  118   ------ Interrupt ------  ------ Interrupt ------  
+  118   1003 sub  $1, %bx
+  118   1004 test $0, %bx
+  118   1005 jgt .top
+  118   ------ Interrupt ------  ------ Interrupt ------  
+  118                            1003 sub  $1, %bx
+  118                            1004 test $0, %bx
+  118                            1005 jgt .top
+  118   ------ Interrupt ------  ------ Interrupt ------  
+  118   1000 mov 2000, %ax
+  118   1001 add $1, %ax
+  119   1002 mov %ax, 2000
+  119   ------ Interrupt ------  ------ Interrupt ------  
+  119                            1000 mov 2000, %ax
+  119                            1001 add $1, %ax
+  120                            1002 mov %ax, 2000
+  120   ------ Interrupt ------  ------ Interrupt ------  
+  120   1003 sub  $1, %bx
+  120   1004 test $0, %bx
+  120   1005 jgt .top
+  120   ------ Interrupt ------  ------ Interrupt ------  
+  120                            1003 sub  $1, %bx
+  120                            1004 test $0, %bx
+  120                            1005 jgt .top
+  120   ------ Interrupt ------  ------ Interrupt ------  
+  120   1000 mov 2000, %ax
+  120   1001 add $1, %ax
+  121   1002 mov %ax, 2000
+  121   ------ Interrupt ------  ------ Interrupt ------  
+  121                            1000 mov 2000, %ax
+  121                            1001 add $1, %ax
+  122                            1002 mov %ax, 2000
+  122   ------ Interrupt ------  ------ Interrupt ------  
+  122   1003 sub  $1, %bx
+  122   1004 test $0, %bx
+  122   1005 jgt .top
+  122   ------ Interrupt ------  ------ Interrupt ------  
+  122                            1003 sub  $1, %bx
+  122                            1004 test $0, %bx
+  122                            1005 jgt .top
+  122   ------ Interrupt ------  ------ Interrupt ------  
+  122   1000 mov 2000, %ax
+  122   1001 add $1, %ax
+  123   1002 mov %ax, 2000
+  123   ------ Interrupt ------  ------ Interrupt ------  
+  123                            1000 mov 2000, %ax
+  123                            1001 add $1, %ax
+  124                            1002 mov %ax, 2000
+  124   ------ Interrupt ------  ------ Interrupt ------  
+  124   1003 sub  $1, %bx
+  124   1004 test $0, %bx
+  124   1005 jgt .top
+  124   ------ Interrupt ------  ------ Interrupt ------  
+  124                            1003 sub  $1, %bx
+  124                            1004 test $0, %bx
+  124                            1005 jgt .top
+  124   ------ Interrupt ------  ------ Interrupt ------  
+  124   1000 mov 2000, %ax
+  124   1001 add $1, %ax
+  125   1002 mov %ax, 2000
+  125   ------ Interrupt ------  ------ Interrupt ------  
+  125                            1000 mov 2000, %ax
+  125                            1001 add $1, %ax
+  126                            1002 mov %ax, 2000
+  126   ------ Interrupt ------  ------ Interrupt ------  
+  126   1003 sub  $1, %bx
+  126   1004 test $0, %bx
+  126   1005 jgt .top
+  126   ------ Interrupt ------  ------ Interrupt ------  
+  126                            1003 sub  $1, %bx
+  126                            1004 test $0, %bx
+  126                            1005 jgt .top
+  126   ------ Interrupt ------  ------ Interrupt ------  
+  126   1000 mov 2000, %ax
+  126   1001 add $1, %ax
+  127   1002 mov %ax, 2000
+  127   ------ Interrupt ------  ------ Interrupt ------  
+  127                            1000 mov 2000, %ax
+  127                            1001 add $1, %ax
+  128                            1002 mov %ax, 2000
+  128   ------ Interrupt ------  ------ Interrupt ------  
+  128   1003 sub  $1, %bx
+  128   1004 test $0, %bx
+  128   1005 jgt .top
+  128   ------ Interrupt ------  ------ Interrupt ------  
+  128                            1003 sub  $1, %bx
+  128                            1004 test $0, %bx
+  128                            1005 jgt .top
+  128   ------ Interrupt ------  ------ Interrupt ------  
+  128   1000 mov 2000, %ax
+  128   1001 add $1, %ax
+  129   1002 mov %ax, 2000
+  129   ------ Interrupt ------  ------ Interrupt ------  
+  129                            1000 mov 2000, %ax
+  129                            1001 add $1, %ax
+  130                            1002 mov %ax, 2000
+  130   ------ Interrupt ------  ------ Interrupt ------  
+  130   1003 sub  $1, %bx
+  130   1004 test $0, %bx
+  130   1005 jgt .top
+  130   ------ Interrupt ------  ------ Interrupt ------  
+  130                            1003 sub  $1, %bx
+  130                            1004 test $0, %bx
+  130                            1005 jgt .top
+  130   ------ Interrupt ------  ------ Interrupt ------  
+  130   1000 mov 2000, %ax
+  130   1001 add $1, %ax
+  131   1002 mov %ax, 2000
+  131   ------ Interrupt ------  ------ Interrupt ------  
+  131                            1000 mov 2000, %ax
+  131                            1001 add $1, %ax
+  132                            1002 mov %ax, 2000
+  132   ------ Interrupt ------  ------ Interrupt ------  
+  132   1003 sub  $1, %bx
+  132   1004 test $0, %bx
+  132   1005 jgt .top
+  132   ------ Interrupt ------  ------ Interrupt ------  
+  132                            1003 sub  $1, %bx
+  132                            1004 test $0, %bx
+  132                            1005 jgt .top
+  132   ------ Interrupt ------  ------ Interrupt ------  
+  132   1000 mov 2000, %ax
+  132   1001 add $1, %ax
+  133   1002 mov %ax, 2000
+  133   ------ Interrupt ------  ------ Interrupt ------  
+  133                            1000 mov 2000, %ax
+  133                            1001 add $1, %ax
+  134                            1002 mov %ax, 2000
+  134   ------ Interrupt ------  ------ Interrupt ------  
+  134   1003 sub  $1, %bx
+  134   1004 test $0, %bx
+  134   1005 jgt .top
+  134   ------ Interrupt ------  ------ Interrupt ------  
+  134                            1003 sub  $1, %bx
+  134                            1004 test $0, %bx
+  134                            1005 jgt .top
+  134   ------ Interrupt ------  ------ Interrupt ------  
+  134   1000 mov 2000, %ax
+  134   1001 add $1, %ax
+  135   1002 mov %ax, 2000
+  135   ------ Interrupt ------  ------ Interrupt ------  
+  135                            1000 mov 2000, %ax
+  135                            1001 add $1, %ax
+  136                            1002 mov %ax, 2000
+  136   ------ Interrupt ------  ------ Interrupt ------  
+  136   1003 sub  $1, %bx
+  136   1004 test $0, %bx
+  136   1005 jgt .top
+  136   ------ Interrupt ------  ------ Interrupt ------  
+  136                            1003 sub  $1, %bx
+  136                            1004 test $0, %bx
+  136                            1005 jgt .top
+  136   ------ Interrupt ------  ------ Interrupt ------  
+  136   1000 mov 2000, %ax
+  136   1001 add $1, %ax
+  137   1002 mov %ax, 2000
+  137   ------ Interrupt ------  ------ Interrupt ------  
+  137                            1000 mov 2000, %ax
+  137                            1001 add $1, %ax
+  138                            1002 mov %ax, 2000
+  138   ------ Interrupt ------  ------ Interrupt ------  
+  138   1003 sub  $1, %bx
+  138   1004 test $0, %bx
+  138   1005 jgt .top
+  138   ------ Interrupt ------  ------ Interrupt ------  
+  138                            1003 sub  $1, %bx
+  138                            1004 test $0, %bx
+  138                            1005 jgt .top
+  138   ------ Interrupt ------  ------ Interrupt ------  
+  138   1000 mov 2000, %ax
+  138   1001 add $1, %ax
+  139   1002 mov %ax, 2000
+  139   ------ Interrupt ------  ------ Interrupt ------  
+  139                            1000 mov 2000, %ax
+  139                            1001 add $1, %ax
+  140                            1002 mov %ax, 2000
+  140   ------ Interrupt ------  ------ Interrupt ------  
+  140   1003 sub  $1, %bx
+  140   1004 test $0, %bx
+  140   1005 jgt .top
+  140   ------ Interrupt ------  ------ Interrupt ------  
+  140                            1003 sub  $1, %bx
+  140                            1004 test $0, %bx
+  140                            1005 jgt .top
+  140   ------ Interrupt ------  ------ Interrupt ------  
+  140   1000 mov 2000, %ax
+  140   1001 add $1, %ax
+  141   1002 mov %ax, 2000
+  141   ------ Interrupt ------  ------ Interrupt ------  
+  141                            1000 mov 2000, %ax
+  141                            1001 add $1, %ax
+  142                            1002 mov %ax, 2000
+  142   ------ Interrupt ------  ------ Interrupt ------  
+  142   1003 sub  $1, %bx
+  142   1004 test $0, %bx
+  142   1005 jgt .top
+  142   ------ Interrupt ------  ------ Interrupt ------  
+  142                            1003 sub  $1, %bx
+  142                            1004 test $0, %bx
+  142                            1005 jgt .top
+  142   ------ Interrupt ------  ------ Interrupt ------  
+  142   1000 mov 2000, %ax
+  142   1001 add $1, %ax
+  143   1002 mov %ax, 2000
+  143   ------ Interrupt ------  ------ Interrupt ------  
+  143                            1000 mov 2000, %ax
+  143                            1001 add $1, %ax
+  144                            1002 mov %ax, 2000
+  144   ------ Interrupt ------  ------ Interrupt ------  
+  144   1003 sub  $1, %bx
+  144   1004 test $0, %bx
+  144   1005 jgt .top
+  144   ------ Interrupt ------  ------ Interrupt ------  
+  144                            1003 sub  $1, %bx
+  144                            1004 test $0, %bx
+  144                            1005 jgt .top
+  144   ------ Interrupt ------  ------ Interrupt ------  
+  144   1000 mov 2000, %ax
+  144   1001 add $1, %ax
+  145   1002 mov %ax, 2000
+  145   ------ Interrupt ------  ------ Interrupt ------  
+  145                            1000 mov 2000, %ax
+  145                            1001 add $1, %ax
+  146                            1002 mov %ax, 2000
+  146   ------ Interrupt ------  ------ Interrupt ------  
+  146   1003 sub  $1, %bx
+  146   1004 test $0, %bx
+  146   1005 jgt .top
+  146   ------ Interrupt ------  ------ Interrupt ------  
+  146                            1003 sub  $1, %bx
+  146                            1004 test $0, %bx
+  146                            1005 jgt .top
+  146   ------ Interrupt ------  ------ Interrupt ------  
+  146   1000 mov 2000, %ax
+  146   1001 add $1, %ax
+  147   1002 mov %ax, 2000
+  147   ------ Interrupt ------  ------ Interrupt ------  
+  147                            1000 mov 2000, %ax
+  147                            1001 add $1, %ax
+  148                            1002 mov %ax, 2000
+  148   ------ Interrupt ------  ------ Interrupt ------  
+  148   1003 sub  $1, %bx
+  148   1004 test $0, %bx
+  148   1005 jgt .top
+  148   ------ Interrupt ------  ------ Interrupt ------  
+  148                            1003 sub  $1, %bx
+  148                            1004 test $0, %bx
+  148                            1005 jgt .top
+  148   ------ Interrupt ------  ------ Interrupt ------  
+  148   1000 mov 2000, %ax
+  148   1001 add $1, %ax
+  149   1002 mov %ax, 2000
+  149   ------ Interrupt ------  ------ Interrupt ------  
+  149                            1000 mov 2000, %ax
+  149                            1001 add $1, %ax
+  150                            1002 mov %ax, 2000
+  150   ------ Interrupt ------  ------ Interrupt ------  
+  150   1003 sub  $1, %bx
+  150   1004 test $0, %bx
+  150   1005 jgt .top
+  150   ------ Interrupt ------  ------ Interrupt ------  
+  150                            1003 sub  $1, %bx
+  150                            1004 test $0, %bx
+  150                            1005 jgt .top
+  150   ------ Interrupt ------  ------ Interrupt ------  
+  150   1000 mov 2000, %ax
+  150   1001 add $1, %ax
+  151   1002 mov %ax, 2000
+  151   ------ Interrupt ------  ------ Interrupt ------  
+  151                            1000 mov 2000, %ax
+  151                            1001 add $1, %ax
+  152                            1002 mov %ax, 2000
+  152   ------ Interrupt ------  ------ Interrupt ------  
+  152   1003 sub  $1, %bx
+  152   1004 test $0, %bx
+  152   1005 jgt .top
+  152   ------ Interrupt ------  ------ Interrupt ------  
+  152                            1003 sub  $1, %bx
+  152                            1004 test $0, %bx
+  152                            1005 jgt .top
+  152   ------ Interrupt ------  ------ Interrupt ------  
+  152   1000 mov 2000, %ax
+  152   1001 add $1, %ax
+  153   1002 mov %ax, 2000
+  153   ------ Interrupt ------  ------ Interrupt ------  
+  153                            1000 mov 2000, %ax
+  153                            1001 add $1, %ax
+  154                            1002 mov %ax, 2000
+  154   ------ Interrupt ------  ------ Interrupt ------  
+  154   1003 sub  $1, %bx
+  154   1004 test $0, %bx
+  154   1005 jgt .top
+  154   ------ Interrupt ------  ------ Interrupt ------  
+  154                            1003 sub  $1, %bx
+  154                            1004 test $0, %bx
+  154                            1005 jgt .top
+  154   ------ Interrupt ------  ------ Interrupt ------  
+  154   1000 mov 2000, %ax
+  154   1001 add $1, %ax
+  155   1002 mov %ax, 2000
+  155   ------ Interrupt ------  ------ Interrupt ------  
+  155                            1000 mov 2000, %ax
+  155                            1001 add $1, %ax
+  156                            1002 mov %ax, 2000
+  156   ------ Interrupt ------  ------ Interrupt ------  
+  156   1003 sub  $1, %bx
+  156   1004 test $0, %bx
+  156   1005 jgt .top
+  156   ------ Interrupt ------  ------ Interrupt ------  
+  156                            1003 sub  $1, %bx
+  156                            1004 test $0, %bx
+  156                            1005 jgt .top
+  156   ------ Interrupt ------  ------ Interrupt ------  
+  156   1000 mov 2000, %ax
+  156   1001 add $1, %ax
+  157   1002 mov %ax, 2000
+  157   ------ Interrupt ------  ------ Interrupt ------  
+  157                            1000 mov 2000, %ax
+  157                            1001 add $1, %ax
+  158                            1002 mov %ax, 2000
+  158   ------ Interrupt ------  ------ Interrupt ------  
+  158   1003 sub  $1, %bx
+  158   1004 test $0, %bx
+  158   1005 jgt .top
+  158   ------ Interrupt ------  ------ Interrupt ------  
+  158                            1003 sub  $1, %bx
+  158                            1004 test $0, %bx
+  158                            1005 jgt .top
+  158   ------ Interrupt ------  ------ Interrupt ------  
+  158   1000 mov 2000, %ax
+  158   1001 add $1, %ax
+  159   1002 mov %ax, 2000
+  159   ------ Interrupt ------  ------ Interrupt ------  
+  159                            1000 mov 2000, %ax
+  159                            1001 add $1, %ax
+  160                            1002 mov %ax, 2000
+  160   ------ Interrupt ------  ------ Interrupt ------  
+  160   1003 sub  $1, %bx
+  160   1004 test $0, %bx
+  160   1005 jgt .top
+  160   ------ Interrupt ------  ------ Interrupt ------  
+  160                            1003 sub  $1, %bx
+  160                            1004 test $0, %bx
+  160                            1005 jgt .top
+  160   ------ Interrupt ------  ------ Interrupt ------  
+  160   1000 mov 2000, %ax
+  160   1001 add $1, %ax
+  161   1002 mov %ax, 2000
+  161   ------ Interrupt ------  ------ Interrupt ------  
+  161                            1000 mov 2000, %ax
+  161                            1001 add $1, %ax
+  162                            1002 mov %ax, 2000
+  162   ------ Interrupt ------  ------ Interrupt ------  
+  162   1003 sub  $1, %bx
+  162   1004 test $0, %bx
+  162   1005 jgt .top
+  162   ------ Interrupt ------  ------ Interrupt ------  
+  162                            1003 sub  $1, %bx
+  162                            1004 test $0, %bx
+  162                            1005 jgt .top
+  162   ------ Interrupt ------  ------ Interrupt ------  
+  162   1000 mov 2000, %ax
+  162   1001 add $1, %ax
+  163   1002 mov %ax, 2000
+  163   ------ Interrupt ------  ------ Interrupt ------  
+  163                            1000 mov 2000, %ax
+  163                            1001 add $1, %ax
+  164                            1002 mov %ax, 2000
+  164   ------ Interrupt ------  ------ Interrupt ------  
+  164   1003 sub  $1, %bx
+  164   1004 test $0, %bx
+  164   1005 jgt .top
+  164   ------ Interrupt ------  ------ Interrupt ------  
+  164                            1003 sub  $1, %bx
+  164                            1004 test $0, %bx
+  164                            1005 jgt .top
+  164   ------ Interrupt ------  ------ Interrupt ------  
+  164   1000 mov 2000, %ax
+  164   1001 add $1, %ax
+  165   1002 mov %ax, 2000
+  165   ------ Interrupt ------  ------ Interrupt ------  
+  165                            1000 mov 2000, %ax
+  165                            1001 add $1, %ax
+  166                            1002 mov %ax, 2000
+  166   ------ Interrupt ------  ------ Interrupt ------  
+  166   1003 sub  $1, %bx
+  166   1004 test $0, %bx
+  166   1005 jgt .top
+  166   ------ Interrupt ------  ------ Interrupt ------  
+  166                            1003 sub  $1, %bx
+  166                            1004 test $0, %bx
+  166                            1005 jgt .top
+  166   ------ Interrupt ------  ------ Interrupt ------  
+  166   1000 mov 2000, %ax
+  166   1001 add $1, %ax
+  167   1002 mov %ax, 2000
+  167   ------ Interrupt ------  ------ Interrupt ------  
+  167                            1000 mov 2000, %ax
+  167                            1001 add $1, %ax
+  168                            1002 mov %ax, 2000
+  168   ------ Interrupt ------  ------ Interrupt ------  
+  168   1003 sub  $1, %bx
+  168   1004 test $0, %bx
+  168   1005 jgt .top
+  168   ------ Interrupt ------  ------ Interrupt ------  
+  168                            1003 sub  $1, %bx
+  168                            1004 test $0, %bx
+  168                            1005 jgt .top
+  168   ------ Interrupt ------  ------ Interrupt ------  
+  168   1000 mov 2000, %ax
+  168   1001 add $1, %ax
+  169   1002 mov %ax, 2000
+  169   ------ Interrupt ------  ------ Interrupt ------  
+  169                            1000 mov 2000, %ax
+  169                            1001 add $1, %ax
+  170                            1002 mov %ax, 2000
+  170   ------ Interrupt ------  ------ Interrupt ------  
+  170   1003 sub  $1, %bx
+  170   1004 test $0, %bx
+  170   1005 jgt .top
+  170   ------ Interrupt ------  ------ Interrupt ------  
+  170                            1003 sub  $1, %bx
+  170                            1004 test $0, %bx
+  170                            1005 jgt .top
+  170   ------ Interrupt ------  ------ Interrupt ------  
+  170   1000 mov 2000, %ax
+  170   1001 add $1, %ax
+  171   1002 mov %ax, 2000
+  171   ------ Interrupt ------  ------ Interrupt ------  
+  171                            1000 mov 2000, %ax
+  171                            1001 add $1, %ax
+  172                            1002 mov %ax, 2000
+  172   ------ Interrupt ------  ------ Interrupt ------  
+  172   1003 sub  $1, %bx
+  172   1004 test $0, %bx
+  172   1005 jgt .top
+  172   ------ Interrupt ------  ------ Interrupt ------  
+  172                            1003 sub  $1, %bx
+  172                            1004 test $0, %bx
+  172                            1005 jgt .top
+  172   ------ Interrupt ------  ------ Interrupt ------  
+  172   1000 mov 2000, %ax
+  172   1001 add $1, %ax
+  173   1002 mov %ax, 2000
+  173   ------ Interrupt ------  ------ Interrupt ------  
+  173                            1000 mov 2000, %ax
+  173                            1001 add $1, %ax
+  174                            1002 mov %ax, 2000
+  174   ------ Interrupt ------  ------ Interrupt ------  
+  174   1003 sub  $1, %bx
+  174   1004 test $0, %bx
+  174   1005 jgt .top
+  174   ------ Interrupt ------  ------ Interrupt ------  
+  174                            1003 sub  $1, %bx
+  174                            1004 test $0, %bx
+  174                            1005 jgt .top
+  174   ------ Interrupt ------  ------ Interrupt ------  
+  174   1000 mov 2000, %ax
+  174   1001 add $1, %ax
+  175   1002 mov %ax, 2000
+  175   ------ Interrupt ------  ------ Interrupt ------  
+  175                            1000 mov 2000, %ax
+  175                            1001 add $1, %ax
+  176                            1002 mov %ax, 2000
+  176   ------ Interrupt ------  ------ Interrupt ------  
+  176   1003 sub  $1, %bx
+  176   1004 test $0, %bx
+  176   1005 jgt .top
+  176   ------ Interrupt ------  ------ Interrupt ------  
+  176                            1003 sub  $1, %bx
+  176                            1004 test $0, %bx
+  176                            1005 jgt .top
+  176   ------ Interrupt ------  ------ Interrupt ------  
+  176   1000 mov 2000, %ax
+  176   1001 add $1, %ax
+  177   1002 mov %ax, 2000
+  177   ------ Interrupt ------  ------ Interrupt ------  
+  177                            1000 mov 2000, %ax
+  177                            1001 add $1, %ax
+  178                            1002 mov %ax, 2000
+  178   ------ Interrupt ------  ------ Interrupt ------  
+  178   1003 sub  $1, %bx
+  178   1004 test $0, %bx
+  178   1005 jgt .top
+  178   ------ Interrupt ------  ------ Interrupt ------  
+  178                            1003 sub  $1, %bx
+  178                            1004 test $0, %bx
+  178                            1005 jgt .top
+  178   ------ Interrupt ------  ------ Interrupt ------  
+  178   1000 mov 2000, %ax
+  178   1001 add $1, %ax
+  179   1002 mov %ax, 2000
+  179   ------ Interrupt ------  ------ Interrupt ------  
+  179                            1000 mov 2000, %ax
+  179                            1001 add $1, %ax
+  180                            1002 mov %ax, 2000
+  180   ------ Interrupt ------  ------ Interrupt ------  
+  180   1003 sub  $1, %bx
+  180   1004 test $0, %bx
+  180   1005 jgt .top
+  180   ------ Interrupt ------  ------ Interrupt ------  
+  180                            1003 sub  $1, %bx
+  180                            1004 test $0, %bx
+  180                            1005 jgt .top
+  180   ------ Interrupt ------  ------ Interrupt ------  
+  180   1000 mov 2000, %ax
+  180   1001 add $1, %ax
+  181   1002 mov %ax, 2000
+  181   ------ Interrupt ------  ------ Interrupt ------  
+  181                            1000 mov 2000, %ax
+  181                            1001 add $1, %ax
+  182                            1002 mov %ax, 2000
+  182   ------ Interrupt ------  ------ Interrupt ------  
+  182   1003 sub  $1, %bx
+  182   1004 test $0, %bx
+  182   1005 jgt .top
+  182   ------ Interrupt ------  ------ Interrupt ------  
+  182                            1003 sub  $1, %bx
+  182                            1004 test $0, %bx
+  182                            1005 jgt .top
+  182   ------ Interrupt ------  ------ Interrupt ------  
+  182   1000 mov 2000, %ax
+  182   1001 add $1, %ax
+  183   1002 mov %ax, 2000
+  183   ------ Interrupt ------  ------ Interrupt ------  
+  183                            1000 mov 2000, %ax
+  183                            1001 add $1, %ax
+  184                            1002 mov %ax, 2000
+  184   ------ Interrupt ------  ------ Interrupt ------  
+  184   1003 sub  $1, %bx
+  184   1004 test $0, %bx
+  184   1005 jgt .top
+  184   ------ Interrupt ------  ------ Interrupt ------  
+  184                            1003 sub  $1, %bx
+  184                            1004 test $0, %bx
+  184                            1005 jgt .top
+  184   ------ Interrupt ------  ------ Interrupt ------  
+  184   1000 mov 2000, %ax
+  184   1001 add $1, %ax
+  185   1002 mov %ax, 2000
+  185   ------ Interrupt ------  ------ Interrupt ------  
+  185                            1000 mov 2000, %ax
+  185                            1001 add $1, %ax
+  186                            1002 mov %ax, 2000
+  186   ------ Interrupt ------  ------ Interrupt ------  
+  186   1003 sub  $1, %bx
+  186   1004 test $0, %bx
+  186   1005 jgt .top
+  186   ------ Interrupt ------  ------ Interrupt ------  
+  186                            1003 sub  $1, %bx
+  186                            1004 test $0, %bx
+  186                            1005 jgt .top
+  186   ------ Interrupt ------  ------ Interrupt ------  
+  186   1000 mov 2000, %ax
+  186   1001 add $1, %ax
+  187   1002 mov %ax, 2000
+  187   ------ Interrupt ------  ------ Interrupt ------  
+  187                            1000 mov 2000, %ax
+  187                            1001 add $1, %ax
+  188                            1002 mov %ax, 2000
+  188   ------ Interrupt ------  ------ Interrupt ------  
+  188   1003 sub  $1, %bx
+  188   1004 test $0, %bx
+  188   1005 jgt .top
+  188   ------ Interrupt ------  ------ Interrupt ------  
+  188                            1003 sub  $1, %bx
+  188                            1004 test $0, %bx
+  188                            1005 jgt .top
+  188   ------ Interrupt ------  ------ Interrupt ------  
+  188   1000 mov 2000, %ax
+  188   1001 add $1, %ax
+  189   1002 mov %ax, 2000
+  189   ------ Interrupt ------  ------ Interrupt ------  
+  189                            1000 mov 2000, %ax
+  189                            1001 add $1, %ax
+  190                            1002 mov %ax, 2000
+  190   ------ Interrupt ------  ------ Interrupt ------  
+  190   1003 sub  $1, %bx
+  190   1004 test $0, %bx
+  190   1005 jgt .top
+  190   ------ Interrupt ------  ------ Interrupt ------  
+  190                            1003 sub  $1, %bx
+  190                            1004 test $0, %bx
+  190                            1005 jgt .top
+  190   ------ Interrupt ------  ------ Interrupt ------  
+  190   1000 mov 2000, %ax
+  190   1001 add $1, %ax
+  191   1002 mov %ax, 2000
+  191   ------ Interrupt ------  ------ Interrupt ------  
+  191                            1000 mov 2000, %ax
+  191                            1001 add $1, %ax
+  192                            1002 mov %ax, 2000
+  192   ------ Interrupt ------  ------ Interrupt ------  
+  192   1003 sub  $1, %bx
+  192   1004 test $0, %bx
+  192   1005 jgt .top
+  192   ------ Interrupt ------  ------ Interrupt ------  
+  192                            1003 sub  $1, %bx
+  192                            1004 test $0, %bx
+  192                            1005 jgt .top
+  192   ------ Interrupt ------  ------ Interrupt ------  
+  192   1000 mov 2000, %ax
+  192   1001 add $1, %ax
+  193   1002 mov %ax, 2000
+  193   ------ Interrupt ------  ------ Interrupt ------  
+  193                            1000 mov 2000, %ax
+  193                            1001 add $1, %ax
+  194                            1002 mov %ax, 2000
+  194   ------ Interrupt ------  ------ Interrupt ------  
+  194   1003 sub  $1, %bx
+  194   1004 test $0, %bx
+  194   1005 jgt .top
+  194   ------ Interrupt ------  ------ Interrupt ------  
+  194                            1003 sub  $1, %bx
+  194                            1004 test $0, %bx
+  194                            1005 jgt .top
+  194   ------ Interrupt ------  ------ Interrupt ------  
+  194   1000 mov 2000, %ax
+  194   1001 add $1, %ax
+  195   1002 mov %ax, 2000
+  195   ------ Interrupt ------  ------ Interrupt ------  
+  195                            1000 mov 2000, %ax
+  195                            1001 add $1, %ax
+  196                            1002 mov %ax, 2000
+  196   ------ Interrupt ------  ------ Interrupt ------  
+  196   1003 sub  $1, %bx
+  196   1004 test $0, %bx
+  196   1005 jgt .top
+  196   ------ Interrupt ------  ------ Interrupt ------  
+  196                            1003 sub  $1, %bx
+  196                            1004 test $0, %bx
+  196                            1005 jgt .top
+  196   ------ Interrupt ------  ------ Interrupt ------  
+  196   1000 mov 2000, %ax
+  196   1001 add $1, %ax
+  197   1002 mov %ax, 2000
+  197   ------ Interrupt ------  ------ Interrupt ------  
+  197                            1000 mov 2000, %ax
+  197                            1001 add $1, %ax
+  198                            1002 mov %ax, 2000
+  198   ------ Interrupt ------  ------ Interrupt ------  
+  198   1003 sub  $1, %bx
+  198   1004 test $0, %bx
+  198   1005 jgt .top
+  198   ------ Interrupt ------  ------ Interrupt ------  
+  198                            1003 sub  $1, %bx
+  198                            1004 test $0, %bx
+  198                            1005 jgt .top
+  198   ------ Interrupt ------  ------ Interrupt ------  
+  198   1000 mov 2000, %ax
+  198   1001 add $1, %ax
+  199   1002 mov %ax, 2000
+  199   ------ Interrupt ------  ------ Interrupt ------  
+  199                            1000 mov 2000, %ax
+  199                            1001 add $1, %ax
+  200                            1002 mov %ax, 2000
+  200   ------ Interrupt ------  ------ Interrupt ------  
+  200   1003 sub  $1, %bx
+  200   1004 test $0, %bx
+  200   1005 jgt .top
+  200   ------ Interrupt ------  ------ Interrupt ------  
+  200                            1003 sub  $1, %bx
+  200                            1004 test $0, %bx
+  200                            1005 jgt .top
+  200   ------ Interrupt ------  ------ Interrupt ------  
+  200   1006 halt
+  200   ----- Halt;Switch -----  ----- Halt;Switch -----  
+  200                            1006 halt
