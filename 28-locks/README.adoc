@@ -1232,6 +1232,19 @@ void mutex_unlock (int *mutex) {
 * As always, making a single general-purpose lock, good for all possible use
   cases, is quite a challenge.
 
+== 28.17 Summary
+
+* The above approach shows how real locks are built these days: some hardware
+  support (in the form of a more powerful instruction) plus some operating
+  system support (e.g., in the form of `park()` and `unpark()` primitives on
+  Solaris, or *futex* on Linux).
+* Of course, the details differ, and the exact code to perform such locking is
+  usually highly tuned.
+* Check out the Solaris or Linux code bases if you want to see more details;
+  they are a fascinating read [L09, S09].
+* Also see David et al.'s excellent work for a comparison of locking
+  strategies on modern multiprocessors [D+13].
+
 == References
 
 [D91] "Just Win, Baby: Al Davis and His Raiders" by Glenn Dickey. Harcourt, 1991.::
@@ -1239,6 +1252,11 @@ void mutex_unlock (int *mutex) {
 * Or, we suppose, the book is more about Al Davis and the Raiders, and not so
   much the quote.
 * To be clear: we are not recommending this book, we just needed a citation.
+
+[D+13] "Everything You Always Wanted to Know about Synchronization but Were Afraid to Ask" by Tudor David, Rachid Guerraoui, Vasileios Trigonakis. SOSP '13, Nemacolin Woodlands Resort, Pennsylvania, November 2013.::
+* An excellent paper comparing many different ways to build locks using
+  hardware primitives.
+* Great to see how many ideas work on modern hardware.
 
 [D68] "Cooperating sequential processes" by Edsger W. Dijkstra. 1968. Available online here: http://www.cs.utexas.edu/users/EWD/ewd01xx/EWD123.PDF.::
 * One of the early seminal papers.
@@ -1291,6 +1309,11 @@ void mutex_unlock (int *mutex) {
 
 [S05] "Guide to porting from Solaris to Linux on x86" by Ajay Sood, April 29, 2005. Available: http://www.ibm.com/developerworks/linux/library/l-solar/.::
 
+[S09] "OpenSolaris Thread Library" by Sun.. Code: `src.opensolaris.org/source/xref/onnv/onnv-gate/usr/src/lib/libc/port/threads/synch.c`.::
+* Pretty interesting, although who knows what will happen now that Oracle owns
+  Sun.
+* Thanks to Mike Swift for the pointer.
+
 [W09] "Load-Link, Store-Conditional" by Many authors. `en.wikipedia.org/wiki/LoadLink/Store-Conditional`.::
 * Can you believe we referenced Wikipedia?
 * But, we found the information there and it felt wrong not to.
@@ -1298,3 +1321,7 @@ void mutex_unlock (int *mutex) {
   architectures: `ldl_l/stl_c` and `ldq_l/stq_c` (Alpha), `lwarx/stwcx`
   (PowerPC), `ll/sc` (MIPS), and `ldrex/strex` (ARM).
 * Actually Wikipedia is pretty amazing, so don't be so harsh, OK?
+
+[WG00] "The SPARC Architecture Manual: Version 9" by D. Weaver, T. Germond. SPARC International, 2000. `http://www.sparc.org/standards/SPARCV9.pdf`.::
+* See the website: `developers.sun.com/solaris/articles/atomic_sparc/` for
+  more on atomics.
