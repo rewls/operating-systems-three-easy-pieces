@@ -341,6 +341,185 @@ image::figure-29-05.jpg[]
 .Scaling Approximate Counters
 image::figure-29-06.jpg[]
 
+== 29.2 Concurrent Linked Lists
+
+* We next examine a more complicated structure, the linked list.
+* Let's start with a basic approach once again.
+* For simplicity, we'll omit some of the obvious routines that such a list
+  would have and just focus on concurrent insert and lookup; we'll leave it to
+  the reader to think about delete, etc.
+* Figure 29.7 shows the code for this rudimentary data structure.
+
+:figure-number: {counter:figure-number}
+.{figure-caption} {figure-number}. Concurrent Linked List
+[,c]
+----
+// basic node structure
+typedef struct __node_t {
+	int key;
+	struct __node_t *next;
+} node_t;
+
+// basic list structure (one used per list)
+typedef struct __list_t {
+	node_t *head;
+	pthread_mutex_t lock;
+} list_t;
+
+void List_Init(list_t *L) {
+	L->head = NULL;
+	pthread_mutex_init(&L->lock, NULL);
+}
+
+int List_Insert(list_t *L, int key) {
+	pthread_mutex_lock(&L->lock);
+	node_t *new = malloc(sizeof(node_t));
+	if (new == NULL) {
+		perror("malloc");
+		pthread_mutex_unlock(&L->lock);
+		return -1; // fail
+	}
+	new->key = key;
+	new->next = L->head;
+	L->head = new;
+	pthread_mutex_unlock(&L->lock);
+	return 0; // success
+}
+
+int List_Lookup(list_t *L, int key) {
+	pthread_mutex_lock(&L->lock);
+	node_t *curr = L->head;
+	while (curr) {
+		if (curr->key == key) {
+			pthread_mutex_unlock(&L->lock);
+			return 0; // success
+		}
+		curr = curr->next;
+	}
+	pthread_mutex_unlock(&L->lock);
+	return -1; // failure
+}
+----
+
+* As you can see in the code, the code simply acquires a lock in the insert
+  routine upon entry, and releases it upon exit.
+* One small tricky issue arises if `malloc()` happens to fail (a rare case);
+  in this case, the code must also release the lock before failing the insert.
+
+'''
+
+* This kind of exceptional control flow has been shown to be quite error
+  prone; a recent study of Linux kernel patches found that a huge fraction of
+  bugs (nearly 40%) are found on such rarely-taken code paths (indeed, this
+  observation sparked some of our own research, in which we removed all
+  memory-failing paths from a Linux file system, resulting in a more robust
+  system [S+11]).
+
+'''
+
+* Thus, a challenge: can we rewrite the insert and lookup routines to remain
+  correct under concurrent insert but avoid the case where the failure path
+  also requires us to add the call to unlock?
+
+'''
+
+* The answer, in this case, is yes.
+* Specifically, we can rearrange the code a bit so that the lock and release
+  only surround the actual critical section in the insert code, and that a
+  common exit path is used in the lookup code.
+* The former works because part of the insert actually need not be locked;
+  assuming that `malloc()` itself is thread-safe, each thread can call into it
+  without worry of race conditions or other concurrency bugs.
+* Only when updating the shared list does a lock need to be held.
+* See Figure 29.8 for the details of these modifications.
+
+:figure-number: {counter:figure-number}
+.{figure-caption} {figure-number}. Concurrent Linked List: Rewritten
+[,c]
+----
+void List_Init(list_t *L) {
+	L->head = NULL;
+	pthread_mutex_init(&L->lock, NULL);
+}
+
+int List_Insert(list_t *L, int key) {
+	// synchronization not needed
+	node_t *new = malloc(sizeof(node_t));
+	if (new == NULL) {
+		perror("malloc");
+		return -1;
+	}
+	new->key = key;
+	// just lock critical section
+	pthread_mutex_lock(&L->lock);
+	new->next = L->head;
+	L->head = new;
+	pthread_mutex_unlock(&L->lock);
+	return 0; // success
+}
+
+int List_Lookup(list_t *L, int key) {
+	int rv = -1;
+	pthread_mutex_lock(&L->lock);
+	node_t *curr = L->head;
+	while (curr) {
+		if (curr->key == key) {
+			rv = 0;
+			break;
+		}
+		curr = curr->next;
+	}
+	pthread_mutex_unlock(&L->lock);
+	return rv; // now both success and failure
+}
+----
+
+* As for the lookup routine, it is a simple code transformation to jump out of
+  the main search loop to a single return path.
+* Doing so again reduces the number of lock acquire/release points in the
+  code, and thus decreases the chances of accidentally introducing bugs (such
+  as forgetting to unlock before returning) into the code.
+
+=== Scaling Linked Lists
+
+* Though we again have a basic concurrent linked list, once again we are in a
+  situation where it does not scale particularly well.
+* One technique that researchers have explored to enable more concurrency
+  within a list is something called *hand-over-hand locking (a.k.a. *lock
+  coupling*) [MS04].
+
+'''
+
+* The idea is pretty simple.
+* Instead of having a single lock for the entire list, you instead add a lock
+  per node of the list.
+* When traversing the list, the code first grabs the next node's lock and then
+  releases the current node's lock (which inspires the name hand-over-hand).
+
+.Tip: Be wary of locks and control flow
+****
+* A general design tip, which is useful in concurrent code as well as
+  elsewhere, is to be wary of control flow changes that lead to function
+  returns, exits, or other similar error conditions that halt the execution of
+  a function.
+* Because many functions will begin by acquiring a lock, allocating some
+  memory, or doing other similar stateful operations, when errors arise, the
+  code has to undo all of the state before returning, which is error-prone.
+* Thus, it is best to structure code to minimize this pattern.
+****
+
+* Conceptually, a hand-over-hand linked list makes some sense; it enables a
+  high degree of concurrency in list operations.
+* However, in practice, it is hard to make such a structure faster than the
+  simple single lock approach, as the overheads of acquiring and releasing
+  locks for each node of a list traversal is prohibitive.
+* Even with very large lists, and a large number of threads, the concurrency
+  enabled by allowing multiple on-going traversals is unlikely to be faster
+  than simply grabbing a single lock, performing an operation, and releasing
+  it.
+* Perhaps some kind of hybrid (where you grab a new lock every so many nodes)
+  would be worth investigating.
+
 == References
 
 [B+10] "An Analysis of Linux Scalability to Many Cores_ by Silas Boyd-Wickizer, Austin T.  Clements, Yandong Mao, Aleksey Pesterev, M. Frans Kaashoek, Robert Morris, Nickolai Zeldovich . OSDI '10, Vancouver, Canada, October 2010.::
@@ -363,3 +542,9 @@ image::figure-29-06.jpg[]
   structures.
 * Though it is missing some of the latest works in the area (due to its age),
   it remains an incredibly useful reference.
+
+[S+11] "Making the Common Case the Only Case with Anticipatory Memory Allocation" by Swaminathan Sundararaman, Yupu Zhang, Sriram Subramanian, Andrea C. Arpaci-Dusseau, Remzi H. Arpaci-Dusseau . FAST '11, San Jose, CA, February 2011.::
+* Our work on removing possibly-failing allocation calls from kernel code
+  paths.
+* By allocating all potentially needed memory before doing any work, we avoid
+  failure deep down in the storage stack.
