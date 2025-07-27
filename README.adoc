@@ -553,8 +553,9 @@ ____
 ** [x] References 353
 ** Homework (Simulation) 354
 
-* 29 Lock-based Concurrent Data Structures 355
-** [ ] 29.1 Concurrent Counters 355
+* link:29-lock-based-concurrent-data-structures.adoc[29 Lock-based Concurrent
+  Data Structures 355]
+** [x] 29.1 Concurrent Counters 355
 ** [ ] 29.2 Concurrent Linked Lists 361
 ** [ ] 29.3 Concurrent Queues 364
 ** [ ] 29.4 Concurrent Hash Table 366
