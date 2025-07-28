@@ -661,6 +661,63 @@ int Hash_Lookup(hash_t *H, int key) {
 .Scaling Hash Tables
 image::figure-29-11.png[]
 
+== 29.5 Summary
+
+* We have introduced a sampling of concurrent data structures, from counters,
+  to lists and queues, and finally to the ubiquitous and heavily-used hash
+  table.
+* We have learned a few important lessons along the way: to be careful with
+  acquisition and release of locks around control flow changes; that enabling
+  more concurrency does not necessarily increase performance; that performance
+  problems should only be remedied once they exist.
+* This last point, of avoiding premature optimization, is central to any
+  performance-minded developer; there is no value in making something faster
+  if doing so will not improve the overall performance of the application.
+
+'''
+
+* Of course, we have just scratched the surface of high performance
+  structures.
+* See Moir and Shavit's excellent survey for more information, as well as
+  links to other sources [MS04].
+* In particular, you might be interested in other structures (such as
+  B-trees); for this knowledge, a database class is your best bet.
+* You also might be curious about techniques that don't use traditional locks
+  at all; such *non-blocking data structures* are something we'll get a taste
+  of in the chapter on common concurrency bugs, but frankly this topic is an
+  entire area of knowledge requiring more study than is possible in this
+  humble book.
+* Find out more on your own if you desire (as always!).
+
+.Tip: Avoid premature optimization (Knuth's law)
+****
+* When building a concurrent data structure, start with the most basic
+  approach, which is to add a single big lock to provide synchronized access.
+* By doing so, you are likely to build a _correct_ lock; if you then find that
+  it suffers from performance problems, you can refine it, thus only making it
+  fast if need be.
+* As *Knuth* famously stated, "Premature optimization is the root of all
+  evil."
+
+'''
+
+* Many operating systems utilized a single lock when first transitioning to
+  multiprocessors, including Sun OS and Linux.
+* In the latter, this lock even had a name, the *big kernel lock* (*BKL*).
+* For many years, this simple approach was a good one, but when multi-CPU
+  systems became the norm, only allowing a single active thread in the kernel
+  at a time became a performance bottleneck.
+* Thus, it was finally time to add the optimization of improved concurrency to
+  these systems.
+* Within Linux, the more straightforward approach was taken: replace one lock
+  with many.
+* Within Sun, a more radical decision was made: build a brand new operating
+  system, known as Solaris, that incorporates concurrency more fundamentally
+  from day one.
+* Read the Linux and Solaris kernel books for more information about these
+  fascinating systems [BC05, MM00].
+****
+
 == References
 
 [B+10] "An Analysis of Linux Scalability to Many Cores_ by Silas Boyd-Wickizer, Austin T.  Clements, Yandong Mao, Aleksey Pesterev, M. Frans Kaashoek, Robert Morris, Nickolai Zeldovich . OSDI '10, Vancouver, Canada, October 2010.::
@@ -673,10 +730,21 @@ image::figure-29-11.png[]
 * One of the first books on operating systems; certainly ahead of its time.
 * Introduced monitors as a concurrency primitive.
 
+[BC05] "Understanding the Linux Kernel (Third Edition)" by Daniel P. Bovet and Marco Cesati.  O'Reilly Media, November 2005.::
+* The classic book on the Linux kernel.
+* You should read it.
+
 [C06] "The Search For Fast, Scalable Counters" by Jonathan Corbet. February 1, 2006. Available: `https://lwn.net/Articles/170003`.::
 * LWN has many wonderful articles about the latest in Linux.
 * This article is a short description of scalable approximate counting; read
   it, and others, to learn more about the latest in Linux.
+
+[L+13] "A Study of Linux File System Evolution" by Lanyue Lu, Andrea C.  Arpaci-Dusseau, Remzi H. Arpaci-Dusseau, Shan Lu. FAST '13, San Jose, CA, February 2013.::
+* Our paper that studies every patch to Linux file systems over nearly a decade.
+* Lots of fun findings in there; read it to see!
+* The work was painful to do though; the poor graduate student, Lanyue Lu, had
+  to look through every single patch by hand in order to understand what they
+  did.
 
 [MS98] "Nonblocking Algorithms and Preemption-safe Locking on Multiprogrammed Shared-memory Multiprocessors" by M. Michael, M. Scott. Journal of Parallel and Distributed Computing, Vol. 51, No. 1, 1998.::
 * Professor Scott and his students have been at the forefront of concurrent
@@ -688,6 +756,11 @@ image::figure-29-11.png[]
   structures.
 * Though it is missing some of the latest works in the area (due to its age),
   it remains an incredibly useful reference.
+
+[MM00] "Solaris Internals: Core Kernel Architecture" by Jim Mauro and Richard McDougall. Prentice Hall, October 2000.::
+* The Solaris book.
+* You should also read this, if you want to learn about something other than
+  Linux.
 
 [S+11] "Making the Common Case the Only Case with Anticipatory Memory Allocation" by Swaminathan Sundararaman, Yupu Zhang, Sriram Subramanian, Andrea C. Arpaci-Dusseau, Remzi H. Arpaci-Dusseau . FAST '11, San Jose, CA, February 2011.::
 * Our work on removing possibly-failing allocation calls from kernel code

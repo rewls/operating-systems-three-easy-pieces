@@ -559,8 +559,8 @@ ____
 ** [x] 29.2 Concurrent Linked Lists 361
 ** [x] 29.3 Concurrent Queues 364
 ** [x] 29.4 Concurrent Hash Table 366
-** [ ] 29.5 Summary 366
-** [ ] References 369
+** [x] 29.5 Summary 366
+** [x] References 369
 ** Homework (Code) 370
 
 * 30 Condition Variables 371
