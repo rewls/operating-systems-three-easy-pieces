@@ -557,7 +557,7 @@ ____
   Data Structures 355]
 ** [x] 29.1 Concurrent Counters 355
 ** [x] 29.2 Concurrent Linked Lists 361
-** [ ] 29.3 Concurrent Queues 364
+** [x] 29.3 Concurrent Queues 364
 ** [ ] 29.4 Concurrent Hash Table 366
 ** [ ] 29.5 Summary 366
 ** [ ] References 369

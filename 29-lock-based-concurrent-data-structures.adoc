@@ -520,6 +520,95 @@ int List_Lookup(list_t *L, int key) {
 * Perhaps some kind of hybrid (where you grab a new lock every so many nodes)
   would be worth investigating.
 
+== 29.3 Concurrent Queues
+
+* As you know by now, there is always a standard method to make a concurrent
+  data structure: add a big lock.
+* For a queue, we'll skip that approach, assuming you can figure it out.
+
+'''
+
+* Instead, we'll take a look at a slightly more concurrent queue designed by
+  Michael and Scott [MS98].
+* The data structures and code used for this queue are found in Figure 29.9
+  (page 11).
+
+:figure-number: {counter:figure-number}
+.{figure-caption} {figure-number}. Michael and Scott Concurrent Queue
+[,c]
+----
+typedef struct __node_t {
+	int value;
+	struct __node_t *next;
+} node_t;
+
+typedef struct __queue_t {
+	node_t *head;
+	node_t *tail;
+	pthread_mutex_t head_lock, tail_lock;
+} queue_t;
+
+void Queue_Init(queue_t *q) {
+	node_t *tmp = malloc(sizeof(node_t));
+	tmp->next = NULL;
+	q->head = q->tail = tmp;
+	pthread_mutex_init(&q->head_lock, NULL);
+	pthread_mutex_init(&q->tail_lock, NULL);
+}
+
+void Queue_Enqueue(queue_t *q, int value) {
+	node_t *tmp = malloc(sizeof(node_t));
+	assert(tmp != NULL);
+	tmp->value = value;
+	tmp->next = NULL;
+
+	pthread_mutex_lock(&q->tail_lock);
+	q->tail->next = tmp;
+	q->tail = tmp;
+	pthread_mutex_unlock(&q->tail_lock);
+}
+
+int Queue_Dequeue(queue_t *q, int *value) {
+	pthread_mutex_lock(&q->head_lock);
+	node_t *tmp = q->head;
+	node_t *new_head = tmp->next;
+	if (new_head == NULL) {
+		pthread_mutex_unlock(&q->head_lock);
+		return -1; // queue was empty
+	}
+	*value = new_head->value;
+	q->head = new_head;
+	pthread_mutex_unlock(&q->head_lock);
+	free(tmp);
+	return 0;
+}
+----
+
+* If you study this code carefully, you'll notice that there are two locks,
+  one for the head of the queue, and one for the tail.
+* The goal of these two locks is to enable concurrency of enqueue and dequeue
+  operations.
+* In the common case, the enqueue routine will only access the tail lock, and
+  dequeue only the head lock.
+
+'''
+
+* One trick used by Michael and Scott is to add a dummy node (allocated in the
+  queue initialization code); this dummy enables the separation of head and
+  tail operations.
+* Study the code, or better yet, type it in, run it, and measure it, to
+  understand how it works deeply.
+
+'''
+
+* Queues are commonly used in multi-threaded applications.
+* However, the type of queue used here (with just locks) often does not
+  completely meet the needs of such programs.
+* A more fully developed bounded queue, that enables a thread to wait if the
+  queue is either empty or overly full, is the subject of our intense study in
+  the next chapter on condition variables.
+* Watch for it!
+
 == References
 
 [B+10] "An Analysis of Linux Scalability to Many Cores_ by Silas Boyd-Wickizer, Austin T.  Clements, Yandong Mao, Aleksey Pesterev, M. Frans Kaashoek, Robert Morris, Nickolai Zeldovich . OSDI '10, Vancouver, Canada, October 2010.::
@@ -536,6 +625,11 @@ int List_Lookup(list_t *L, int key) {
 * LWN has many wonderful articles about the latest in Linux.
 * This article is a short description of scalable approximate counting; read
   it, and others, to learn more about the latest in Linux.
+
+[MS98] "Nonblocking Algorithms and Preemption-safe Locking on Multiprogrammed Shared-memory Multiprocessors" by M. Michael, M. Scott. Journal of Parallel and Distributed Computing, Vol. 51, No. 1, 1998.::
+* Professor Scott and his students have been at the forefront of concurrent
+  algorithms and data structures for many years; check out his web page,
+  numerous papers, or books to find out more.
 
 [MS04] "Concurrent Data Structures" by Mark Moir and Nir Shavit. In Handbook of Data Structures and Applications (Editors D. Metha and S.Sahni). Chapman and Hall/CRC Press, 2004. Available: `www.ostep.org/Citations/concurrent.pdf`.::
 * A short but relatively comprehensive reference on concurrent data
