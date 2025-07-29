@@ -571,8 +571,8 @@ ____
 ** [x] References 387
 ** Homework (Code) 388
 
-* 31 Semaphores 391
-** [ ] 31.1 Semaphores: A Definition 391
+* link:31-semaphores/[31 Semaphores 391]
+** [x] 31.1 Semaphores: A Definition 391
 ** [ ] 31.2 Binary Semaphores (Locks) 393
 ** [ ] 31.3 Semaphores For Ordering 394
 ** [ ] 31.4 The Producer/Consumer (Bounded Buffer) Problem 396

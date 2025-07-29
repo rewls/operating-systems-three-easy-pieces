@@ -1,0 +1,156 @@
+= 31 Semaphores
+:figure-caption: Figure 31.
+:source-highlighter: rouge
+:tabsize: 8
+:toc: left
+
+* As we know now, one needs both locks and condition variables to solve a
+  broad range of relevant and interesting concurrency problems.
+* One of the first people to realize this years ago was Edsger Dijkstra
+  (though it is hard to know the exact history [GR92]), known among other
+  things for his famous "shortest paths" algorithm in graph theory [D59], an
+  early polemic on structured programming entitled "Goto Statements Considered
+  Harmful" [D68a] (what a great title!), and, in the case we will study here,
+  the introduction of a synchronization primitive called the semaphore [D68b,
+  D72].
+* Indeed, Dijkstra and colleagues invented the semaphore as a single primitive
+  for all things related to synchronization; as you will see, one can use
+  semaphores as both locks and condition variables.
+
+.The crux: How to use semaphores
+****
+* How can we use semaphores instead of locks and condition variables?
+* What is the definition of a semaphore?
+* What is a binary semaphore?
+* Is it straightforward to build a semaphore out of locks and condition
+  variables?
+* To build locks and condition variables out of semaphores?
+****
+
+== 31.1 Semaphores: A Definition
+
+* A semaphore is an object with an integer value that we can manipulate with
+  two routines; in the POSIX standard, these routines are `sem_wait()` and
+  `sem_post()`{empty}footnote:[Historically, `sem_wait()` was called `P()` by
+  Dijkstra and `sem_post()` called `V()`. These shortened forms come from
+  Dutch words; interestingly, which Dutch words they supposedly derive from
+  has changed over time. Originally, `P()` came from "passering" (to pass) and
+  V() from "vrijgave" (release); later, Dijkstra wrote `P()` was from
+  "prolaag", a contraction of "probeer" (Dutch for "try") and "verlaag"
+  ("decrease"), and `V()` from "verhoog" which means "increase". Sometimes,
+  people call them down and up. Use the Dutch versions to impress your
+  friends, or confuse them, or both. See
+  `https://news.ycombinator.com/item?id=8761539`) for details.].
+* Because the initial value of the semaphore determines its behavior, before
+  calling any other routine to interact with the semaphore, we must first
+  initialize it to some value, as the code in Figure 31.1 does.
+
+:figure-number: {counter:figure-number}
+.{figure-caption} {figure-number}. Initializing A Semaphore
+[,c]
+----
+#include <semaphore.h>
+sem_t s;
+sem_init(&s, 0, 1);
+----
+
+* In the figure, we declare a semaphore `s` and initialize it to the value 1
+  by passing 1 in as the third argument.
+* The second argument to `sem_init()` will be set to 0 in all of the examples
+  we'll see; this indicates that the semaphore is shared between threads in
+  the same process.
+* See the man page for details on other usages of semaphores (namely, how they
+  can be used to synchronize access across different processes), which require
+  a different value for that second argument.
+
+'''
+
+* After a semaphore is initialized, we can call one of two functions to
+  interact with it, `sem_wait()` or `sem_post()`.
+* The behavior of these two functions is seen in Figure 31.2.
+
+:figure-number: {counter:figure-number}
+.{figure-caption} {figure-number}. Semaphore: Definitions Of Wait And Post
+[,c]
+----
+int sem_wait(sem_t *s) {
+	decrement the value of semaphore s by one
+	wait if value of semaphore s is negative
+}
+
+int sem_post(sem_t *s) {
+	increment the value of semaphore s by one
+	if there are one or more threads waiting, wake one
+}
+----
+
+* For now, we are not concerned with the implementation of these routines,
+  which clearly requires some care; with multiple threads calling into
+  `sem_wait()` and `sem_post()`, there is the obvious need for managing these
+  critical sections.
+* We will now focus on how to use these primitives; later we may discuss how
+  they are built.
+
+'''
+
+* We should discuss a few salient aspects of the interfaces here.
+* First, we can see that `sem_wait()` will either return right away (because
+  the value of the semaphore was one or higher when we called `sem_wait()`),
+  or it will cause the caller to suspend execution waiting for a subsequent
+  post.
+* Of course, multiple calling threads may call into `sem_wait()`, and thus all
+  be queued waiting to be woken.
+
+'''
+
+* Second, we can see that `sem_post()` does not wait for some particular
+  condition to hold like `sem_wait()` does.
+* Rather, it simply increments the value of the semaphore and then, if there
+  is a thread waiting to be woken, wakes one of them up.
+
+'''
+
+* Third, the value of the semaphore, when negative, is equal to the number of
+  waiting threads [D68b].
+* Though the value generally isn't seen by users of the semaphores, this
+  invariant is worth knowing and perhaps can help you remember how a semaphore
+  functions.
+
+'''
+
+* Don't worry (yet) about the seeming race conditions possible within the
+  semaphore; assume that the actions they make are performed atomically.
+* We will soon use locks and condition variables to do just this.
+
+== References
+
+[D59] "A Note on Two Problems in Connexion with Graphs" by E. W. Dijkstra. Numerische Mathematik 1, 269-271, 1959. Available: `http://www-m3.ma.tum.de/twiki/pub/MN0506/WebHome/dijkstra.pdf`.::
+* Can you believe people worked on algorithms in 1959?
+* We can't.
+* Even before computers were any fun to use, these people had a sense that
+  they would transform the world...
+
+[D68a] "Go-to Statement Considered Harmful" by E.W. Dijkstra. CACM, volume 11(3), March 1968. `http://www.cs.utexas.edu/users/EWD/ewd02xx/EWD215.PDF`.::
+* Sometimes thought of as the beginning of the field of software engineering.
+
+[D68b] "The Structure of the THE Multiprogramming System" by E.W. Dijkstra. CACM, volume 11(5), 1968.::
+* One of the earliest papers to point out that systems work in computer
+  science is an engaging intellectual endeavor.
+* Also argues strongly for modularity in the form of layered systems.
+
+[D72] "Information Streams Sharing a Finite Buffer" by E.W. Dijkstra.  Information Processing Letters 1, 1972.  `http://www.cs.utexas.edu/users/EWD/ewd03xx/EWD329.PDF`.::
+* Did Dijkstra invent everything?
+* No, but maybe close.
+* He certainly was the first to clearly write down what the problems were in
+  concurrent code.
+* However, practitioners in OS design knew of many of the problems described
+  by Dijkstra, so perhaps giving him too much credit would be a
+  misrepresentation.
+
+[GR92] "Transaction Processing: Concepts and Techniques" by Jim Gray, Andreas Reuter. Morgan Kaufmann, September 1992.::
+* The exact quote that we find particularly humorous is found on page 485, at
+  the top of Section 8.8: "The first multiprocessors, circa 1960, had test and
+  set instructions ... presumably the OS implementors worked out the appropriate
+  algorithms, although Dijkstra is generally credited with inventing semaphores
+  many years later."
+* Oh, snap!
