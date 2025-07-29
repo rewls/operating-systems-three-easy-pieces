@@ -482,26 +482,26 @@ int main(int argc, char *argv[]) {
 [,c]
 ----
 void *producer(void *arg) {
-    int i;
-    for (i = 0; i < loops; i++) {
-	sem_wait(&mutex);	// Line P0 (NEW LINE)
-	sem_wait(&empty);	// Line P1
-	put(i);			// Line P2
-	sem_post(&full);	// Line P3
-	sem_post(&mutex);	// Line P4 (NEW LINE)
-    }
+	int i;
+	for (i = 0; i < loops; i++) {
+		sem_wait(&mutex);	// Line P0 (NEW LINE)
+		sem_wait(&empty);	// Line P1
+		put(i);			// Line P2
+		sem_post(&full);	// Line P3
+		sem_post(&mutex);	// Line P4 (NEW LINE)
+	}
 }
 
 void *consumer(void *arg) {
-    int i;
-    for (i = 0; i < loops; i++) {
-	sem_wait(&mutex);	// Line C0 (NEW LINE)
-	sem_wait(&full);	// Line C1
-	int tmp = get();	// Line C2
-	sem_post(&empty);	// Line C3
-	sem_post(&mutex);	// Line C4 (NEW LINE)
-	printf("%d\n", tmp);
-    }
+	int i;
+	for (i = 0; i < loops; i++) {
+		sem_wait(&mutex);	// Line C0 (NEW LINE)
+		sem_wait(&full);	// Line C1
+		int tmp = get();	// Line C2
+		sem_post(&empty);	// Line C3
+		sem_post(&mutex);	// Line C4 (NEW LINE)
+		printf("%d\n", tmp);
+	}
 }
 ----
 
@@ -564,26 +564,26 @@ void *consumer(void *arg) {
 [,c]
 ----
 void *producer(void *arg) {
-    int i;
-    for (i = 0; i < loops; i++) {
-	sem_wait(&empty);	// Line P1
-	sem_wait(&mutex);	// Line P1.5 (lock)
-	put(i);			// Line P2
-	sem_post(&mutex);	// Line P2.5 (unlock)
-	sem_post(&full);	// Line P3
-    }
+	int i;
+	for (i = 0; i < loops; i++) {
+		sem_wait(&empty);	// Line P1
+		sem_wait(&mutex);	// Line P1.5 (lock)
+		put(i);			// Line P2
+		sem_post(&mutex);	// Line P2.5 (unlock)
+		sem_post(&full);	// Line P3
+	}
 }
 
 void *consumer(void *arg) {
-    int i;
-    for (i = 0; i < loops; i++) {
-	sem_wait(&full);	// Line C1
-	sem_wait(&mutex);	// Line C1.5 (lock)
-	int tmp = get();	// Line C2
-	sem_post(&mutex);	// Line C2.5 (unlock)
-	sem_post(&empty);	// Line C3
-	printf("%d\n", tmp);
-    }
+	int i;
+	for (i = 0; i < loops; i++) {
+		sem_wait(&full);	// Line C1
+		sem_wait(&mutex);	// Line C1.5 (lock)
+		int tmp = get();	// Line C2
+		sem_post(&mutex);	// Line C2.5 (unlock)
+		sem_post(&empty);	// Line C3
+		printf("%d\n", tmp);
+	}
 }
 ----
 
@@ -862,6 +862,41 @@ void get_forks(int p) {
 * Look them up if you are interested in learning more, or just getting more
   practice thinking in a concurrent manner [D08].
 
+== 31.7 Thread Throttling
+
+* One other simple use case for semaphores arises on occasion, and thus we
+  present it here.
+* The specific problem is this: how can a programmer prevent "too many"
+  threads from doing something at once and bogging the system down?
+* Answer: decide upon a threshold for "too many", and then use a semaphore to
+  limit the number of threads concurrently executing the piece of code in
+  question.
+* We call this approach *throttling* [T99], and consider it a form of
+  *admission control*.
+
+'''
+
+* Let's consider a more specific example.
+* Imagine that you create hundreds of threads to work on some problem in
+  parallel.
+* However, in a certain part of the code, each thread acquires a large amount
+  of memory to perform part of the computation; let's call this part of the
+  code the _memory-intensive region_.
+* If _all_ of the threads enter the memory-intensive region at the same time,
+  the sum of all the memory allocation requests will exceed the amount of
+  physical memory on the machine.
+* As a result, the machine will start thrashing (i.e., swapping pages to and
+  from the disk), and the entire computation will slow to a crawl.
+
+'''
+
+* A simple semaphore can solve this problem.
+* By initializing the value of the semaphore to the maximum number of threads
+  you wish to enter the memory-intensive region at once, and then putting a
+  `sem_wait()` and `sem_post()` around the region, a semaphore can naturally
+  throttle the number of threads that are ever concurrently in the dangerous
+  region of the code.
+
 == References
 
 [CB08] "Real-world Concurrency" by Bryan Cantrill, Jeff Bonwick. ACM Queue.  Volume 6, No. 5. September 2008.::
@@ -915,3 +950,8 @@ void get_forks(int p) {
 [H87] "Aspects of Cache Memory and Instruction Buffer Performance" by Mark D. Hill. Ph.D.  Dissertation, U.C. Berkeley, 1987.::
 * Hill's dissertation work, for those obsessed with caching in early systems.
 * A great example of a quantitative dissertation.
+
+[T99] "Re: NT kernel guy playing with Linux" by Linus Torvalds. June 27, 1999. Available: `https://yarchive.net/comp/linux/semaphores.html`.::
+* A response from Linus himself about the utility of semaphores, including the
+  throttling case we mention in the text.
+* As always, Linus is slightly insulting but quite informative.

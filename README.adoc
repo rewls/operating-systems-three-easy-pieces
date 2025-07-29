@@ -578,7 +578,7 @@ ____
 ** [x] 31.4 The Producer/Consumer (Bounded Buffer) Problem 396
 ** [x] 31.5 Reader-Writer Locks 401
 ** [x] 31.6 The Dining Philosophers 403
-** [ ] 31.7 Thread Throttling 406
+** [x] 31.7 Thread Throttling 406
 ** [ ] 31.8 How To Implement Semaphores 406
 ** [ ] 31.9 Summary 407
 ** [ ] References 409
