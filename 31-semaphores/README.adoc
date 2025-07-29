@@ -713,6 +713,155 @@ void rwlock_release_writelock(rwlock_t *rw) {
 * And thus we call this similar advice Hill's Law.
 ****
 
+== 31.6 The Dining Philosophers
+
+* One of the most famous concurrency problems posed, and solved, by Dijkstra,
+  is known as the *dining philosopher's problem* [D71].
+* The problem is famous because it is fun and somewhat intellectually
+  interesting; however, its practical utility is low.
+* However, its fame forces its inclusion here; indeed, you might be asked
+  about it on some interview, and you'd really hate your OS professor if you
+  miss that question and don't get the job.
+* Conversely, if you get the job, please feel free to send your OS professor a
+  nice note, or some stock options.
+
+'''
+
+* The basic setup for the problem is this (as shown in Figure 31.14): assume
+  there are five "philosophers" sitting around a table.
+* Between each pair of philosophers is a single fork (and thus, five total).
+* The philosophers each have times where they think, and don't need any forks,
+  and times where they eat.
+* In order to eat, a philosopher needs two forks, both the one on their left
+  and the one on their right.
+* The contention for these forks, and the synchronization problems that ensue,
+  are what makes this a problem we study in concurrent programming.
+
+.The Dining Philosophers
+image::figure-31-14.png[]
+
+* Here is the basic loop of each philosopher, assuming each has a unique
+  thread identifier `p` from 0 to 4 (inclusive):
+
+[source,c]
+while (1) {
+	think();
+	get_forks(p);
+	eat();
+	put_forks(p);
+}
+
+* The key challenge, then, is to write the routines `get_forks()` and
+  `put_forks()` such that there is no deadlock, no philosopher starves and
+  never gets to eat, and concurrency is high (i.e., as many philosophers can
+  eat at the same time as possible).
+
+'''
+
+* Following Downey's solutions [D08], we'll use a few helper functions to get
+  us towards a solution.
+* They are:
+
+[source,c]
+int left(int p) { return p; }
+int right(int p) { return (p + 1) % 5; }
+
+* When philosopher `p` wishes to refer to the fork on their left, they simply
+  call `left(p)`.
+* Similarly, the fork on the right of a philosopher `p` is referred to by
+  calling `right(p)`; the modulo operator therein handles the one case where
+  the last philosopher (`p=4`) tries to grab the fork on their right, which is
+  fork 0.
+
+'''
+
+* We'll also need some semaphores to solve this problem.
+* Let us assume we have five, one for each fork: `sem_t forks[5]`.
+
+=== Broken Solution
+
+* We attempt our first solution to the problem.
+* Assume we initialize each semaphore (in the forks array) to a value of 1.
+* Assume also that each philosopher knows its own number (`p`).
+* We can thus write the `get_forks()` and `put_forks()` routine (Figure 31.15,
+  page 15).
+
+:figure-number: {counter:figure-number}
+.{figure-caption} {figure-number}. The `get_forks()` And `put_forks()` Routines
+[,c]
+----
+void get_forks(int p) {
+	sem_wait(&forks[left(p)]);
+	sem_wait(&forks[right(p)]);
+}
+
+void put_forks(int p) {
+	sem_post(&forks[left(p)]);
+	sem_post(&forks[right(p)]);
+}
+----
+
+* The intuition behind this (broken) solution is as follows.
+* To acquire the forks, we simply grab a "lock" on each one: first the one on
+  the left, and then the one on the right.
+* When we are done eating, we release them.
+* Simple, no?
+* Unfortunately, in this case, simple means broken.
+* Can you see the problem that arises?
+* Think about it.
+
+'''
+
+* The problem is *deadlock*.
+* If each philosopher happens to grab the fork on their left before any
+  philosopher can grab the fork on their right, each will be stuck holding one
+  fork and waiting for another, forever.
+* Specifically, philosopher 0 grabs fork 0, philosopher 1 grabs fork 1,
+  philosopher 2 grabs fork 2, philosopher 3 grabs fork 3, and philosopher 4
+  grabs fork 4; all the forks are acquired, and all the philosophers are stuck
+  waiting for a fork that another philosopher possesses.
+* We'll study deadlock in more detail soon; for now, it is safe to say that
+  this is not a working solution.
+
+=== A Solution: Breaking The Dependency
+
+* The simplest way to attack this problem is to change how forks are acquired
+  by at least one of the philosophers; indeed, this is how Dijkstra himself
+  solved the problem.
+* Specifically, let's assume that philosopher 4 (the highest numbered one)
+  gets the forks in a different order than the others (Figure 31.16); the
+  `put_forks()` code remains the same.
+
+:figure-number: {counter:figure-number}
+.{figure-caption} {figure-number}. Breaking The Dependency In `get_forks()`
+[,c]
+----
+void get_forks(int p) {
+	if (p == 4) {
+		sem_wait(&forks[right(p)]);
+		sem_wait(&forks[left(p)]);
+	} else {
+		sem_wait(&forks[left(p)]);
+		sem_wait(&forks[right(p)]);
+	}
+}
+----
+
+* Because the last philosopher tries to grab right before left, there is no
+  situation where each philosopher grabs one fork and is stuck waiting for
+  another; the cycle of waiting is broken.
+* Think through the ramifications of this solution, and convince yourself that
+  it works.
+
+'''
+
+* There are other "famous" problems like this one, e.g., the *cigarette
+  smoker's problem* or the *sleeping barber problem*.
+* Most of them are just excuses to think about concurrency; some of them have
+  fascinating names.
+* Look them up if you are interested in learning more, or just getting more
+  practice thinking in a concurrent manner [D08].
+
 == References
 
 [CB08] "Real-world Concurrency" by Bryan Cantrill, Jeff Bonwick. ACM Queue.  Volume 6, No. 5. September 2008.::
@@ -746,6 +895,14 @@ void rwlock_release_writelock(rwlock_t *rw) {
 * However, practitioners in OS design knew of many of the problems described
   by Dijkstra, so perhaps giving him too much credit would be a
   misrepresentation.
+
+[D08] "The Little Book of Semaphores" by A.B. Downey. Available at the following site: `http://greenteapress.com/semaphores/`.::
+* A nice (and free!) book about semaphores.
+* Lots of fun problems to solve, if you like that sort of thing.
+
+[D71] "Hierarchical ordering of sequential processes" by E.W. Dijkstra. Available online here: `http://www.cs.utexas.edu/users/EWD/ewd03xx/EWD310.PDF`.::
+* Presents numerous concurrency problems, including Dining Philosophers.
+* The wikipedia page about this problem is also useful.
 
 [GR92] "Transaction Processing: Concepts and Techniques" by Jim Gray, Andreas Reuter. Morgan Kaufmann, September 1992.::
 * The exact quote that we find particularly humorous is found on page 485, at
