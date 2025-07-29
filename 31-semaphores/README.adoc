@@ -897,7 +897,115 @@ void get_forks(int p) {
   throttle the number of threads that are ever concurrently in the dangerous
   region of the code.
 
+== 31.8 How To Implement Semaphores
+
+* Finally, let's use our low-level synchronization primitives, locks and
+  condition variables, to build our own version of semaphores called ...
+  _(drum roll here)_ ... *Zemaphores*.
+* This task is fairly straightforward, as you can see in Figure 31.17 (page
+  17).
+
+:figure-number: {counter:figure-number}
+.{figure-caption} {figure-number}. Implementing Zemaphores With Locks And CVs
+[,c]
+----
+typedef struct __Zem_t {
+	int value;
+	pthread_cond_t cond;
+	pthread_mutex_t lock;
+} Zem_t;
+
+// only one thread can call this
+void Zem_init(Zem_t *s, int value) {
+	s->value = value;
+	Cond_init(&s->cond);
+	Mutex_init(&s->lock);
+}
+
+void Zem_wait(Zem_t *s) {
+	Mutex_lock(&s->lock);
+	while (s->value <= 0)
+		Cond_wait(&s->cond, &s->lock);
+	s->value--;
+	Mutex_unlock(&s->lock);
+}
+
+void Zem_post(Zem_t *s) {
+	Mutex_lock(&s->lock);
+	s->value++;
+	Cond_signal(&s->cond);
+	Mutex_unlock(&s->lock);
+}
+----
+
+* In the code above, we use just one lock and one condition variable, plus a
+  state variable to track the value of the semaphore.
+* Study the code for yourself until you really understand it.
+* Do it!
+
+'''
+
+* One subtle difference between our Zemaphore and pure semaphores as defined
+  by Dijkstra is that we don't maintain the invariant that the value of the
+  semaphore, when negative, reflects the number of waiting threads; indeed,
+  the value will never be lower than zero.
+* This behavior is easier to implement and matches the current Linux
+  implementation.
+
+'''
+
+* Curiously, building condition variables out of semaphores is a much trickier
+  proposition.
+* Some highly experienced concurrent programmers tried to do this in the
+  Windows environment, and many different bugs ensued [B04].
+* Try it yourself, and see if you can figure out why building condition
+  variables out of semaphores is more challenging of a problem than it might
+  appear.
+
+== 31.9 Summary
+
+* Semaphores are a powerful and flexible primitive for writing concurrent
+  programs.
+* Some programmers use them exclusively, shunning locks and condition
+  variables, due to their simplicity and utility.
+
+'''
+
+* In this chapter, we have presented just a few classic problems and
+  solutions.
+* If you are interested in finding out more, there are many other materials
+  you can reference.
+* One great (and free reference) is Allen Downey's book on concurrency and
+  programming with semaphores [D08].
+* This book has lots of puzzles you can work on to improve your understanding
+  of both semaphores in specific and concurrency in general.
+* Becoming a real concurrency expert takes years of effort; going beyond what
+  you learn in this class is undoubtedly the key to mastering such a topic.
+
+.Tip: Be careful with generalization
+****
+* The abstract technique of generalization can thus be quite useful in systems
+  design, where one good idea can be made slightly broader and thus solve a
+  larger class of problems.
+* However, be careful when generalizing; as Lampson warns us "Don't
+  generalize; generalizations are generally wrong" [L83].
+
+'''
+
+* One could view semaphores as a generalization of locks and condition
+  variables; however, is such a generalization needed?
+* And, given the difficulty of realizing a condition variable on top of a
+  semaphore, perhaps this generalization is not as general as you might think.
+****
+
 == References
+
+[B04] "Implementing Condition Variables with Semaphores" by Andrew Birrell.  December 2004.::
+* An interesting read on how difficult implementing CVs on top of semaphores
+  really is, and the mistakes the author and co-workers made along the way.
+* Particularly relevant because the group had done a ton of concurrent
+  programming; Birrell, for example, is known for (among other things) writing
+  various thread-programming guides.
 
 [CB08] "Real-world Concurrency" by Bryan Cantrill, Jeff Bonwick. ACM Queue.  Volume 6, No. 5. September 2008.::
 * A nice article by some kernel hackers from a company formerly known as Sun
@@ -950,6 +1058,17 @@ void get_forks(int p) {
 [H87] "Aspects of Cache Memory and Instruction Buffer Performance" by Mark D. Hill. Ph.D.  Dissertation, U.C. Berkeley, 1987.::
 * Hill's dissertation work, for those obsessed with caching in early systems.
 * A great example of a quantitative dissertation.
+
+[L83] "Hints for Computer Systems Design" by Butler Lampson. ACM Operating Systems Review, 15:5, October 1983.::
+* Lampson, a famous systems researcher, loved using hints in the design of
+  computer systems.
+* A hint is something that is often correct but can be wrong; in this use, a
+  signal() is telling a waiting thread that it changed the condition that the
+  waiter was waiting on, but not to trust that the condition will be in the
+  desired state when the waiting thread wakes up.
+* In this paper about hints for designing systems, one of Lampson's general
+  hints is that you should use hints.
+* It is not as confusing as it sounds.
 
 [T99] "Re: NT kernel guy playing with Linux" by Linus Torvalds. June 27, 1999. Available: `https://yarchive.net/comp/linux/semaphores.html`.::
 * A response from Linus himself about the utility of semaphores, including the
