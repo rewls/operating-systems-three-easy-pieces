@@ -219,6 +219,97 @@ image::figure-31-05.png[]
   be implemented in a simpler manner than the generalized semaphores we
   present here.
 
+== 31.3 Semaphores For Ordering
+
+* Semaphores are also useful to order events in a concurrent program.
+* For example, a thread may wish to wait for a list to become non-empty so it
+  can delete an element from it.
+* In this pattern of usage, we often find one thread _waiting_ for something
+  to happen, and another thread making that something happen and then
+  _signaling_ that it has happened, thus waking the waiting thread.
+* We are thus using the semaphore as an ordering primitive (similar to our use
+  of condition variables earlier).
+
+'''
+
+* A simple example is as follows.
+* Imagine a thread creates another thread and then wants to wait for it to
+  complete its execution (Figure 31.6).
+* When this program runs, we would like to see the following:
+
+....
+parent: begin
+child
+parent: end
+....
+
+:figure-number: {counter:figure-number}
+.{figure-caption} {figure-number}. A Parent Waiting For Its Child
+[,c]
+----
+sem_t s;
+
+void *child(void *arg) {
+	printf("child\n");
+	sem_post(&s); // signal here: child is done
+	return NULL;
+}
+
+int main(int argc, char *argv[]) {
+	sem_init(&s, 0, X); // what should X be?
+	printf("parent: begin\n");
+	pthread_t c;
+	Pthread_create(&c, NULL, child, NULL);
+	sem_wait(&s); // wait here for child
+	printf("parent: end\n");
+	return 0;
+}
+----
+
+* The question, then, is how to use a semaphore to achieve this effect; as it
+  turns out, the answer is relatively easy to understand.
+* As you can see in the code, the parent simply calls `sem_wait()` and the
+  child `sem_post()` to wait for the condition of the child finishing its
+  execution to become true.
+* However, this raises the question: what should the initial value of this
+  semaphore be?
+
+'''
+
+* _(Again, think about it here, instead of reading ahead)_
+
+'''
+
+* The answer, of course, is that the value of the semaphore should be set to
+  is 0.
+* There are two cases to consider.
+* First, let us assume that the parent creates the child but the child has not
+  run yet (i.e., it is sitting in a ready queue but not running).
+* In this case (Figure 31.7, page 6), the parent will call `sem_wait()` before
+  the child has called `sem_post()`; we'd like the parent to wait for the
+  child to run.
+* The only way this will happen is if the value of the semaphore is not
+  greater than 0; hence, 0 is the initial value.
+* The parent runs, decrements the semaphore (to -1), then waits (sleeping).
+* When the child finally runs, it will call `sem_post()`, increment the value
+  of the semaphore to 0, and wake the parent, which will then return from
+  `sem_wait()` and finish the program.
+
+.Thread Trace: Parent Waiting For Child (Case 1)
+image::figure-31-07.png[]
+
+* The second case (Figure 31.8) occurs when the child runs to completion
+  before the parent gets a chance to call `sem_wait()`.
+* In this case, the child will first call `sem_post()`, thus incrementing the
+  value of the semaphore from 0 to 1.
+* When the parent then gets a chance to run, it will call `sem_wait()` and
+  find the value of the semaphore to be 1; the parent will thus decrement the
+  value (to 0) and return from `sem_wait()` without waiting, also achieving
+  the desired effect.
+
+.Thread Trace: Parent Waiting For Child (Case 2)
+image::figure-31-08.png[]
+
 == References
 
 [D59] "A Note on Two Problems in Connexion with Graphs" by E. W. Dijkstra. Numerische Mathematik 1, 269-271, 1959. Available: `http://www-m3.ma.tum.de/twiki/pub/MN0506/WebHome/dijkstra.pdf`.::
