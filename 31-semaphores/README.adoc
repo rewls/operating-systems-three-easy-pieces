@@ -310,6 +310,283 @@ image::figure-31-07.png[]
 .Thread Trace: Parent Waiting For Child (Case 2)
 image::figure-31-08.png[]
 
+== 31.4 The Producer/Consumer (Bounded Buffer) Problem
+
+* The next problem we will confront in this chapter is known as the
+  *producer/consumer* problem, or sometimes as the *bounded buffer* problem
+  [D72].
+* This problem is described in detail in the previous chapter on condition
+  variables; see there for details.
+
+.Aside: Setting the value of a semaphore
+****
+* We've now seen two examples of initializing a semaphore.
+* In the first case, we set the value to 1 to use the semaphore as a lock; in
+  the second, to 0, to use the semaphore for ordering.
+* So what's the general rule for semaphore initialization?
+
+'''
+
+* One simple way to think about it, thanks to Perry Kivolowitz, is to consider
+  the number of resources you are willing to give away immediately after
+  initialization.
+* With the lock, it was 1, because you are willing to have the lock locked
+  (given away) immediately after initialization.
+* With the ordering case, it was 0, because there is nothing to give away at
+  the start; only when the child thread is done is the resource created, at
+  which point, the value is incremented to 1.
+* Try this line of thinking on future semaphore problems, and see if it helps.
+****
+
+=== First Attempt
+
+* Our first attempt at solving the problem introduces two semaphores, empty
+  and full, which the threads will use to indicate when a buffer entry has
+  been emptied or filled, respectively.
+* The code for the put and get routines is in Figure 31.9, and our attempt at
+  solving the producer and consumer problem is in Figure 31.10 (page 8).
+
+:figure-number: {counter:figure-number}
+.{figure-caption} {figure-number}. The Put And Get Routines
+[,c]
+----
+int buffer[MAX];
+int fill = 0;
+int use = 0;
+
+void put(int value) {
+	buffer[fill] = value;		// Line F1
+	fill = (fill + 1) % MAX;	// Line F2
+}
+
+int get() {
+	int tmp = buffer[use];	// Line G1
+	use = (use + 1) % MAX;	// Line G2
+	return tmp;
+}
+----
+
+:figure-number: {counter:figure-number}
+.{figure-caption} {figure-number}. Adding The Full And Empty Conditions
+[,c]
+----
+sem_t empty;
+sem_t full;
+
+void *producer(void *arg) {
+	int i;
+	for (i = 0; i < loops; i++) {
+		sem_wait(&empty);	// Line P1
+		put(i);			// Line P2
+		sem_post(&full);	// Line P3
+	}
+}
+
+void *consumer(void *arg) {
+	int tmp = 0;
+	while (tmp != -1) {
+		sem_wait(&full);	// Line C1
+		tmp = get();		// Line C2
+		sem_post(&empty);	// Line C3
+		printf("%d\n", tmp);
+	}
+}
+
+int main(int argc, char *argv[]) {
+	// ...
+	sem_init(&empty, 0, MAX);	// MAX are empty
+	sem_init(&full, 0, 0);		// 0 are full
+	// ...
+}
+----
+
+* In this example, the producer first waits for a buffer to become empty in
+  order to put data into it, and the consumer similarly waits for a buffer to
+  become filled before using it.
+* Let us first imagine that `MAX=1` (there is only one buffer in the array),
+  and see if this works.
+
+'''
+
+* Imagine again there are two threads, a producer and a consumer.
+* Let us examine a specific scenario on a single CPU.
+* Assume the consumer gets to run first.
+* Thus, the consumer will hit Line C1 in Figure 31.10, calling
+  `sem_wait(&full)`.
+* Because full was initialized to the value 0, the call will decrement full
+  (to -1), block the consumer, and wait for another thread to call
+  `sem_post()` on full, as desired.
+
+'''
+
+* Assume the producer then runs.
+* It will hit Line P1, thus calling the `sem_wait(&empty)` routine.
+* Unlike the consumer, the producer will continue through this line, because
+  empty was initialized to the value `MAX` (in this case, 1).
+* Thus, `empty` will be decremented to 0 and the producer will put a data
+  value into the first entry of buffer (Line P2).
+* The producer will then continue on to P3 and call `sem_post(&full)`,
+  changing the value of the `full` semaphore from -1 to 0 and waking the
+  consumer (e.g., move it from blocked to ready).
+
+'''
+
+* In this case, one of two things could happen.
+* If the producer continues to run, it will loop around and hit Line P1 again.
+* This time, however, it would block, as the empty semaphore's value is 0.
+* If the producer instead was interrupted and the consumer began to run, it
+  would return from `sem_wait(&full)` (Line C1), find that the buffer was
+  full, and consume it.
+* In either case, we achieve the desired behavior.
+
+'''
+
+* You can try this same example with more threads (e.g., multiple producers,
+  and multiple consumers).
+* It should still work.
+
+'''
+
+* Let us now imagine that `MAX` is greater than 1 (say `MAX=10`).
+* For this example, let us assume that there are multiple producers and
+  multiple consumers.
+* We now have a problem: a race condition.
+* Do you see where it occurs?
+* (take some time and look for it)
+* If you can't see it, here's a hint: look more closely at the `put()` and
+  `get()` code.
+
+'''
+
+* OK, let's understand the issue.
+* Imagine two producers (Pa and Pb) both calling into `put()` at roughly the
+  same time.
+* Assume producer Pa gets to run first, and just starts to fill the first
+  buffer entry (`fill=0` at Line F1).
+* Before Pa gets a chance to increment the fill counter to 1, it is
+  interrupted.
+* Producer Pb starts to run, and at Line F1 it also puts its data into the 0th
+  element of buffer, which means that the old data there is overwritten!
+* This action is a no-no; we don't want any data from the producer to be lost.
+
+=== A Solution: Adding Mutual Exclusion
+
+* As you can see, what we've forgotten here is _mutual exclusion_.
+* The filling of a buffer and incrementing of the index into the buffer is a
+  critical section, and thus must be guarded carefully.
+* So let's use our friend the binary semaphore and add some locks.
+* Figure 31.11 shows our attempt.
+
+:figure-number: {counter:figure-number}
+.{figure-caption} {figure-number}. Adding Mutual Exclusion (Incorrectly)
+[,c]
+----
+void *producer(void *arg) {
+    int i;
+    for (i = 0; i < loops; i++) {
+	sem_wait(&mutex);	// Line P0 (NEW LINE)
+	sem_wait(&empty);	// Line P1
+	put(i);			// Line P2
+	sem_post(&full);	// Line P3
+	sem_post(&mutex);	// Line P4 (NEW LINE)
+    }
+}
+
+void *consumer(void *arg) {
+    int i;
+    for (i = 0; i < loops; i++) {
+	sem_wait(&mutex);	// Line C0 (NEW LINE)
+	sem_wait(&full);	// Line C1
+	int tmp = get();	// Line C2
+	sem_post(&empty);	// Line C3
+	sem_post(&mutex);	// Line C4 (NEW LINE)
+	printf("%d\n", tmp);
+    }
+}
+----
+
+* Now we've added some locks around the entire `put()`/`get()` parts of the
+  code, as indicated by the `NEW LINE` comments.
+* That seems like the right idea, but it also doesn't work.
+* Why?
+* Deadlock.
+* Why does deadlock occur?
+* Take a moment to consider it; try to find a case where deadlock arises.
+* What sequence of steps must happen for the program to deadlock? 
+
+=== Avoiding Deadlock
+
+* OK, now that you figured it out, here is the answer.
+* Imagine two threads, one producer and one consumer.
+* The consumer gets to run first.
+* It acquires the mutex (Line C0), and then calls `sem_wait()` on the full
+  semaphore (Line C1); because there is no data yet, this call causes the
+  consumer to block and thus yield the CPU; importantly, though, the consumer
+  still holds the lock.
+
+'''
+
+* A producer then runs.
+* It has data to produce and if it were able to run, it would be able to wake
+  the consumer thread and all would be good.
+* Unfortunately, the first thing it does is call `sem_wait()` on the binary
+  mutex semaphore (Line P0).
+* The lock is already held.
+* Hence, the producer is now stuck waiting too.
+
+'''
+
+* There is a simple cycle here.
+* The consumer _holds_ the mutex and is _waiting_ for the someone to signal
+  full.
+* The producer could _signal_ full but is _waiting_ for the mutex.
+* Thus, the producer and consumer are each stuck waiting for each other: a
+  classic deadlock.
+
+=== At Last, A Working Solution
+
+* To solve this problem, we simply must reduce the scope of the lock.
+* Figure 31.12 (page 10) shows the correct solution.
+* As you can see, we simply move the mutex acquire and release to be just
+  around the critical section; the full and empty wait and signal code is left
+  outside{empty}footnote:[Indeed, it may have been more natural to place the
+  mutex acquire/release inside the put() and get() functions for the purposes
+  of modularity.].
+* The result is a simple and working bounded buffer, a commonly-used pattern
+  in multithreaded programs.
+* Understand it now; use it later.
+* You will thank us for years to come.
+* Or at least, you will thank us when the same question is asked on the final
+  exam, or during a job interview.
+
+:figure-number: {counter:figure-number}
+.{figure-caption} {figure-number}. Adding Mutual Exclusion (Correctly)
+[,c]
+----
+void *producer(void *arg) {
+    int i;
+    for (i = 0; i < loops; i++) {
+	sem_wait(&empty);	// Line P1
+	sem_wait(&mutex);	// Line P1.5 (lock)
+	put(i);			// Line P2
+	sem_post(&mutex);	// Line P2.5 (unlock)
+	sem_post(&full);	// Line P3
+    }
+}
+
+void *consumer(void *arg) {
+    int i;
+    for (i = 0; i < loops; i++) {
+	sem_wait(&full);	// Line C1
+	sem_wait(&mutex);	// Line C1.5 (lock)
+	int tmp = get();	// Line C2
+	sem_post(&mutex);	// Line C2.5 (unlock)
+	sem_post(&empty);	// Line C3
+	printf("%d\n", tmp);
+    }
+}
+----
+
 == References
 
 [D59] "A Note on Two Problems in Connexion with Graphs" by E. W. Dijkstra. Numerische Mathematik 1, 269-271, 1959. Available: `http://www-m3.ma.tum.de/twiki/pub/MN0506/WebHome/dijkstra.pdf`.::
