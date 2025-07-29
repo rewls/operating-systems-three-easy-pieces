@@ -587,7 +587,142 @@ void *consumer(void *arg) {
 }
 ----
 
+== 31.5 Reader-Writer Locks
+
+* Another classic problem stems from the desire for a more flexible locking
+  primitive that admits that different data structure accesses might require
+  different kinds of locking.
+* For example, imagine a number of concurrent list operations, including
+  inserts and simple lookups.
+* While inserts change the state of the list (and thus a traditional critical
+  section makes sense), lookups simply read the data structure; as long as we
+  can guarantee that no insert is on-going, we can allow many lookups to
+  proceed concurrently.
+* The special type of lock we will now develop to support this type of
+  operation is known as a *reader-writer lock* [CHP71].
+* The code for such a lock is available in Figure 31.13 (page 12).
+
+:figure-number: {counter:figure-number}
+.{figure-caption} {figure-number}. A Simple Reader-Writer Lock
+[,c]
+----
+typedef struct _rwlock_t {
+	sem_t lock;		// binary semaphore (basic lock)
+	sem_t writelock;	// allow ONE writer/MANY readers
+	int readers;		// #readers in critical section
+} rwlock_t;
+
+void rwlock_init(rwlock_t *rw) {
+	rw->readers = 0;
+	sem_init(&rw->lock, 0, 1);
+	sem_init(&rw->writelock, 0, 1);
+}
+
+void rwlock_acquire_readlock(rwlock_t *rw) {
+	sem_wait(&rw->lock);
+	rw->readers++;
+	if (rw->readers == 1) // first reader gets writelock
+		sem_wait(&rw->writelock);
+	sem_post(&rw->lock);
+}
+
+void rwlock_release_readlock(rwlock_t *rw) {
+	sem_wait(&rw->lock);
+	rw->readers--;
+	if (rw->readers == 0) // last reader lets it go
+		sem_post(&rw->writelock);
+	sem_post(&rw->lock);
+}
+
+void rwlock_acquire_writelock(rwlock_t *rw) {
+	sem_wait(&rw->writelock);
+}
+
+void rwlock_release_writelock(rwlock_t *rw) {
+	sem_post(&rw->writelock);
+}
+----
+
+* The code is pretty simple.
+* If some thread wants to update the data structure in question, it should
+  call the new pair of synchronization operations:
+  `rwlock_acquire_writelock()`, to acquire a write lock, and
+  `rwlock_release_writelock()`, to release it.
+* Internally, these simply use the `writelock` semaphore to ensure that only a
+  single writer can acquire the lock and thus enter the critical section to
+  update the data structure in question.
+
+'''
+
+* More interesting is the pair of routines to acquire and release read locks.
+* When acquiring a read lock, the reader first acquires `lock` and then
+  increments the `readers` variable to track how many readers are currently
+  inside the data structure.
+* The important step then taken within `rwlock_acquire_readlock()` occurs when
+  the first reader acquires the lock; in that case, the reader also acquires
+  the write lock by calling `sem_wait()` on the `writelock` semaphore, and
+  then releasing the `lock` by calling `sem_post()`.
+
+'''
+
+* Thus, once a reader has acquired a read lock, more readers will be allowed
+  to acquire the read lock too; however, any thread that wishes to acquire the
+  write lock will have to wait until all readers are finished; the last one to
+  exit the critical section calls `sem_post()` on "writelock" and thus enables
+  a waiting writer to acquire the lock.
+
+'''
+
+* This approach works (as desired), but does have some negatives, especially
+  when it comes to fairness.
+* In particular, it would be relatively easy for readers to starve writers.
+* More sophisticated solutions to this problem exist; perhaps you can think of
+  a better implementation?
+* Hint: think about what you would need to do to prevent more readers from
+  entering the lock once a writer is waiting.
+
+'''
+
+* Finally, it should be noted that reader-writer locks should be used with
+  some caution.
+* They often add more overhead (especially with more sophisticated
+  implementations), and thus do not end up speeding up performance as compared
+  to just using simple and fast locking primitives [CB08].
+* Either way, they showcase once again how we can use semaphores in an
+  interesting and useful way.
+
+.Tip: Simple and dumb can be better (hill's law)
+****
+* You should never underestimate the notion that the simple and dumb approach
+  can be the best one.
+* With locking, sometimes a simple spin lock works best, because it is easy to
+  implement and fast.
+* Although something like reader/writer locks sounds cool, they are complex,
+  and complex can mean slow.
+* Thus, always try the simple and dumb approach first.
+
+'''
+
+* This idea, of appealing to simplicity, is found in many places.
+* One early source is Mark Hill's dissertation [H87], which studied how to
+  design caches for CPUs.
+* Hill found that simple direct-mapped caches worked better than fancy
+  set-associative designs (one reason is that in caching, simpler designs
+  enable faster lookups).
+* As Hill succinctly summarized his work: "Big and dumb is better."
+* And thus we call this similar advice Hill's Law.
+****
+
 == References
+
+[CB08] "Real-world Concurrency" by Bryan Cantrill, Jeff Bonwick. ACM Queue.  Volume 6, No. 5. September 2008.::
+* A nice article by some kernel hackers from a company formerly known as Sun
+  on the real problems faced in concurrent code.
+
+[CHP71] "Concurrent Control with Readers and Writers" by P.J. Courtois, F.  Heymans, D.L.  Parnas. Communications of the ACM, 14:10, October 1971.::
+* The introduction of the reader-writer problem, and a simple solution.
+* Later work introduced more complex solutions, skipped here because, well,
+  they are pretty complex.
 
 [D59] "A Note on Two Problems in Connexion with Graphs" by E. W. Dijkstra. Numerische Mathematik 1, 269-271, 1959. Available: `http://www-m3.ma.tum.de/twiki/pub/MN0506/WebHome/dijkstra.pdf`.::
 * Can you believe people worked on algorithms in 1959?
@@ -619,3 +754,7 @@ void *consumer(void *arg) {
   algorithms, although Dijkstra is generally credited with inventing semaphores
   many years later."
 * Oh, snap!
+
+[H87] "Aspects of Cache Memory and Instruction Buffer Performance" by Mark D. Hill. Ph.D.  Dissertation, U.C. Berkeley, 1987.::
+* Hill's dissertation work, for those obsessed with caching in early systems.
+* A great example of a quantitative dissertation.
