@@ -874,6 +874,17 @@ void free(void *ptr, int size) {
 * But in cases like the memory allocator above, broadcast may be the most
   straightforward solution available.
 
+== 30.4 Summary
+
+* We have seen the introduction of another important synchronization primitive
+  beyond locks: condition variables.
+* By allowing threads to sleep when some program state is not as desired, CVs
+  enable us to neatly solve a number of important synchronization problems,
+  including the famous (and still important) producer/consumer problem, as
+  well as covering conditions.
+* A more dramatic concluding sentence would go here, such as "He loved Big
+  Brother" [O49].
+
 == References
 
 [D68] "Cooperating sequential processes" by Edsger W. Dijkstra. 1968. Available online here: `http://www.cs.utexas.edu/users/EWD/ewd01xx/EWD123.PDF`.::
@@ -903,3 +914,11 @@ void free(void *ptr, int size) {
   means to be woken up; the older semantics, developed by Tony Hoare [H74],
   then became known as "Hoare" semantics, which is a bit unfortunate of a
   name.
+
+[O49] "1984" by George Orwell. Secker and Warburg, 1949.::
+* A little heavy-handed, but of course a must read.
+* That said, we kind of gave away the ending by quoting the last sentence.
+* Sorry!
+* And if the government is reading this, let us just say that we think that
+  the government is "double plus good”.
+* Hear that, our pals at the NSA?
