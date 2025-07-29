@@ -573,7 +573,7 @@ ____
 
 * link:31-semaphores/[31 Semaphores 391]
 ** [x] 31.1 Semaphores: A Definition 391
-** [ ] 31.2 Binary Semaphores (Locks) 393
+** [x] 31.2 Binary Semaphores (Locks) 393
 ** [ ] 31.3 Semaphores For Ordering 394
 ** [ ] 31.4 The Producer/Consumer (Bounded Buffer) Problem 396
 ** [ ] 31.5 Reader-Writer Locks 401

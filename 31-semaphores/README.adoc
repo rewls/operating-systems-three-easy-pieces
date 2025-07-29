@@ -1,5 +1,6 @@
 = 31 Semaphores
 :figure-caption: Figure 31.
+:imagesdir: ../images
 :source-highlighter: rouge
 :tabsize: 8
 :toc: left
@@ -121,6 +122,102 @@ int sem_post(sem_t *s) {
 * Don't worry (yet) about the seeming race conditions possible within the
   semaphore; assume that the actions they make are performed atomically.
 * We will soon use locks and condition variables to do just this.
+
+== 31.2 Binary Semaphores (Locks)
+
+* We are now ready to use a semaphore.
+* Our first use will be one with which we are already familiar: using a
+  semaphore as a lock.
+* See Figure 31.3 for a code snippet; therein, you'll see that we simply
+  surround the critical section of interest with a `sem_wait()`/`sem_post()`
+  pair.
+* Critical to making this work, though, is the initial value of the semaphore
+  `m` (initialized to `X` in the figure).
+* What should `X` be?
+
+:figure-number: {counter:figure-number}
+.{figure-caption} {figure-number}. A Binary Semaphore (That Is, A Lock)
+[,c]
+----
+sem_t m;
+sem_init(&m, 0, X); // init to X; what should X be?
+
+sem_wait(&m);
+// critical section here
+sem_post(&m);
+----
+
+* ... _(Try thinking about it before going on)_ ...
+
+'''
+
+* Looking back at definition of the `sem_wait()` and `sem_post()` routines
+  above, we can see that the initial value should be 1.
+
+'''
+
+* To make this clear, let's imagine a scenario with two threads.
+* The first thread (Thread 0) calls `sem_wait()`; it will first decrement the
+  value of the semaphore, changing it to 0.
+* Then, it will wait only if the value is not greater than or equal to 0.
+* Because the value is 0, `sem_wait()` will simply return and the calling
+  thread will continue; Thread 0 is now free to enter the critical section.
+* If no other thread tries to acquire the lock while Thread 0 is inside the
+  critical section, when it calls `sem_post()`, it will simply restore the
+  value of the semaphore to 1 (and not wake a waiting thread, because there
+  are none).
+* Figure 31.4 shows a trace of this scenario.
+
+:figure-number: {counter:figure-number}
+.{figure-caption} {figure-number}. Thread Trace: Single Thread Using A Semaphore
+[%autowidth]
+|===
+|Value of Semaphore	|Thread 0		|Thread 1
+
+|1			|			|
+|1			|call `sem_wait()`	|
+|0			|`sem_wait()` returns	|
+|0			|(`crit sect`)		|
+|0			|call `sem_post()`	|
+|1			|`sem_post()` returns	|
+|===
+
+* A more interesting case arises when Thread 0 "holds the lock" (i.e., it has
+  called `sem_wait()` but not yet called `sem_post()`), and another thread
+  (Thread 1) tries to enter the critical section by calling `sem_wait()`.
+* In this case, Thread 1 will decrement the value of the semaphore to -1, and
+  thus wait (putting itself to sleep and relinquishing the processor).
+* When Thread 0 runs again, it will eventually call `sem post()`, incrementing
+  the value of the semaphore back to zero, and then wake the waiting thread
+  (Thread 1), which will then be able to acquire the lock for itself.
+* When Thread 1 finishes, it will again increment the value of the semaphore,
+  restoring it to 1 again.
+
+'''
+
+* Figure 31.5 shows a trace of this example.
+* In addition to thread actions, the figure shows the *scheduler state* of
+  each thread: Run (the thread is running), Ready (i.e., runnable but not
+  running), and Sleep (the thread is blocked).
+* Note that Thread 1 goes into the sleeping state when it tries to acquire the
+  already-held lock; only when Thread 0 runs again can Thread 1 be awoken and
+  potentially run again.
+
+.Thread Trace: Two Threads Using A Semaphore
+image::figure-31-05.png[]
+
+* If you want to work through your own example, try a scenario where multiple
+  threads queue up waiting for a lock.
+* What would the value of the semaphore be during such a trace?
+
+'''
+
+* Thus we are able to use semaphores as locks.
+* Because locks only have two states (held and not held), we sometimes call a
+  semaphore used as a lock a *binary semaphore*.
+* Note that if you are using a semaphore only in this binary fashion, it could
+  be implemented in a simpler manner than the generalized semaphores we
+  present here.
 
 == References
 
