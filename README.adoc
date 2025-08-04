@@ -584,8 +584,9 @@ ____
 ** [x] References 409
 ** Homework (Code) 410
 
-* 32 Common Concurrency Problems 411
-** [ ] 32.1 What Types Of Bugs Exist? 411
+* link:32-common-concurrency-problems.adoc[32 Common Concurrency Problems
+  411]
+** [x] 32.1 What Types Of Bugs Exist? 411
 ** [ ] 32.2 Non-Deadlock Bugs 412
 ** [ ] 32.3 Deadlock Bugs 415
 ** [ ] 32.4 Summary 424
