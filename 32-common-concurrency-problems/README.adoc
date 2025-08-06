@@ -1,6 +1,8 @@
 = 32 Common Concurrency Problems
 :figure-caption: Figure 32.
+:source-highlighter: rouge
 :table-caption!:
+:tabsize: 8
 :toc: left
 
 * Researchers have spent a great deal of time and effort looking into
@@ -68,6 +70,148 @@
   drive our discussion.
 * For the second class of deadlock bugs, we discuss the long line of work that
   has been done in either preventing, avoiding, or handling deadlock.
+
+== 32.2 Non-Deadlock Bugs
+
+* Non-deadlock bugs make up a majority of concurrency bugs, according to Lu's study.
+* But what types of bugs are these?
+* How do they arise?
+* How can we fix them?
+* We now discuss the two major types of non-deadlock bugs
+  found by Lu et al.: *atomicity violation* bugs and *order
+  violation* bugs.
+
+=== Atomicity-Violation Bugs
+
+* The first type of problem encountered is referred to as an *atomicity
+  violation*.
+* Here is a simple example, found in MySQL.
+* Before reading the explanation, try figuring out what the bug is.
+* Do it!
+
+:figure-number: {counter:figure-number}
+.{figure-caption} {figure-number}. Atomicity Violation (`atomicity.c`)
+[,c]
+----
+include::atomicity.c[]
+----
+
+* In the example, two different threads access the field `proc_info` in the
+  structure `thd`.
+* The first thread checks if the value is non-NULL and then prints its value;
+  the second thread sets it to NULL.
+* Clearly, if the first thread performs the check but then is interrupted
+  before the call to `fputs`, the second thread could run in-between, thus
+  setting the pointer to NULL; when the first thread resumes, it will crash,
+  as a NULL pointer will be dereferenced by `fputs`.
+
+'''
+
+* The more formal definition of an atomicity violation, according to Lu et al,
+  is this: "The desired serializability among multiple memory accesses is
+  violated (i.e. a code region is intended to be atomic, but the atomicity is
+  not enforced during execution)."
+* In our example above, the code has an _atomicity assumption_ (in Lu's words)
+  about the check for non-NULL of `proc_info` and the usage of `proc_info` in
+  the `fputs()` call; when the assumption is incorrect, the code will not work
+  as desired.
+
+'''
+
+* Finding a fix for this type of problem is often (but not always)
+  straightforward.
+* Can you think of how to fix the code above?
+
+'''
+
+* In this solution (Figure 32.3), we simply add locks around the
+  shared-variable references, ensuring that when either thread accesses the
+  `proc_info` field, it has a lock held (`proc_info_lock`).
+* Of course, any other code that accesses the structure should also acquire
+  this lock before doing so.
+
+:figure-number: {counter:figure-number}
+.{figure-caption} {figure-number}. Atomicity Violation Fixed (`atomicity_fixed.c`)
+[,c]
+----
+include:atomicity_fixed.c[]
+----
+
+=== Order-Violation Bugs
+
+* Another common type of non-deadlock bug found by Lu et al. is known as an
+  *order violation*.
+* Here is another simple example; once again, see if you can figure out why
+  the code below has a bug in it.
+
+:figure-number: {counter:figure-number}
+.{figure-caption} {figure-number}. Ordering Bug (`ordering.c`)
+[,c]
+----
+include::ordering.c[]
+----
+
+* As you probably figured out, the code in Thread 2 seems to assume that the
+  variable `mThread` has already been initialized (and is not NULL); however,
+  if Thread 2 runs immediately once created, the value of `mThread` will not
+  be set when it is accessed within `mMain()` in Thread 2, and will likely
+  crash with a NULL-pointer dereference.
+* Note that we assume the value of `mThread` is initially NULL; if not, even
+  stranger things could happen as arbitrary memory locations are accessed
+  through the dereference in Thread 2.
+
+'''
+
+* The more formal definition of an order violation is the following: "The
+  desired order between two (groups of) memory accesses is flipped (i.e., A
+  should always be executed before B, but the order is not enforced during
+  execution)" [L+08].
+
+'''
+
+* The fix to this type of bug is generally to enforce ordering.
+* As discussed previously, using *condition variables* is an easy and robust way
+  to add this style of synchronization into modern code bases.
+* In the example above, we could thus rewrite the code as seen in Figure 32.5.
+
+:figure-number: {counter:figure-number}
+.{figure-caption} {figure-number}. Fixing The Ordering Violation (`ordering_fixed.c`)
+[,c]
+----
+include::ordering_fixed.c[]
+----
+
+* In this fixed-up code sequence, we have added a condition variable
+  (`mtCond`) and corresponding lock (`mtLock`), as well as a state variable
+  (`mtInit`).
+* When the initialization code runs, it sets the state of `mtInit` to 1 and
+  signals that it has done so.
+* If Thread 2 had run before this point, it will be waiting for this signal
+  and corresponding state change; if it runs later, it will check the state
+  and see that the initialization has already occurred (i.e., `mtInit` is set
+  to 1), and thus continue as is proper.
+* Note that we could likely use `mThread` as the state variable itself, but do
+  not do so for the sake of simplicity here.
+* When ordering matters between threads, condition variables (or semaphores)
+  can come to the rescue.
+
+=== Non-Deadlock Bugs: Summary
+
+* A large fraction (97%) of non-deadlock bugs studied by Lu et al. are either
+  atomicity or order violations.
+* Thus, by carefully thinking about these types of bug patterns, programmers
+  can likely do a better job of avoiding them.
+* Moreover, as more automated code-checking tools develop, they should likely
+  focus on these two types of bugs as they constitute such a large fraction of
+  non-deadlock bugs found in deployment.
+
+'''
+
+* Unfortunately, not all bugs are as easily fixed as the examples we looked at
+  above.
+* Some require a deeper understanding of what the program is doing, or a
+  larger amount of code or data structure reorganization to fix.
+* Read Lu et al.'s excellent (and readable) paper for more details.
 
 == References
 
