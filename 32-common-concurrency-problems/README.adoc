@@ -741,6 +741,36 @@ image::xfigure-32-02.png[]
 * Read these works, or better yet, take a course on databases to learn more
   about this rich and interesting topic.
 
+== 32.4 Summary
+
+* In this chapter, we have studied the types of bugs that occur in concurrent
+  programs.
+* The first type, non-deadlock bugs, are surprisingly common, but often are
+  easier to fix.
+* They include atomicity violations, in which a sequence of instructions that
+  should have been executed together was not, and order violations, in which
+  the needed order between two threads was not enforced.
+
+'''
+
+* We have also briefly discussed deadlock: why it occurs, and what can be done
+  about it.
+* The problem is as old as concurrency itself, and many hundreds of papers
+  have been written about the topic.
+* The best solution in practice is to be careful, develop a lock acquisition
+  order, and thus prevent deadlock from occurring in the first place.
+* Wait-free approaches also have promise, as some wait-free data structures
+  are now finding their way into commonly-used libraries and critical systems,
+  including Linux.
+* However, their lack of generality and the complexity to develop a new
+  wait-free data structure will likely limit the overall utility of this
+  approach.
+* Perhaps the best solution is to develop new concurrent programming models:
+  in systems such as MapReduce (from Google) [GD02], programmers can describe
+  certain types of parallel computations without any locks whatsoever.
+* Locks are problematic by their very nature; perhaps we should seek to avoid
+  using them unless we truly must.
+
 == References
 
 [B+87] "Concurrency Control and Recovery in Database Systems" by Philip A. Bernstein, Vassos Hadzilacos, Nathan Goodman. Addison-Wesley, 1987.::
@@ -761,6 +791,11 @@ image::xfigure-32-02.png[]
   written form.
 * However, he called it the "deadly embrace", which (thankfully) did not catch
   on.
+
+[GD02] "MapReduce: Simplified Data Processing on Large Clusters" by Sanjay Ghemawhat, Jeff Dean. OSDI ’04, San Francisco, CA, October 2004.::
+* The MapReduce paper ushered in the era of large-scale data processing, and
+  proposes a framework for performing such computations on clusters of
+  generally unreliable machines.
 
 [H01] "A Pragmatic Implementation of Non-blocking Linked-lists" by Tim Harris. International Conference on Distributed Computing (DISC), 2001.::
 * A relatively modern example of the difficulties of building something as
