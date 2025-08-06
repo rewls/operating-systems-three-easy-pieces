@@ -588,7 +588,7 @@ ____
   411]
 ** [x] 32.1 What Types Of Bugs Exist? 411
 ** [x] 32.2 Non-Deadlock Bugs 412
-** [ ] 32.3 Deadlock Bugs 415
+** [x] 32.3 Deadlock Bugs 415
 ** [ ] 32.4 Summary 424
 ** [ ] References 425
 ** Homework (Code) 426
