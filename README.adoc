@@ -612,8 +612,8 @@ ____
 
 * [x] link:35-a-dialogue-on-persistence.adoc[35 A Dialogue on Persistence 443]
 
-* 36 I/O Devices 445
-** [ ] 36.1 System Architecture 445
+* link:36-io-devices.adoc[36 I/O Devices 445]
+** [x] 36.1 System Architecture 445
 ** [ ] 36.2 A Canonical Device 447
 ** [ ] 36.3 The Canonical Protocol 448
 ** [ ] 36.4 Lowering CPU Overhead With Interrupts 449
