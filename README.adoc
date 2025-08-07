@@ -610,7 +610,7 @@ ____
 
 === 3 Persistence
 
-* [ ] 35 A Dialogue on Persistence 443
+* [x] link:35-a-dialogue-on-persistence.adoc[35 A Dialogue on Persistence 443]
 
 * 36 I/O Devices 445
 ** [ ] 36.1 System Architecture 445
