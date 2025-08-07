@@ -615,7 +615,7 @@ ____
 * link:36-io-devices.adoc[36 I/O Devices 445]
 ** [x] 36.1 System Architecture 445
 ** [x] 36.2 A Canonical Device 447
-** [ ] 36.3 The Canonical Protocol 448
+** [x] 36.3 The Canonical Protocol 448
 ** [ ] 36.4 Lowering CPU Overhead With Interrupts 449
 ** [ ] 36.5 More Efficient Data Movement With DMA 450
 ** [ ] 36.6 Methods Of Device Interaction 451
