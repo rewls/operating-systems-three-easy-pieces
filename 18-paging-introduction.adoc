@@ -1,0 +1,47 @@
+= 18 Paging: Introduction
+:toc: left
+
+* It is sometimes said that the operating system takes one of two approaches
+  when solving most any space-management problem.
+* The first approach is to chop things up into _variable-sized_ pieces, as we
+  saw with *segmentation* in virtual memory.
+* Unfortunately, this solution has inherent difficulties.
+* In particular, when dividing a space into different-size chunks, the space
+  itself can become *fragmented*, and thus allocation becomes more challenging
+  over time.
+
+'''
+
+* Thus, it may be worth considering the second approach: to chop up space into
+  _fixed-sized_ pieces.
+* In virtual memory, we call this idea *paging*, and it goes back to an early
+  and important system, the Atlas [KE+62, L78].
+* Instead of splitting up a process's address space into some number of
+  variable-sized logical segments (e.g., code, heap, stack), we divide it into
+  fixed-sized units, each of which we call a *page*.
+* Correspondingly, we view physical memory as an array of fixed-sized slots
+  called *page frames*; each of these frames can contain a single virtual-memory
+  page.
+* Our challenge:
+
+.The crux: How to virtualize memory with pages
+****
+* How can we virtualize memory with pages, so as to avoid the problems of
+  segmentation?
+* What are the basic techniques?
+* How do we make those techniques work well, with minimal space and time
+  overheads?
+****
+
+== References
+
+[KE+62] "One-level Storage System" by T. Kilburn, D.B.G. Edwards, M.J.  Lanigan, F.H. Sumner. IRE Trans. EC-11, 2, 1962. Reprinted in Bell and Newell, "Computer Structures: Readings and Examples". McGraw-Hill, New York, 1971.::
+* The Atlas pioneered the idea of dividing memory into fixed-sized pages and
+  in many senses was an early form of the memory-management ideas we see in
+  modern computer systems.
+
+[L78] "The Manchester Mark I and Atlas: A Historical Perspective" by S. H. Lavington. Communications of the ACM, Volume 21:1, January 1978.::
+* This paper is a great retrospective of some of the history of the
+  development of some important computer systems.
+* As we sometimes forget in the US, many of these new ideas came from
+  overseas.

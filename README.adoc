@@ -440,7 +440,7 @@ ____
 ** [ ] References 197
 ** Homework (Simulation) 198
 
-* 18 Paging: Introduction 199
+* link:18-paging-introduction.adoc[18 Paging: Introduction 199]
 ** [ ] 18.1 A Simple Example And Overview 199
 ** [ ] 18.2 Where Are Page Tables Stored? 203
 ** [ ] 18.3 What’s Actually In The Page Table? 204
