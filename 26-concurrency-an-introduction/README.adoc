@@ -19,32 +19,32 @@
 
 * In this chapter, we introduce a new abstraction for a single running
   process: that of a *thread*.
-* Instead of our classic view of a single point of execution within a program
+* #Instead of our classic view of a single point of execution within a program
   (i.e., a single PC where instructions are being fetched from and executed),
   a *multi-threaded* program has more than one point of execution (i.e.,
-  multiple PCs, each of which is being fetched and executed from).
-* Perhaps another way to think of this is that each thread is very much like a
+  multiple PCs, each of which is being fetched and executed from).#
+* #Perhaps another way to think of this is that each thread is very much like a
   separate process, except for one difference: they _share_ the same address
-  space and thus can access the same data.
+  space and thus can access the same data.#
 
 '''
 
 * The state of a single thread is thus very similar to that of a process.
-* It has a program counter (PC) that tracks where the program is fetching
-  instructions from.
-* Each thread has its own private set of registers it uses for computation;
+* #It has a program counter (PC) that tracks where the program is fetching
+  instructions from.#
+* #Each thread has its own private set of registers it uses for computation;
   thus, if there are two threads that are running on a single processor, when
   switching from running one (T1) to running the other (T2), a *context
-  switch* must take place.
+  switch* must take place.#
 * The context switch between threads is quite similar to the context switch
   between processes, as the register state of T1 must be saved and the
   register state of T2 restored before running T2.
-* With processes, we saved state to a *process control block (PCB)*; now,
+* #With processes, we saved state to a *process control block (PCB)*; now,
   we'll need one or more *thread control blocks (TCBs)* to store the state of
-  each thread of a process.
-* There is one major difference, though, in the context switch we perform
+  each thread of a process.#
+* #There is one major difference, though, in the context switch we perform
   between threads as compared to processes: the address space remains the same
-  (i.e., there is no need to switch which page table we are using).
+  (i.e., there is no need to switch which page table we are using).#
 
 '''
 
@@ -57,8 +57,8 @@
 
 * However, in a multi-threaded process, each thread runs independently and of
   course may call into various routines to do whatever work it is doing.
-* Instead of a single stack in the address space, there will be one per
-  thread.
+* #Instead of a single stack in the address space, there will be one per
+  thread.#
 * Let's say we have a multi-threaded process that has two threads in it; the
   resulting address space looks different (Figure 26.1, right).
 
@@ -67,18 +67,18 @@ image::figure-26-01.png[]
 
 * In this figure, you can see two stacks spread throughout the address space
   of the process.
-* Thus, any stack-allocated variables, parameters, return values, and other
+* #Thus, any stack-allocated variables, parameters, return values, and other
   things that we put on the stack will be placed in what is sometimes called
-  *thread-local* storage, i.e., the stack of the relevant thread.
+  *thread-local* storage, i.e., the stack of the relevant thread.#
 
 '''
 
-* You might also notice how this ruins our beautiful address space layout.
+* #You might also notice how this ruins our beautiful address space layout.#
 * Before, the stack and heap could grow independently and trouble only arose
   when you ran out of room in the address space.
 * Here, we no longer have such a nice situation.
-* Fortunately, this is usually OK, as stacks do not generally have to be very
-  large (the exception being in programs that make heavy use of recursion).
+* #Fortunately, this is usually OK, as stacks do not generally have to be very
+  large (the exception being in programs that make heavy use of recursion).#
 
 == 26.1 Why Use Threads?
 
@@ -91,7 +91,7 @@ image::figure-26-01.png[]
 
 * As it turns out, there are at least two major reasons you should use
   threads.
-* The first is simple: *parallelism*.
+* #The first is simple: *parallelism*.#
 * Imagine you are writing a program that performs operations on very large
   arrays, for example, adding two large arrays together, or incrementing the
   value of each element in the array by some amount.
@@ -100,15 +100,15 @@ image::figure-26-01.png[]
 * However, if you are executing the program on a system with multiple
   processors, you have the potential of speeding up this process considerably
   by using the processors to each perform a portion of the work.
-* The task of transforming your standard *single-threaded* program into a
+* #The task of transforming your standard *single-threaded* program into a
   program that does this sort of work on multiple CPUs is called
   *parallelization*, and using a thread per CPU to do this work is a natural
-  and typical way to make programs run faster on modern hardware.
+  and typical way to make programs run faster on modern hardware.#
 
 '''
 
-* The second reason is a bit more subtle: to avoid blocking program progress
-  due to slow I/O.
+* #The second reason is a bit more subtle: to avoid blocking program progress
+  due to slow I/O.#
 * Imagine that you are writing a program that performs different types of I/O:
   either waiting to send or receive a message, for an explicit disk I/O to
   complete, or even (implicitly) for a page fault to finish.
@@ -128,10 +128,11 @@ image::figure-26-01.png[]
 
 * Of course, in either of the cases mentioned above, you could use multiple
   processes instead of threads.
-* However, threads share an address space and thus make it easy to share data,
-  and hence are a natural choice when constructing these types of programs.
-* Processes are a more sound choice for logically separate tasks where little
-  sharing of data structures in memory is needed.
+* #However, threads share an address space and thus make it easy to share
+  data, and hence are a natural choice when constructing these types of
+  programs.#
+* #Processes are a more sound choice for logically separate tasks where little
+  sharing of data structures in memory is needed.#
 
 == 26.2 An Example: Thread Creation
 
@@ -149,9 +150,9 @@ include::t0.c[]
 
 * The main program creates two threads, each of which will run the function
   `mythread()`, though with different arguments (the string `A` or `B`).
-* Once a thread is created, it may start running right away (depending on the
+* #Once a thread is created, it may start running right away (depending on the
   whims of the scheduler); alternately, it may be put in a "ready" but not
-  "running" state and thus not run yet.
+  "running" state and thus not run yet.#
 * Of course, on a multiprocessor, the threads could even be running at the
   same time, but let's not worry about this possibility quite yet.
 
@@ -305,9 +306,9 @@ main: done with both (counter = 19221041)
 
 .Tip: Know and use your tools
 ****
-* You should always learn new tools that help you write, debug, and understand
-  computer systems.
-* Here, we use a neat tool called a *disassembler*.
+* #You should always learn new tools that help you write, debug, and
+  understand computer systems.#
+* #Here, we use a neat tool called a *disassembler*.#
 * When you run a disassembler on an executable, it shows you what assembly
   instructions make up the program.
 * For example, if we wish to understand the low-level code to update a counter
@@ -320,11 +321,11 @@ prompt> objdump -d main
 * Doing so produces a long listing of all the instructions in the program,
   neatly labeled (particularly if you compiled with the `-g` flag), which
   includes symbol information in the program.
-* The `objdump` program is just one of many tools you should learn how to use;
-  a debugger like `gdb`, memory profilers like `valgrind` or purify, and of
-  course the compiler itself are others that you should spend time to learn
+* #The `objdump` program is just one of many tools you should learn how to
+  use; a debugger like `gdb`, memory profilers like `valgrind` or purify, and
+  of course the compiler itself are others that you should spend time to learn
   more about; the better you are at using your tools, the better systems
-  you'll be able to build.
+  you'll be able to build.#
 ****
 
 == 26.4 The Heart Of The Problem: Uncontrolled Scheduling
@@ -410,9 +411,9 @@ mov %eax, 0x8049a1c
 .The Problem: Up Close and Personal
 image::figure-26-07.png[]
 
-* What we have demonstrated here is called a *race condition* (or, more
+* #What we have demonstrated here is called a *race condition* (or, more
   specifically, a *data race*): the results depend on the timing of the code's
-  execution.
+  execution.#
 * With some bad luck (i.e., context switches that occur at untimely points in
   the execution), we get the wrong result.
 * In fact, we may get a different result each time; thus, instead of a nice
@@ -431,8 +432,8 @@ image::figure-26-07.png[]
 '''
 
 * What we really want for this code is what we call *mutual exclusion*.
-* This property guarantees that if one thread is executing within the critical
-  section, the others will be prevented from doing so.
+* #This property guarantees that if one thread is executing within the
+  critical section, the others will be prevented from doing so.#
 
 '''
 
@@ -444,20 +445,20 @@ image::figure-26-07.png[]
 
 .Tip: Use atomic operations
 ****
-* Atomic operations are one of the most powerful underlying techniques in
+* #Atomic operations are one of the most powerful underlying techniques in
   building computer systems, from the computer architecture, to concurrent
   code (what we are studying here), to file systems (which we'll study soon
-  enough), database management systems, and even distributed systems [L+93].
+  enough), database management systems, and even distributed systems [L+93].#
 
 '''
 
-* The idea behind making a series of actions *atomic* is simply expressed with
+* #The idea behind making a series of actions *atomic* is simply expressed with
   the phrase "all or nothing"; it should either appear as if all of the
   actions you wish to group together occurred, or that none of them occurred,
-  with no in-between state visible.
-* Sometimes, the grouping of many actions into a single atomic action is
+  with no in-between state visible.#
+* #Sometimes, the grouping of many actions into a single atomic action is
   called a *transaction*, an idea developed in great detail in the world of
-  databases and transaction processing [GR92].
+  databases and transaction processing [GR92].#
 
 '''
 
@@ -473,9 +474,9 @@ image::figure-26-07.png[]
 
 == 26.5 The Wish For Atomicity
 
-* One way to solve this problem would be to have more powerful instructions
+* #One way to solve this problem would be to have more powerful instructions
   that, in a single step, did exactly whatever we needed done and thus removed
-  the possibility of an untimely interrupt.
+  the possibility of an untimely interrupt.#
 * For example, what if we had a super instruction that looked like this:
 +
 ....
@@ -506,7 +507,7 @@ mov %eax, 0x8049a1c
 
 * As we said, if we had a single instruction to do this, we could just issue
   that instruction and be done.
-* But in the general case, we won't have such an instruction.
+* #But in the general case, we won't have such an instruction.#
 * Imagine we were building a concurrent B-tree, and wished to update it; would
   we really want the hardware to support an "atomic update of B-tree"
   instruction?
@@ -514,9 +515,9 @@ mov %eax, 0x8049a1c
 
 '''
 
-* Thus, what we will instead do is ask the hardware for a few useful
+* #Thus, what we will instead do is ask the hardware for a few useful
   instructions upon which we can build a general set of what we call
-  *synchronization primitives*.
+  *synchronization primitives*.#
 * By using this hardware support, in combination with some help from the
   operating system, we will be able to build multi-threaded code that accesses
   critical sections in a synchronized and controlled manner, and thus reliably
@@ -533,13 +534,13 @@ mov %eax, 0x8049a1c
   direction.
 * At that point, take a break; we don't want your head hurting too much.
 
-.The crux: How to support synchronization
+.#The crux: How to support synchronization#
 ****
-* What support do we need from the hardware in order to build useful
-  synchronization primitives?
-* What support do we need from the OS?
-* How can we build these primitives correctly and efficiently?
-* How can programs use them to get the desired results?
+* #What support do we need from the hardware in order to build useful
+  synchronization primitives?#
+* #What support do we need from the OS?#
+* #How can we build these primitives correctly and efficiently?#
+* #How can programs use them to get the desired results?#
 ****
 
 == 26.6 One More Problem: Waiting For Another
@@ -547,8 +548,8 @@ mov %eax, 0x8049a1c
 * This chapter has set up the problem of concurrency as if only one type of
   interaction occurs between threads, that of accessing shared variables and
   the need to support atomicity for critical sections.
-* As it turns out, there is another common interaction that arises, where one
-  thread must wait for another to complete some action before it continues.
+* #As it turns out, there is another common interaction that arises, where one
+  thread must wait for another to complete some action before it continues.#
 * This interaction arises, for example, when a process performs a disk I/O and
   is put to sleep; when the I/O completes, the process needs to be roused from
   its slumber so it can continue.
@@ -574,10 +575,10 @@ mov %eax, 0x8049a1c
 
 * A *critical section* is a piece of code that accesses a shared resource,
   usually a variable or data structure.
-* A *race condition* (or *data race* [NM92]) arises if multiple threads of
+* #A *race condition* (or *data race* [NM92]) arises if multiple threads of
   execution enter the critical section at roughly the same time; both attempt
   to update the shared data structure, leading to a surprising (and perhaps
-  undesirable) outcome.
+  undesirable) outcome.#
 * An *indeterminate* program consists of one or more race conditions; the
   output of the program varies from run to run, depending on which threads ran
   when. +
@@ -593,8 +594,8 @@ mov %eax, 0x8049a1c
 
 * Before wrapping up, one question that you might have is: why are we studying
   this in OS class?
-* "History" is the one-word answer; the OS was the first concurrent program,
-  and many techniques were created for use within the OS.
+* #"History" is the one-word answer; the OS was the first concurrent program,
+  and many techniques were created for use within the OS.#
 * Later, with multi-threaded processes, application programmers also had to
   consider such things.
 
@@ -608,15 +609,15 @@ mov %eax, 0x8049a1c
   where this block lives, and change the size of the file to reflect the new
   larger size (among other things; we'll learn more about files in the third
   part of the book).
-* Because an interrupt may occur at any time, the code that updates these
+* #Because an interrupt may occur at any time, the code that updates these
   shared structures (e.g., a bitmap for allocation, or the file's inode) are
   critical sections; thus, OS designers, from the very beginning of the
   introduction of the interrupt, had to worry about how the OS updates
-  internal structures.
+  internal structures.#
 * An untimely interrupt causes all of the problems described above.
-* Not surprisingly, page tables, process lists, file system structures, and
+* #Not surprisingly, page tables, process lists, file system structures, and
   virtually every kernel data structure has to be carefully accessed, with the
-  proper synchronization primitives, to work correctly.
+  proper synchronization primitives, to work correctly.#
 
 == References
 
@@ -639,30 +640,31 @@ mov %eax, 0x8049a1c
   like the word "the").
 
 [GR92] "Transaction Processing: Concepts and Techniques" by Jim Gray and Andreas Reuter. Morgan Kaufmann, September 1992.::
-* This book is the bible of transaction processing, written by one of the
-  legends of the field, Jim Gray.
-* It is, for this reason, also considered Jim Gray's "brain dump", in which he
-  wrote down everything he knows about how database management systems work.
+* #This book is the bible of transaction processing, written by one of the
+  legends of the field, Jim Gray.#
+* #It is, for this reason, also considered Jim Gray's "brain dump", in which
+  he wrote down everything he knows about how database management systems
+  work.#
 * Sadly, Gray passed away tragically a few years back, and many of us lost a
   friend and great mentor, including the co-authors of said book, who were
   lucky enough to interact with Gray during their graduate school years.
 
 [L+93] "Atomic Transactions" by Nancy Lynch, Michael Merritt, William Weihl, Alan Fekete. Morgan Kaufmann, August 1993.::
-* A nice text on some of the theory and practice of atomic transactions for
-  distributed systems.
+* #A nice text on some of the theory and practice of atomic transactions for
+  distributed systems.#
 * Perhaps a bit formal for some, but lots of good material is found herein.
 
 [NM92] "What Are Race Conditions? Some Issues and Formalizations" by Robert H.  B. Netzer and Barton P. Miller. ACM Letters on Programming Languages and Systems, Volume 1:1, March 1992.::
-* An excellent discussion of the different types of races found in concurrent
-  programs.
+* #An excellent discussion of the different types of races found in concurrent
+  programs.#
 * In this chapter (and the next few), we focus on data races, but later we
   will broaden to discuss general races as well.
 
 [SR05] "Advanced Programming in the UNIX Environment" by W. Richard Stevens and Stephen A. Rago. Addison-Wesley, 2005.::
-* As we've said many times, buy this book, and read it, in little chunks,
-  preferably before going to bed.
-* This way, you will actually fall asleep more quickly; more importantly, you
-  learn a little more about how to become a serious UNIX programmer.
+* #As we've said many times, buy this book, and read it, in little chunks,
+  preferably before going to bed.#
+* #This way, you will actually fall asleep more quickly; more importantly, you
+  learn a little more about how to become a serious UNIX programmer.#
 
 == Homework (Simulation)
 
