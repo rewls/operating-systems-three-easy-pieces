@@ -66,11 +66,11 @@ Yes.
 
 Student::
 OK, let me think. +
-Well, we used to have many people grabbing for peaches all at once, which is
-faster. +
-But in my way, we just go one at a time, which is correct, but quite a bit
-slower. +
-The best kind of approach would be fast and correct, probably.
+#Well, we used to have many people grabbing for peaches all at once, which is
+faster.# +
+#But in my way, we just go one at a time, which is correct, but quite a bit
+slower.# +
+#The best kind of approach would be fast and correct, probably.#
 
 Professor::
 You are really starting to impress. +
@@ -86,13 +86,13 @@ Professor::
 Indeed. +
 My apologies! +
 One must never forget the concrete. +
-Well, as it turns out, there are certain types of programs that we call
+#Well, as it turns out, there are certain types of programs that we call
 *multi-threaded* applications; each thread is kind of like an independent
-agent running around in this program, doing things on the program's behalf. +
-But these threads access memory, and for them, each spot of memory is kind of
-like one of those peaches. +
-If we don't coordinate access to memory between threads, the program won't
-work as expected. +
+agent running around in this program, doing things on the program's behalf.# +
+#But these threads access memory, and for them, each spot of memory is kind of
+like one of those peaches.# +
+#If we don't coordinate access to memory between threads, the program won't
+work as expected.# +
 Make sense?
 
 Student::
@@ -103,10 +103,10 @@ Isn't that just application programming?
 Professor::
 Good question! +
 A few reasons, actually. +
-First, the OS must support multi-threaded applications with primitives such as
-locks and condition variables, which we'll talk about soon. +
-Second, the OS itself was the first concurrent program -- it must access its
-own memory very carefully or many strange and terrible things will happen. +
+#First, the OS must support multi-threaded applications with primitives such as
+locks and condition variables, which we'll talk about soon.# +
+#Second, the OS itself was the first concurrent program -- it must access its
+own memory very carefully or many strange and terrible things will happen.# +
 Really, it can get quite grisly.
 
 Student::
