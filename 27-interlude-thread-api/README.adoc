@@ -13,11 +13,11 @@
   and condition variables more slowly, with many examples; this chapter is
   thus better used as a reference.
 
-.Crux: How to create and control threads
+.#Crux: How to create and control threads#
 ****
-* What interfaces should the OS present for thread creation and control?
-* How should these interfaces be designed to enable ease of use as well as
-  utility?
+* #What interfaces should the OS present for thread creation and control?#
+* #How should these interfaces be designed to enable ease of use as well as
+  utility?#
 ****
 
 == 27.1 Thread Creation
@@ -27,13 +27,15 @@
   must exist.
 * In POSIX, it is easy:
 
-[source,c]
+[,c]
+----
 #include <pthread.h>
 int
 pthread_create(pthread_t *thread,
 		const pthread_attr_t *attr,
 		void *(*start_routine)(void*),
 		void *arg);
+----
 
 '''
 
@@ -52,8 +54,8 @@ pthread_create(pthread_t *thread,
   the scheduling priority of the thread.
 * An attribute is initialized with a separate call to `pthread_attr_init()`;
   see the manual page for details.
-* However, in most cases, the defaults will be fine; in this case, we will
-  simply pass the value `NULL` in.
+* #However, in most cases, the defaults will be fine; in this case, we will
+  simply pass the value `NULL` in.#
 
 '''
 
@@ -61,8 +63,8 @@ pthread_create(pthread_t *thread,
   function should this thread start running in?
 * In C, we call this a function pointer, and this one tells us the following
   is expected: a function name (start routine), which is passed a single
-  argument of type `void *` (as indicated in the parentheses after start
-  routine), and which returns a value of type `void *` (i.e., a *void
+  argument of type `void +*+` (as indicated in the parentheses after start
+  routine), and which returns a value of type `void +*+` (i.e., a *void
   pointer*).
 
 '''
@@ -88,9 +90,9 @@ int pthread_create(..., // first two args are the same
 * Finally, the fourth argument, `arg`, is exactly the argument to be passed to
   the function where the thread begins execution.
 * You might ask: why do we need these void pointers?
-* Well, the answer is quite simple: having a void pointer as an argument to
+* #Well, the answer is quite simple: having a void pointer as an argument to
   the function start routine allows us to pass in any type of argument; having
-  it as a return value allows the thread to return any type of result.
+  it as a return value allows the thread to return any type of result.#
 
 '''
 
@@ -329,8 +331,8 @@ assert(rc == 0); // always check success!
 
 * The second problem with the code above is that it fails to check error codes
   when calling lock and unlock.
-* Just like virtually any library routine you call in a UNIX system, these
-  routines can also fail!
+* #Just like virtually any library routine you call in a UNIX system, these
+  routines can also fail!#
 * If your code doesn't properly check error codes, the failure will happen
   silently, which in this case could allow multiple threads into a critical
   section.
@@ -363,26 +365,26 @@ int pthread_mutex_timedlock(pthread_mutex_t *mutex,
   acquiring the lock, whichever happens first.
 * Thus, the `timedlock` with a timeout of zero degenerates to the `trylock`
   case.
-* Both of these versions should generally be avoided; however, there are a few
-  cases where avoiding getting stuck (perhaps indefinitely) in a lock
+* #Both of these versions should generally be avoided; however, there are a
+  few cases where avoiding getting stuck (perhaps indefinitely) in a lock
   acquisition routine can be useful, as we'll see in future chapters (e.g.,
-  when we study deadlock).
+  when we study deadlock).#
 
 == 27.4 Condition Variables
 
 * The other major component of any threads library, and certainly the case
   with POSIX threads, is the presence of a condition variable.
-* Condition variables are useful when some kind of signaling must take place
+* #Condition variables are useful when some kind of signaling must take place
   between threads, if one thread is waiting for another to do something before
-  it can continue.
+  it can continue.#
 * Two primary routines are used by programs wishing to interact in this way:
 
 [source,c]
 int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex);
 int pthread_cond_signal(pthread_cond_t *cond);
 
-* To use a condition variable, one has to in addition have a lock that is
-  associated with this condition.
+* #To use a condition variable, one has to in addition have a lock that is
+  associated with this condition.#
 * When calling either of the above routines, this lock should be held.
 
 '''
@@ -430,21 +432,22 @@ Pthread_mutex_unlock(&lock);
 * A few things to note about this code sequence.
 * First, when signaling (as well as when modifying the global variable
   `ready`), we always make sure to have the lock held.
-* This ensures that we don't accidentally introduce a race condition into our code.
+* This ensures that we don't accidentally introduce a race condition into our
+  code.
 
 '''
 
 * Second, you might notice that the wait call takes a lock as its second
   parameter, whereas the signal call only takes a condition.
-* The reason for this difference is that the wait call, in addition to putting
+* #The reason for this difference is that the wait call, in addition to putting
   the calling thread to sleep, _releases_ the lock when putting said caller to
-  sleep.
+  sleep.#
 * Imagine if it did not: how could the other thread acquire the lock and
   signal it to wake up?
-* However, _before_ returning after being woken, the `pthread_cond_wait()`
+* #However, _before_ returning after being woken, the `pthread_cond_wait()`
   re-acquires the lock, thus ensuring that any time the waiting thread is
   running between the lock acquire at the beginning of the wait sequence, and
-  the lock release at the end, it holds the lock.
+  the lock release at the end, it holds the lock.#
 
 '''
 
@@ -453,10 +456,10 @@ Pthread_mutex_unlock(&lock);
 * We'll discuss this issue in detail when we study condition variables in a
   future chapter, but in general, using a while loop is the simple and safe
   thing to do.
-* Although it rechecks the condition (perhaps adding a little overhead), there
+* #Although it rechecks the condition (perhaps adding a little overhead), there
   are some pthread implementations that could spuriously wake up a waiting
   thread; in such a case, without rechecking, the waiting thread will continue
-  thinking that the condition has changed even though it has not.
+  thinking that the condition has changed even though it has not.#
 * It is safer thus to view waking up as a hint that something might have
   changed, rather than an absolute fact.
 
@@ -477,12 +480,12 @@ while (ready == 0)
 ready = 1;
 
 * Don't ever do this, for the following reasons.
-* First, it performs poorly in many cases (spinning for a long time just
-  wastes CPU cycles).
-* Second, it is error prone.
-* As recent research shows [X+10], it is surprisingly easy to make mistakes
+* #First, it performs poorly in many cases (spinning for a long time just
+  wastes CPU cycles).#
+* #Second, it is error prone.#
+* #As recent research shows [X+10], it is surprisingly easy to make mistakes
   when using flags (as above) to synchronize between threads; in that study,
-  roughly half the uses of these ad hoc synchronizations were buggy!
+  roughly half the uses of these ad hoc synchronizations were buggy!#
 * Don't be lazy; use condition variables even when you think you can get away
   without doing so.
 
@@ -537,7 +540,7 @@ prompt> gcc -o main main.c -Wall -pthread
   how you build concurrent programs.
 * Read on to learn more.
 
-.Aside: Thread api guidelines
+.Aside: Thread API guidelines
 ****
 * There are a number of small but important things to remember when you use
   the POSIX thread library (or really, any thread library) to build a
@@ -546,33 +549,33 @@ prompt> gcc -o main main.c -Wall -pthread
 
 '''
 
-.Keep it simple.
+.#Keep it simple.#
 * Above all else, any code to lock or signal between threads should be as
   simple as possible.
 * Tricky thread interactions lead to bugs.
 
-.Minimize thread interactions.
+.#Minimize thread interactions.#
 * Try to keep the number of ways in which threads interact to a minimum.
 * Each interaction should be carefully thought out and constructed with tried
   and true approaches (many of which we will learn about in the coming
   chapters).
 
-.Initialize locks and condition variables.
+.#Initialize locks and condition variables.#
 * Failure to do so will lead to code that sometimes works and sometimes fails
   in very strange ways.
 
-.Check your return codes.
+.#Check your return codes.#
 * Of course, in any C and UNIX programming you do, you should be checking each
   and every return code, and it's true here as well.
 * Failure to do so will lead to bizarre and hard to understand behavior,
   making you likely to (a) scream, (b) pull some of your hair out, or (c)
   both.
 
-.Be careful with how you pass arguments to, and return values from, threads.
+.#Be careful with how you pass arguments to, and return values from, threads.#
 * In particular, any time you are passing a reference to a variable allocated
   on the stack, you are probably doing something wrong.
 
-.Each thread has its own stack.
+.#Each thread has its own stack.#
 * As related to the point above, please remember that each thread has its own
   stack.
 * Thus, if you have a locally-allocated variable inside of some function a
@@ -581,10 +584,10 @@ prompt> gcc -o main main.c -Wall -pthread
 * To share data between threads, the values must be in the heap or otherwise
   some locale that is globally accessible.
 
-.Always use condition variables to signal between threads.
+.#Always use condition variables to signal between threads.#
 * While it is often tempting to use a simple flag, don't do it.
 
-.Use the manual pages.
+.#Use the manual pages.#
 * On Linux, in particular, the pthread man pages are highly informative and
   discuss many of the nuances presented here, often in even more detail.
 * Read them carefully!
@@ -600,21 +603,21 @@ prompt> gcc -o main main.c -Wall -pthread
 * Another one of these books on threads.
 
 [B+96] "PThreads Programming: by A POSIX Standard for Better Multiprocessing.  " Dick Buttlar, Jacqueline Farrell, Bradford Nichols. O'Reilly, September 1996::
-* A reasonable book from the excellent, practical publishing house O'Reilly.
+* #A reasonable book from the excellent, practical publishing house O'Reilly.#
 * Our bookshelves certainly contain a great deal of books from this company,
   including some excellent offerings on Perl, Python, and Javascript
   (particularly Crockford's "Javascript: The Good Parts".)
 
 [K+96] "Programming With Threads" by Steve Kleiman, Devang Shah, Bart Smaalders. Prentice Hall, January 1996.::
-* Probably one of the better books in this space.
+* #Probably one of the better books in this space.#
 * Get it at your local library.
 * Or steal it from your mother.
 * More seriously, just ask your mother for it -- she'll let you borrow it,
   don't worry.
 
 [X+10] "Ad Hoc Synchronization Considered Harmful" by Weiwei Xiong, Soyeon Park, Jiaqi Zhang, Yuanyuan Zhou, Zhiqiang Ma. OSDI 2010, Vancouver, Canada.::
-* This paper shows how seemingly simple synchronization code can lead to a
-  surprising number of bugs.
+* #This paper shows how seemingly simple synchronization code can lead to a
+  surprising number of bugs.#
 * Use condition variables and do the signaling correctly!
 
 == Homework (Code)
