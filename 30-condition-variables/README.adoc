@@ -13,16 +13,15 @@
 
 '''
 
-* In particular, there are many cases where a thread wishes to check whether a
-  condition is true before continuing its execution.
+* #In particular, there are many cases where a thread wishes to check whether
+  a condition is true before continuing its execution.#
 * For example, a parent thread might wish to check whether a child thread has
   completed before continuing (this is often called a `join()`); how should
   such a wait be implemented?
 * Let's look at Figure 30.1.
 
-:figure-number: {counter:figure-number}
-.{figure-caption} {figure-number}. A Parent Waiting For Its Child
-[,c]
+[,c,caption="{figure-caption} {counter:figure-number}. "]
+.A Parent Waiting For Its Child
 ----
 void *child(void *arg) {
 	printf("child\n");
@@ -33,8 +32,8 @@ void *child(void *arg) {
 int main(int argc, char *argv[]) {
 	printf("parent: begin\n");
 	pthread_t c;
-	Pthread_create(&c, NULL, child, NULL); // child
-										   // XXX how to wait for child?
+	Pthread_create(&c, NULL, child, NULL);	// child
+	// XXX how to wait for child?
 	printf("parent: end\n");
 	return 0;
 }
@@ -51,15 +50,14 @@ parent: end
 '''
 
 * We could try using a shared variable, as you see in Figure 30.2.
-* This solution will generally work, but it is hugely inefficient as the
-  parent spins and wastes CPU time.
+* #This solution will generally work, but it is hugely inefficient as the
+  parent spins and wastes CPU time.#
 * What we would like here instead is some way to put the parent to sleep until
   the condition we are waiting for (e.g., the child is done executing) comes
   true.
 
-:figure-number: {counter:figure-number}
-.{figure-caption} {figure-number}. Parent Waiting For Child: Spin-based Approach
-[,c]
+[,c,caption="{figure-caption} {counter:figure-number}. "]
+.Parent Waiting For Child: Spin-based Approach
 ----
 volatile int done = 0;
 
@@ -82,23 +80,23 @@ int main(int argc, char *argv[]) {
 
 .The crux: How to wait for a condition
 ****
-* In multi-threaded programs, it is often useful for a thread to wait for some
-  condition to become true before proceeding.
-* The simple approach, of just spinning until the condition becomes true, is
+* #In multi-threaded programs, it is often useful for a thread to wait for
+  some condition to become true before proceeding.#
+* #The simple approach, of just spinning until the condition becomes true, is
   grossly inefficient and wastes CPU cycles, and in some cases, can be
-  incorrect.
-* Thus, how should a thread wait for a condition?
+  incorrect.#
+* Thus, #how should a thread wait for a condition?#
 ****
 
 == 30.1 Definition and Routines
 
 * To wait for a condition to become true, a thread can make use of what is
   known as a *condition variable*.
-* A *condition variable* is an explicit queue that threads can put themselves
+* #A *condition variable* is an explicit queue that threads can put themselves
   on when some state of execution (i.e., some *condition*) is not as desired
   (by *waiting* on the condition); some other thread, when it changes said
   state, can then wake one (or more) of those waiting threads and thus allow
-  them to continue (by *signaling* on the condition).
+  them to continue (by *signaling* on the condition).#
 * The idea goes back to Dijkstra's use of "private semaphores" [D68]; a
   similar idea was later named a "condition variable" by Hoare in his work on
   monitors [H74].
@@ -122,21 +120,20 @@ pthread_cond_signal(pthread_cond_t *c);
 '''
 
 * We will often refer to these as `wait()` and `signal()` for simplicity.
-* One thing you might notice about the `wait()` call is that it also takes a
+* #One thing you might notice about the `wait()` call is that it also takes a
   mutex as a parameter; it assumes that this mutex is locked when `wait()` is
-  called.
-* The responsibility of `wait()` is to release the lock and put the calling
+  called.#
+* #The responsibility of `wait()` is to release the lock and put the calling
   thread to sleep (atomically); when the thread wakes up (after some other
   thread has signaled it), it must re-acquire the lock before returning to the
-  caller.
-* This complexity stems from the desire to prevent certain race conditions
-  from occurring when a thread is trying to put itself to sleep.
+  caller.#
+* #This complexity stems from the desire to prevent certain race conditions
+  from occurring when a thread is trying to put itself to sleep.#
 * Let's take a look at the solution to the join problem (Figure 30.3) to
   understand this better.
 
-:figure-number: {counter:figure-number}
-.{figure-caption} {figure-number}. Parent Waiting For Child: Use A Condition Variable
-[,c]
+[,c,caption="{figure-caption} {counter:figure-number}. "]
+.Parent Waiting For Child: Use A Condition Variable
 ----
 int done = 0;
 pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
@@ -173,9 +170,9 @@ int main(int argc, char *argv[]) {
 ----
 
 * There are two cases to consider.
-* In the first, the parent creates the child thread but continues running
+* #In the first, the parent creates the child thread but continues running
   itself (assume we have only a single processor) and thus immediately calls
-  into `thr_join()` to wait for the child thread to complete.
+  into `thr_join()` to wait for the child thread to complete.#
 * In this case, it will acquire the lock, check if the child is done (it is
   not), and put itself to sleep by calling `wait()` (hence releasing the
   lock).
@@ -187,9 +184,9 @@ int main(int argc, char *argv[]) {
 
 '''
 
-* In the second case, the child runs immediately upon creation, sets `done` to
+* #In the second case, the child runs immediately upon creation, sets `done` to
   1, calls signal to wake a sleeping thread (but there is none, so it just
-  returns), and is done.
+  returns), and is done.#
 * The parent then runs, calls `thr_join()`, sees that `done` is 1, and thus
   does not wait and returns.
 
@@ -204,12 +201,11 @@ int main(int argc, char *argv[]) {
 
 * To make sure you understand the importance of each piece of the `thr_exit()`
   and `thr_join()` code, let's try a few alternate implementations.
-* First, you might be wondering if we need the state variable `done`.
+* #First, you might be wondering if we need the state variable `done`.#
 * What if the code looked like the example below? (Figure 30.4)
 
-:figure-number: {counter:figure-number}
-.{figure-caption} {figure-number}. Parent Waiting: No State Variable
-[,c]
+[,c,caption="{figure-caption} {counter:figure-number}. "]
+.Parent Waiting: No State Variable
 ----
 void thr_exit() {
 	Pthread_mutex_lock(&m);
@@ -225,9 +221,9 @@ void thr_join() {
 ----
 
 * Unfortunately this approach is broken.
-* Imagine the case where the child runs immediately and calls `thr_exit()`
+* #Imagine the case where the child runs immediately and calls `thr_exit()`
   immediately; in this case, the child will signal, but there is no thread
-  asleep on the condition.
+  asleep on the condition.#
 * When the parent runs, it will simply call wait and be stuck; no thread will
   ever wake it.
 * From this example, you should appreciate the importance of the state
@@ -240,10 +236,12 @@ void thr_join() {
 * In this example, we imagine that one does not need to hold a lock in order
   to signal and wait.
 * What problem could occur here?
-* Think about it{empty}footnote:[Note that this example is not "real" code,
-  because the call to `pthread_cond_wait()` always requires a mutex as well as
-  a condition variable; here, we just pretend that the interface does not do
-  so for the sake of the negative example.]!
+* Think about it{empty}footnote:[
+  Note that this example is not "real" code, because the call to
+  `pthread_cond_wait()` always requires a mutex as well as a condition
+  variable; here, we just pretend that the interface does not do so for the
+  sake of the negative example.
+  ]!
 
 :figure-number: {counter:figure-number}
 [,c]
@@ -259,7 +257,7 @@ void thr_join() {
 }
 ----
 
-* The issue here is a subtle race condition.
+* #The issue here is a subtle race condition.#
 * Specifically, if the parent calls `thr_join()` and then checks the value of
   `done`, it will see that it is 0 and thus try to go to sleep.
 * But just before it calls wait to go to sleep, the parent is interrupted, and
@@ -277,8 +275,8 @@ void thr_join() {
 
 .Tip: Always hold the lock while signaling
 ****
-* Although it is strictly not necessary in all cases, it is likely simplest
-  and best to hold the lock while signaling when using condition variables.
+* #Although it is strictly not necessary in all cases, it is likely simplest
+  and best to hold the lock while signaling when using condition variables.#
 * The example above shows a case where you _must_ hold the lock for
   correctness; however, there are some other cases where it is likely OK not
   to, but probably is something you should avoid.
@@ -300,28 +298,28 @@ void thr_join() {
 * The next synchronization problem we will confront in this chapter is known
   as the *producer/consumer* problem, or sometimes as the *bounded buffer*
   problem, which was first posed by Dijkstra [D72].
-* Indeed, it was this very producer/consumer problem that led Dijkstra and his
-  co-workers to invent the generalized semaphore (which can be used as either
-  a lock or a condition variable) [D01]; we will learn more about semaphores
-  later.
+* #Indeed, it was this very producer/consumer problem that led Dijkstra and
+  his co-workers to invent the generalized semaphore (which can be used as
+  either a lock or a condition variable) [D01]; we will learn more about
+  semaphores later.#
 
 '''
 
-* Imagine one or more producer threads and one or more consumer threads.
-* Producers generate data items and place them in a buffer; consumers grab
-  said items from the buffer and consume them in some way.
+* #Imagine one or more producer threads and one or more consumer threads.#
+* #Producers generate data items and place them in a buffer; consumers grab
+  said items from the buffer and consume them in some way.#
 
 '''
 
-* This arrangement occurs in many real systems.
+* #This arrangement occurs in many real systems.#
 * For example, in a multi-threaded web server, a producer puts HTTP requests
   into a work queue (i.e., the bounded buffer); consumer threads take requests
   out of this queue and process them.
 
 '''
 
-* A bounded buffer is also used when you pipe the output of one program into
-  another, e.g., `grep foo file.txt | wc -l`.
+* #A bounded buffer is also used when you pipe the output of one program into
+  another, e.g., `grep foo file.txt | wc -l`.#
 * This example runs two processes concurrently; `grep` writes lines from
   `file.txt` with the string `foo` in them to what it thinks is standard
   output; the UNIX shell redirects the output to what is called a UNIX pipe
@@ -329,9 +327,9 @@ void thr_join() {
 * The other end of this pipe is connected to the standard input of the process
   `wc`, which simply counts the number of lines in the input stream and prints
   out the result.
-* Thus, the `grep` process is the producer; the `wc` process is the consumer;
+* #Thus, the `grep` process is the producer; the `wc` process is the consumer;
   between them is an in-kernel bounded buffer; you, in this example, are just
-  the happy user.
+  the happy user.#
 
 '''
 
@@ -348,9 +346,8 @@ void thr_join() {
   of the buffer.
 * See Figure 30.6 (page 6) for details.
 
-:figure-number: {counter:figure-number}
-.{figure-caption} {figure-number}. The Put And Get Routines (v1)
-[,c]
+[,c,caption="{figure-caption} {counter:figure-number}. "]
+.The Put And Get Routines (v1)
 ----
 int buffer;
 int count = 0; // initially, empty
@@ -399,9 +396,8 @@ int get() {
   of that shared buffer (forever), each time printing out the data item it
   pulled from the shared buffer.
 
-:figure-number: {counter:figure-number}
-.{figure-caption} {figure-number}. Producer/Consumer Threads (v1)
-[,c]
+[,c,caption="{figure-caption} {counter:figure-number}. "]
+.Producer/Consumer Threads (v1)
 ----
 void *producer(void *arg) {
 	int i;
@@ -430,9 +426,8 @@ void *consumer(void *arg) {
 * In this (broken) first try (Figure 30.8), we have a single condition
   variable `cond` and associated lock `mutex`.
 
-:figure-number: {counter:figure-number}
-.{figure-caption} {figure-number}. Producer/Consumer: Single CV And If Statement
-[,c]
+[,c,caption="{figure-caption} {counter:figure-number}. "]
+.Producer/Consumer: Single CV And If Statement
 ----
 int loops; // must initialize somewhere...
 cond_t cond;
@@ -503,9 +498,9 @@ void *consumer(void *arg) {
 
 '''
 
-* Here is where the problem occurs: another consumer (stem:[T_{c2}]) sneaks in
-  and consumes the one existing value in the buffer (c1, c2, c4, c5, c6,
-  skipping the wait at c3 because the buffer is full).
+* Here is where the problem occurs: #another consumer (stem:[T_{c2}]) sneaks
+  in and consumes the one existing value in the buffer (c1, c2, c4, c5, c6,
+  skipping the wait at c3 because the buffer is full).#
 * Now assume stem:[T_{c1}] runs; just before returning from the wait, it
   re-acquires the lock and then returns.
 * It then calls `get()` (c4), but there are no buffers to consume!
@@ -522,29 +517,29 @@ image::figure-30-09.jpg[]
 * The problem arises for a simple reason: after the producer woke
   stem:[T_{c1}], but before stem:[T_{c1}] ever ran, the state of the bounded
   buffer changed (thanks to stem:[T_{c2}]).
-* Signaling a thread only wakes them up; it is thus a hint that the state of
+* #Signaling a thread only wakes them up; it is thus a hint that the state of
   the world has changed (in this case, that a value has been placed in the
   buffer), but there is no guarantee that when the woken thread runs, the
-  state will still be as desired.
-* This interpretation of what a signal means is often referred to as *Mesa
+  state will still be as desired.#
+* #This interpretation of what a signal means is often referred to as *Mesa
   semantics*, after the first research that built a condition variable in such
   a manner [LR80]; the contrast, referred to as *Hoare semantics*, is harder
   to build but provides a stronger guarantee that the woken thread will run
-  immediately upon being woken [H74].
-* Virtually every system ever built employs Mesa semantics.
+  immediately upon being woken [H74].#
+* #Virtually every system ever built employs Mesa semantics.#
 
 === Better, But Still Broken: While, Not If
 
-* Fortunately, this fix is easy (Figure 30.10): change the `if` to a `while`.
+* Fortunately, #this fix is easy (Figure 30.10): change the `if` to a
+  `while`.#
 * Think about why this works; now consumer stem:[T_{c1}] wakes up and (with
   the lock held) immediately re-checks the state of the shared variable (c2).
 * If the buffer is empty at that point, the consumer simply goes back to sleep
   (c3).
 * The corollary `if` is also changed to a `while` in the producer (p2).
 
-:figure-number: {counter:figure-number}
-.{figure-caption} {figure-number}. 
-[,c]
+[,c,caption="{figure-caption} {counter:figure-number}. "]
+.Producer/Consumer: Single CV And While
 ----
 int loops;
 cond_t cond;
@@ -576,10 +571,28 @@ void *consumer(void *arg) {
 }
 ----
 
-* Thanks to Mesa semantics, a simple rule to remember with condition variables
-  is to *always use while loops*.
-* Sometimes you don't have to recheck the condition, but it is always safe to
-  do so; just do it and be happy.
+* #Thanks to Mesa semantics, a simple rule to remember with condition
+  variables is to *always use while loops*.#
+* #Sometimes you don't have to recheck the condition, but it is always safe to
+  do so; just do it and be happy.#
+
+.Tip: Use while (not if) for conditions
+****
+* #When checking for a condition in a multi-threaded program, using a `while`
+  loop is always correct; using an `if` statement only might be, depending on
+  the semantics of signaling.#
+* #Thus, always use `while` and your code will behave as expected.#
+
+'''
+
+* #Using while loops around conditional checks also handles the case where
+  *spurious wakeups* occur.#
+* #In some thread packages, due to details of the implementation, it is
+  possible that two threads get woken up though just a single signal has taken
+  place [L11].#
+* Spurious wakeups are further reason to re-check the condition a thread is
+  waiting on.
+****
 
 '''
 
@@ -634,18 +647,18 @@ void *consumer(void *arg) {
 image::figure-30-11.jpg[]
 
 * Signaling is clearly needed, but must be more directed.
-* A consumer should not wake other consumers, only producers, and vice-versa.
+* #A consumer should not wake other consumers, only producers, and
+  vice-versa.#
 
 === The Single Buffer Producer/Consumer Solution
 
-* The solution here is once again a small one: use _two_ condition variables,
-  instead of one, in order to properly signal which type of thread should wake
-  up when the state of the system changes.
+* The solution here is once again a small one: #use _two_ condition
+  variables, instead of one, in order to properly signal which type of thread
+  should wake up when the state of the system changes.#
 * Figure 30.12 shows the resulting code.
 
-:figure-number: {counter:figure-number}
-.{figure-caption} {figure-number}. Producer/Consumer: Two CVs And While
-[,c]
+[,c,caption="{figure-caption} {counter:figure-number}. "]
+.Producer/Consumer: Two CVs And While
 ----
 cond_t empty, fill;
 mutex_t mutex;
@@ -683,36 +696,18 @@ void *consumer(void *arg) {
   never accidentally wake a consumer, and a producer can never accidentally
   wake a producer.
 
-.Tip: Use while (not if) for conditions
-****
-* When checking for a condition in a multi-threaded program, using a `while`
-  loop is always correct; using an `if` statement only might be, depending on
-  the semantics of signaling.
-* Thus, always use `while` and your code will behave as expected.
-
-'''
-
-* Using while loops around conditional checks also handles the case where
-  *spurious wakeups* occur.
-* In some thread packages, due to details of the implementation, it is
-  possible that two threads get woken up though just a single signal has taken
-  place [L11].
-* Spurious wakeups are further reason to re-check the condition a thread is
-  waiting on.
-****
-
 === The Correct Producer/Consumer Solution
 
 * We now have a working producer/consumer solution, albeit not a fully general
   one.
-* The last change we make is to enable more concurrency and efficiency;
+* #The last change we make is to enable more concurrency and efficiency;
   specifically, we add more buffer slots, so that multiple values can be
   produced before sleeping, and similarly multiple values can be consumed
-  before sleeping.
-* With just a single producer and consumer, this approach is more efficient as
-  it reduces context switches; with multiple producers or consumers (or both),
-  it even allows concurrent producing or consuming to take place, thus
-  increasing concurrency.
+  before sleeping.#
+* #With just a single producer and consumer, this approach is more efficient
+  as it reduces context switches; with multiple producers or consumers (or
+  both), it even allows concurrent producing or consuming to take place, thus
+  increasing concurrency.#
 * Fortunately, it is a small change from our current solution.
 
 '''
@@ -722,14 +717,13 @@ void *consumer(void *arg) {
 * We also slightly change the conditions that producers and consumers check in
   order to determine whether to sleep or not.
 * We also show the correct waiting and signaling logic (Figure 30.14).
-* A producer only sleeps if all buffers are currently filled (p2); similarly,
-  a consumer only sleeps if all buffers are currently empty (c2).
+* #A producer only sleeps if all buffers are currently filled (p2); similarly,
+  a consumer only sleeps if all buffers are currently empty (c2).#
 * And thus we solve the producer/consumer problem; time to sit back and drink
   a cold one.
 
-:figure-number: {counter:figure-number}
-.{figure-captiob} {figure-number}. The Correct Put And Get Routines
-[,c]
+[,c,caption="{figure-caption} {counter:figure-number}. "]
+.The Correct Put And Get Routines
 ----
 int buffer[MAX];
 int fill_ptr = 0;
@@ -750,9 +744,8 @@ int get() {
 }
 ----
 
-:figure-number: {counter:figure-number}
-.{figure-captiob} {figure-number}. The Correct Producer/Consumer Synchronization
-[,c]
+[,c,caption="{figure-caption} {counter:figure-number}. "]
+.The Correct Producer/Consumer Synchronization
 ----
 cond_t empty, fill;
 mutex_t mutex;
@@ -796,9 +789,8 @@ void *consumer(void *arg) {
   a simple multi-threaded memory allocation library.
 * Figure 30.15 shows a code snippet which demonstrates the issue.
 
-:figure-number: {counter:figure-number}
-.{figure-caption} {figure-number}. Covering Conditions: An Example
-[,c]
+[,c,caption="{figure-caption} {counter:figure-number}. "]
+.Covering Conditions: An Example
 ----
 // how many bytes of the heap are free?
 int bytesLeft = MAX_HEAP_SIZE;
@@ -829,8 +821,8 @@ void free(void *ptr, int size) {
 * As you might see in the code, when a thread calls into the memory allocation
   code, it might have to wait in order for more memory to become free.
 * Conversely, when a thread frees memory, it signals that more memory is free.
-* However, our code above has a problem: which waiting thread (there can be
-  more than one) should be woken up?
+* However, our code above has a problem: #which waiting thread (there can be
+  more than one) should be woken up?#
 
 '''
 
@@ -852,27 +844,28 @@ void free(void *ptr, int size) {
 
 '''
 
-* The solution suggested by Lampson and Redell is straightforward: replace the
-  `pthread_cond_signal()` call in the code above with a call to
-  `pthread_cond_broadcast()`, which wakes up all waiting threads.
+* #The solution suggested by Lampson and Redell is straightforward: replace
+  the `pthread_cond_signal()` call in the code above with a call to
+  `pthread_cond_broadcast()`, which wakes up all waiting threads.#
 * By doing so, we guarantee that any threads that should be woken are.
-* The downside, of course, can be a negative performance impact, as we might
-  needlessly wake up many other waiting threads that shouldn't (yet) be awake.
+* #The downside, of course, can be a negative performance impact, as we might
+  needlessly wake up many other waiting threads that shouldn't (yet) be
+  awake.#
 * Those threads will simply wake up, re-check the condition, and then go
   immediately back to sleep.
 * Lampson and Redell call such a condition a *covering condition*, as it
   covers all the cases where a thread needs to wake up (conservatively); the
   cost, as we've discussed, is that too many threads might be woken.
-* The astute reader might also have noticed we could have used this approach
+* #The astute reader might also have noticed we could have used this approach
   earlier (see the producer/consumer problem with only a single condition
-  variable).
+  variable).#
 * However, in that case, a better solution was available to us, and thus we
   used it.
-* In general, if you find that your program only works when you change your
+* #In general, if you find that your program only works when you change your
   signals to broadcasts (but you don't think it should need to), you probably
-  have a bug; fix it!
-* But in cases like the memory allocator above, broadcast may be the most
-  straightforward solution available.
+  have a bug; fix it!#
+* #But in cases like the memory allocator above, broadcast may be the most
+  straightforward solution available.#
 
 == 30.4 Summary
 
@@ -888,16 +881,16 @@ void free(void *ptr, int size) {
 == References
 
 [D68] "Cooperating sequential processes" by Edsger W. Dijkstra. 1968. Available online here: `http://www.cs.utexas.edu/users/EWD/ewd01xx/EWD123.PDF`.::
-* Another classic from Dijkstra; reading his early works on concurrency will
-  teach you much of what you need to know.
+* #Another classic from Dijkstra; reading his early works on concurrency will
+  teach you much of what you need to know.#
 
 [D72] "Information Streams Sharing a Finite Buffer" by E.W. Dijkstra. Information Processing Letters 1: 179-180, 1972. http://www.cs.utexas.edu/users/EWD/ewd03xx/EWD329.PDF::
 * The famous paper that introduced the producer/consumer problem.
 
 [D01] "My recollections of operating system design" by E.W. Dijkstra. April, 2001. Available: `http://www.cs.utexas.edu/users/EWD/ewd13xx/EWD1303.PDF`.::
-* A fascinating read for those of you interested in how the pioneers of our
+* #A fascinating read for those of you interested in how the pioneers of our
   field came up with some very basic and fundamental concepts, including ideas
-  like "interrupts" and even pa stack"!
+  like "interrupts" and even "a stack"!#
 
 [H74] "Monitors: An Operating System Structuring Concept" by C.A.R. Hoare.  Communications of the ACM, 17:10, pages 549–557, October 1974.::
 * Hoare did a fair amount of theoretical work in concurrency.
@@ -905,8 +898,8 @@ void free(void *ptr, int size) {
   coolest sorting algorithm in the world, at least according to these authors.
 
 [L11] "Pthread_cond_signal Man Page" by Mysterious author. March, 2011. Available online: `http://linux.die.net/man/3/pthread_cond_signal`.::
-* The Linux man page shows a nice simple example of why a thread might get a
-  spurious wakeup, due to race conditions within the signal/wakeup code.
+* #The Linux man page shows a nice simple example of why a thread might get a
+  spurious wakeup, due to race conditions within the signal/wakeup code.#
 
 [LR80] "Experience with Processes and Monitors in Mesa" by B.W. Lampson, D.R. Redell. Communications of the ACM. 23:2, pages 105-117, February 1980.::
 * A classic paper about how to actually implement signaling and condition
@@ -916,7 +909,7 @@ void free(void *ptr, int size) {
   name.
 
 [O49] "1984" by George Orwell. Secker and Warburg, 1949.::
-* A little heavy-handed, but of course a must read.
+* #A little heavy-handed, but of course a must read.#
 * That said, we kind of gave away the ending by quoting the last sentence.
 * Sorry!
 * And if the government is reading this, let us just say that we think that
