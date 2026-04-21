@@ -330,7 +330,7 @@ ____
 ** [x] 6.1 Basic Technique: Limited Direct Execution 57
 ** [x] 6.2 Problem #1: Restricted Operations 58
 ** [x] 6.3 Problem #2: Switching Between Processes 63
-** [ ] 6.4 Worried About Concurrency? 67
+** [x] 6.4 Worried About Concurrency? 67
 ** [ ] 6.5 Summary 68
 ** [ ] References 71
 ** Homework (Measurement) 72
